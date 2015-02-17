@@ -1,0 +1,141 @@
+\documentclass{MScthesisITEM}
+
+% this package is just to generate text for demo-purposes
+
+\usepackage{blindtext}
+\usepackage{mathtools} % math packages
+\usepackage[siunitx]{circuitikz}
+\usepackage{todonotes}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{wrapfig}
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usepackage{url}
+
+%\pgfplotsset{compat=1.11}
+
+\lstset{
+	numbers=left,
+	stepnumber=1, 
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	basicstyle=\footnotesize, 
+	numberstyle=\footnotesize, 
+	tabsize=2, 
+	breaklines=true,
+	captionpos=b,}
+
+\title{Named Data Networking} % The title of your assignement; NB use \newlinetitle to start a newline
+\author{Haakon Garseg Mørk} % Your firstname and lastname
+\professor{Stig F. Mjølsnes, ITEM} % Affiliation = ITEM for instance
+\supervisor{N/A}
+
+%% Uncomment the following in case you want subfigures; note that there will be a warning for the caption package
+% \let\subcaption\undefined
+% \let\subfloat\undefined
+% \usepackage[bf]{caption}
+% \usepackage{subcaption}
+
+\DeclareGraphicsExtensions{.pdf,.jpg}
+\graphicspath{{./figs/}}
+
+\loadglsentries{glossary}
+\makeglossaries
+
+\begin{document}
+\selectlanguage{english}
+\pagenumbering{roman}
+\pagestyle{plain}
+
+%% Only for the project; comment out the line below for the master's thesis; the front page will be generated automatically by DAIM
+\titleITEM
+
+%% Only for the master's thesis; for the project report the description is taken from It's Learning and added by the department
+% \selectlanguage{english} % Change to 'norsk' if you are writing in Norwegian
+% \input{problem_description}
+% \cleardoublepage
+
+%% There must be an abstract in English, even though the main text is in Norwegian
+\selectlanguage{english}
+\include{abstract_english}
+\cleardoublepage
+
+%% Only for the master's thesis; if the main text is in English and you can write Norwegian, there must be an abstract in Norwegian as well.
+% \selectlanguage{norsk}
+% \include{abstract_norwegian}
+% \cleardoublepage
+
+\selectlanguage{english}% Change to 'norsk' if you are writing in Norwegian
+
+% \include{preface}
+% \cleardoublepage
+
+\include{acknowledgment}
+\cleardoublepage
+
+% similarly you may add a separate acknowledgments page
+
+\tableofcontents*
+\cleardoublepage
+
+%% include if relevant
+\listoffigures
+\cleardoublepage
+
+\lstlistoflistings
+\cleardoublepage
+
+%% include if relevant
+\listoftables
+\cleardoublepage
+
+%% include if relevant
+% \listofalgorithms
+% \addcontentsline{toc}{chapter}{List of Algorithms}
+% \cleardoublepage
+
+%% include if relevant
+% \printglossary[title=List of Symbols, style=long]
+% \cleardoublepage
+% \glsaddall[]
+
+% include if relevant
+\printglossary[title=List of Acronyms,type=\acronymtype] % prints just the list of acronyms
+\cleardoublepage
+
+\pagenumbering{arabic}
+\pagestyle{ruled}
+\include{chapter1}
+\include{chapter2}
+\include{chapter3}
+\include{chapter4}
+\include{chapter5}
+\include{chapter6}
+\include{chapter7}
+
+%% include here the other chapters
+
+%% References
+%\include{references}
+\renewcommand*{\bibname}{References}
+\bibliographystyle{ieeetr}
+%\bibliographystyle{alpha}
+\bibliography{main}
+
+% Uncomment the following if you have any appendix
+\appendix
+\addtocontents{toc}{%
+ \protect\vspace{1em}%
+ \protect\noindent \bfseries \appendixtocname\protect\par
+ \protect\vspace{-.5em}%
+}
+\renewcommand{\chaptername}{\appendixname}
+% include below possible appendices (chapters)
+%\include{appendix}
+
+
+\end{document} 
