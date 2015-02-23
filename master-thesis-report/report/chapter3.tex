@@ -1,2 +1,19 @@
 \chapter{Experimental Setup}\label{chp:experimental_setup}
 Ingress
+
+ChronoSync
+Encode data into crypto digest, i.e. a state digest, to exchange states between all parties. 
+If the state is equal to the one stored locally, then nothing should happen.
+If not, two options are available; 
+- the differences of the dataset state can be directly inferred
+and sent as the response to the sync interest if the state
+digest is the same as one of the previous local state
+digests;
+- a state reconciliation method is used to determine the dif-
+ferences of the knowledge if the state digest is unknown
+(for example, when recovering from a network partition).
+
+Sync interest
+Sync data
+Recovery interest
+Recovery data
