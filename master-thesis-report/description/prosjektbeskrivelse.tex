@@ -28,15 +28,47 @@ FAKULTET FOR INFORMASJONSTEKNOLOGI, MATEMATIKK OG ELEKTROTEKNIKK} \\
 \begin{tabular}{@{}p{5cm}l}
 Kandidatens navn:	& Haakon Garseg Mørk\\
 Emne:			& Master thesis\\
-Oppgavens tittel: 	& Named Data Networking \\
+Oppgavens tittel: 	& Security Properties of Information-centric Networks \\
 Oppgavens beskrivelse: 	& \\
 \end{tabular}
 
+The translation from name to address and location is a fundamental problem to all networks.
+Named Data Networking (NDN) is a proposal for content-centric discovery and routing approach to networking
+going on at the University of California, Los Angeles (UCLA) [1], which is part of the inspiration and a contact point for this work.
 
+In general, the name to address resolution can either be maintained by a catalogue lookup service, 
+such as DNS (internet) and HLR (mobile networks), or resolved on-the-fly by a protocol on request, such as ARP (LAN). 
+There has been a tremendous amount of work done on the naming problem in distributed systems, 
+some became big failures (e.g. X.500) others such as the web URLs are very successful. Bringing things even further,
+the Digital Object Identifier system [2] is a Uniform Resource Identifier (URI) directed at the content/object itself rather than a location. 
+Very much related to the name/address problem is the information security problem of efficient and practical public key distribution, 
+which remain unsolved in practice, 
+even though a significant number of digital certificate and verification protocols and schemes have been proposed,
+and systems tested over the last two decades. 
+One notable and early theoretical proposal is Rivest and Lampson SDSI proposal [3],
+and subsequent work, that may be revisited for applicable to named data networking.
+
+This project aims to understand the ideas and concepts of named data networking, and investigate the
+potential these notions hold for network security, even for properties of anonymity and privacy. 
+It should be investigated whether the recent proposal by Håkon Wium Lie to use the Norwegian top domains of .sj and .bv as
+privacy-friendly internet domains can be put in this context [4]. 
+
+One idea for the student work can be to build a public key distribution application that uses ChronoSync [5] and runs over NDN.
+This approach will allow for easy experimentation in the regular internet protocols environment.     
+
+[1]  UCLA.  Named Data Networking. Web site at http://named-data.net/
+
+[2]  The DOI system.  www.doi.org
+
+[3]  Rivest, Ronald L., and Butler Lampson. SDSI-a simple distributed security infrastructure. Crypto, 1996.
+
+[4]  Håkon Wium Lie.  En digital Svalbard-traktat. Dagbladet-kronikk 24.juni 2014.  
+
+[5]  UCLA, Named-data. ChronoSync. Source code: https://github.com/named-data/ChronoSync
 
 \begin{tabular}{@{}p{5cm}l}
 Utf\o{}rt ved:	& Institutt for telematikk \\
-Veileder:	& Markku-Juhani O. Saarinen \\
+Professor/veileder:	& Stig F. Mjølsnes \\
 \end{tabular}
 
 \end{titlepage}
