@@ -19,8 +19,16 @@ from pyndn.sync import ChronoSync2013
 class PublicKeySync(object):
 	#pkList == chatRomm
 	def __init__(self, screenName, pkListName, hubPrefix, face, keyChain, certificateName):
+		"""
+		PublicKeySync:
+			To be written (TBW)
+
+		"""
 		self.screenName = screenName
 		self.pkListName = pkListName
+
+		# ChronoSync2013: The Face for calling registerPrefix and expressInterest. 
+		# The Face object must remain valid for the life of this ChronoSync2013 object.
 		self.face = face
 		self.keyChain = keyChain
 		self.certificateName = certificateName
@@ -33,59 +41,124 @@ class PublicKeySync(object):
 
         # This should only be called once, so get the random string here.
 		self.pkListPrefix = Name(hubPrefix).append(self.pkListName)
-		session = int(round(self.getNowMilliseconds() / 1000.0))
+
+		# ChronoSync2013: The session number used with the applicationDataPrefix in sync state messages.
+		session = int(round(self.getNowMilliseconds() / 1000.0)) 
+
 		self.userName = self.screenName + str(session)
 		
-		# self.sync = ChronoSync2013(
-  #          self.sendInterest, 
-  #          self.initial, 
-  #          self.pkListPrefix,
-  #          Name("/ndn/broadcast/PublicKeySync-0.1").append(self.pkList), 
-  #          session,
-  #          face, 
-  #          keyChain, 
-  #          certificateName, 
-  #          self.syncLifetime,
-  #          onRegisterFailed)
+		broadcastPrefix = Name("/ndn/broadcast/PublicKeySync-0.1").append(self.pkListName)
+		self.sync = ChronoSync2013(
+           self.sendInterest, 			#onReceivedSyncState 		(function object)
+           self.initial,				#onInitialized 				(function object)
+           self.pkListPrefix,			#applicationDataPrefix		(Name)
+           broadcastPrefix, 			#applicationBroadcastPrefix	(Name)
+           session,						#sessionNo					(int)
+           self.face,					#face 						(Face)
+           self.keyChain,				#KeyChain 					(KeyChain)
+           self.certificateName,		#certificateName			(Name)
+           self.syncLifetime,			#syncLifetime				(float)
+           onRegisterFailed)			#onRegisterFailed 			(function object)
 
 		face.registerPrefix(self.pkListPrefix, self.onInterest, onRegisterFailed)
 
-
+	# onInitialized
 	def initial(self):
+		"""
+		PublicKeySync:
+			To be written (TBW)
+
+		ChronoSync2013 docs: 
+		onInitialized: 
+			This calls onInitialized() when the first sync data is received 
+			(or the interest times out because there are no other publishers yet).
+		"""
 		self.face.expressInterest(self.pkListPrefix, self.onData, self.onTimeout)
 
+	# onReceivedSyncState
 	def sendInterest(self, syncStates, isRecovery):
-		self.isRecoverySyncState = isRecovery
+		"""
+		PublicKeySync:
+			To be written (TBW)
 
-		interest = Interest(Name(self.pkListPrefix))
-		interest.setInterestLifetimeMilliseconds(self.syncLifetime)
-		self.face.expressInterest(interest, self.onData, self.onTimeout)
+		ChronoSync2013 docs:
+		onReceivedSyncState: 
+			When ChronoSync receives a sync state message, this calls onReceivedSyncState(syncStates, isRecovery) 
+			where syncStates is the list of SyncState messages and isRecovery is true if this is the initial list of SyncState 
+			messages or from a recovery interest. (For example, if isRecovery is true, a chat application would not 
+			want to re-display all the associated chat messages.) The callback should send interests to fetch the application 
+			data for the sequence numbers in the sync state.
+		"""
+		self.isRecoverySyncState = isRecovery
+		dump("onReceivedSyncState in recovery: ", self.isRecoverySyncState)
+
+		sendList = []       # of str
+		sessionNoList = []  # of int
+		sequenceNoList = [] # of int
+		# Loops through the syncStates
+		# ChronoSync2013: A SyncState holds the values of a sync state message which is passed to the 
+		# 	onReceivedSyncState callback which was given to the ChronoSync2013 constructor.
+		for j in range(len(syncStates)):
+			syncState = syncStates[j]
+
+			# ChronoSync2013: Get the application data prefix for this sync state message.
+			nameComponents = Name(syncState.getDataPrefix())
+			tempName = nameComponents.get(-1).toEscapedString()
+			# ChronoSync2013: Get the sequence number for this sync state message.
+			sequenceNo = syncState.getSequenceNo()
+			# ChronoSync2013: Get the session number associated with the application data prefix for this sync state message.
+			sessionNo = syncState.getSessionNo()
+
+			sendList.append(syncState.getDataPrefix());
+			sequenceNoList.append(sequenceNo);
+			sessionNoList.append(sessionNo);
+
+		# Loop through all syncStates and send an interest for all. 
+		for i in range(len(sendList)):
+			uri = (sendList[i] + "/" + str(sessionNoList[i]) + "/" + str(sequenceNoList[i]))
+			interestName = Name(uri)
+			dump("Sync - sending interest: ", interestName.toUri())
+
+			interest = Interest(interestName)
+			interest.setInterestLifetimeMilliseconds(self.syncLifetime)
+			self.face.expressInterest(interest, self.onData, self.onTimeout)
 
 	def onInterest(self, prefix, interest, transport, registeredPrefixId):
+		"""
+		PublicKeySync:
+			To be written (TBW)
+
+		"""
 		dump("Got interest packet with name", interest.getName().toUri())
 
-		# content = "this should be the newest public key list"
-
-		# # what's the essense behind this no?
-		# sequenceNo = int(interest.getName().get(self.pkListPrefix.size() + 1).toEscapedString())
+		content = "this should be the newest public key list"
 		
-		# data = Data(interest.getName())
-		# data.setContent(Blob(content))
-		# self.keyChain.sign(data, self.certificateName)
-		# try:
-		# 	transport.send(data.wireEncode().toBuffer())
-		# except Exception as ex:
-		# 	logging.getLogger(__name__).error(
-		# 	"Error in transport.send: %s", str(ex))
-		# 	return
+		data = Data(interest.getName())
+		data.setContent(Blob(content))
+		self.keyChain.sign(data, self.certificateName)
+		try:
+			transport.send(data.wireEncode().toBuffer())
+		except Exception as ex:
+			logging.getLogger(__name__).error(
+			"Error in transport.send: %s", str(ex))
+			return
 		
 
 	def onData(self, interest, data):
+		"""
+		PublicKeySync:
+			To be written (TBW)
+
+		"""
 		dump("Got data packet with name", data.getName().toUri())
 		# Use join to convert each byte to chr.
 		dump(data.getContent().toRawStr())
 
 	def onTimeout(self, interest):
+		"""
+		PublicKeySync:
+			To be written (TBW)
+		"""
 		dump("Time out for interest", interest.getName().toUri())
 
 	@staticmethod
@@ -206,6 +279,7 @@ def dump(*list):
 		result += (element if type(element) is str else repr(element)) + " "
 	print(result)
 
+# onRegisterFailed
 def onRegisterFailed(prefix):
 	print("Register failed for prefix " + prefix.toUri())
 
