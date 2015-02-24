@@ -18,9 +18,9 @@ from pyndn.sync import ChronoSync2013
 
 class PublicKeySync(object):
 	#pkList == chatRomm
-	def __init__(self, screenName, pkList, hubPrefix, face, keyChain, certificateName):
+	def __init__(self, screenName, pkListName, hubPrefix, face, keyChain, certificateName):
 		self.screenName = screenName
-		self.pkList = pkList
+		self.pkListName = pkListName
 		self.face = face
 		self.keyChain = keyChain
 		self.certificateName = certificateName
@@ -29,10 +29,10 @@ class PublicKeySync(object):
 		self.roster = [] # of str
 		self.maxMessageCacheLength = 100
 		self.isRecoverySyncState = True
-		self.syncLifetime = 5000.0 # milliseconds
+		self.syncLifetime = 15000.0 # milliseconds
 
         # This should only be called once, so get the random string here.
-		self.pkListPrefix = Name(hubPrefix).append(self.pkList)
+		self.pkListPrefix = Name(hubPrefix).append(self.pkListName)
 		session = int(round(self.getNowMilliseconds() / 1000.0))
 		self.userName = self.screenName + str(session)
         
@@ -58,11 +58,27 @@ class PublicKeySync(object):
 		self.isRecoverySyncState = isRecovery
 
 		interest = Interest(Name(self.pkListPrefix))
-		interest.setInterestLifetimeMilliseconds(self._syncLifetime)
-		self._face.expressInterest(interest, self.onData, self.onTimeout)
+		interest.setInterestLifetimeMilliseconds(self.syncLifetime)
+		self.face.expressInterest(interest, self.onData, self.onTimeout)
 
 	def onInterest(self, prefix, interest, transport, registeredPrefixId):
 		dump("Got interest packet with name", interest.getName().toUri())
+
+		# content = "this should be the newest public key list"
+
+		# # what's the essense behind this no?
+		# sequenceNo = int(interest.getName().get(self.pkListPrefix.size() + 1).toEscapedString())
+		
+		# data = Data(interest.getName())
+		# data.setContent(Blob(content))
+		# self.keyChain.sign(data, self.certificateName)
+		# try:
+		# 	transport.send(data.wireEncode().toBuffer())
+		# except Exception as ex:
+		# 	logging.getLogger(__name__).error(
+		# 	"Error in transport.send: %s", str(ex))
+		# 	return
+		
 
 	def onData(self, interest, data):
 		dump("Got data packet with name", data.getName().toUri())
@@ -208,12 +224,13 @@ def main():
 		hubPrefix = defaultHubPrefix
 
 	defaultpkList = "pklist"
-	pkList = promptAndInput("Sync with public key list [" + defaultpkList + "]: ")
-	if pkList == "":
-		pkList = defaultpkList
+	pkListName = promptAndInput("Sync with public key list [" + defaultpkList + "]: ")
+	if pkListName == "":
+		pkListName = defaultpkList
 
-	host = "129.241.209.101"
-	print("Connecting to " + host + ", public Key List: " + pkList + ", Name: " + screenName)
+	host = "localhost" 
+	# host = "129.241.209.101"
+	print("Connecting to " + host + ", public Key List: " + pkListName + ", Name: " + screenName)
 	print("")
 
     # Set up the key chain.
@@ -236,7 +253,7 @@ def main():
 	
 	face.setCommandSigningInfo(keyChain, certificateName)
 
-	pkSync = PublicKeySync(screenName, pkList, Name(hubPrefix), face, keyChain, certificateName)
+	pkSync = PublicKeySync(screenName, pkListName, Name(hubPrefix), face, keyChain, certificateName)
 
 	pkSync.initial()
 	pkSync.face.processEvents()
