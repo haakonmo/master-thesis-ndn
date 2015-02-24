@@ -40,7 +40,7 @@ class PublicKeySync(object):
 		self.syncLifetime = 15000.0 # milliseconds
 
         # This should only be called once, so get the random string here.
-		self.pkListPrefix = Name(hubPrefix).append(self.pkListName)
+		self.pkListPrefix = Name(hubPrefix).append(self.pkListName)self.getRandomString()
 
 		# ChronoSync2013: The session number used with the applicationDataPrefix in sync state messages.
 		session = int(round(self.getNowMilliseconds() / 1000.0)) 
@@ -170,6 +170,21 @@ class PublicKeySync(object):
 		:rtype: float
 		"""
 		return time.time() * 1000.0
+
+	@staticmethod
+    def _getRandomString():
+        """
+        Generate a random name for ChronoSync.
+        """
+        #TODO: better seed
+        seed = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789"
+        result = ""
+        for i in range(10):
+          # Using % means the distribution isn't uniform, but that's OK.
+          position = random.randrange(256) % len(seed)
+          result += seed[position]
+
+        return result
 
 DEFAULT_RSA_PUBLIC_KEY_DER = bytearray([
 	0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
