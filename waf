@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# encoding: ISO8859-1
+# Haakon Garseg Mørk, 2015
+
+import os, sys, inspect
+
+VERSION="0.1"
+REVISION="rf4efrs4fzfd"
+INSTALL=''
+C1='#8'
+C2='#.'
+C3='#)'
+cwd = os.getcwd()
+join = os.path.join
+

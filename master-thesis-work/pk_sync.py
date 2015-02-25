@@ -39,8 +39,8 @@ class PublicKeySync(object):
 		self.isRecoverySyncState = True
 		self.syncLifetime = 15000.0 # milliseconds
 
-        # This should only be called once, so get the random string here.
-		self.pkListPrefix = Name(hubPrefix).append(self.pkListName)self.getRandomString()
+		# This should only be called once, so get the random string here.
+		self.pkListPrefix = Name(hubPrefix).append(self.pkListName).append(self.getRandomString())
 
 		# ChronoSync2013: The session number used with the applicationDataPrefix in sync state messages.
 		session = int(round(self.getNowMilliseconds() / 1000.0)) 
@@ -61,6 +61,10 @@ class PublicKeySync(object):
            onRegisterFailed)			#onRegisterFailed 			(function object)
 
 		face.registerPrefix(self.pkListPrefix, self.onInterest, onRegisterFailed)
+
+	def sendUpdatedPublicKeyList(self):
+		# When the application wants to publish data, it calls ChronoSync2013 method publishNextSequenceNo()
+		self.sync.publishNextSequenceNo()
 
 	# onInitialized
 	def initial(self):
@@ -103,7 +107,10 @@ class PublicKeySync(object):
 
 			# ChronoSync2013: Get the application data prefix for this sync state message.
 			nameComponents = Name(syncState.getDataPrefix())
+
 			tempName = nameComponents.get(-1).toEscapedString()
+			dump("Temp name ",tempName)
+			# tempName is the random string 
 			# ChronoSync2013: Get the sequence number for this sync state message.
 			sequenceNo = syncState.getSequenceNo()
 			# ChronoSync2013: Get the session number associated with the application data prefix for this sync state message.
@@ -172,19 +179,19 @@ class PublicKeySync(object):
 		return time.time() * 1000.0
 
 	@staticmethod
-    def _getRandomString():
-        """
-        Generate a random name for ChronoSync.
-        """
-        #TODO: better seed
-        seed = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789"
-        result = ""
-        for i in range(10):
-          # Using % means the distribution isn't uniform, but that's OK.
-          position = random.randrange(256) % len(seed)
-          result += seed[position]
+	def getRandomString():
+		"""
+		Generate a random name for ChronoSync.
+		"""
+		#TODO: better seed
+		seed = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789"
+		result = ""
+		for i in range(10):
+			# Using % means the distribution isn't uniform, but that's OK.
+			position = random.randrange(256) % len(seed)
+			result += seed[position]
 
-        return result
+		return result
 
 DEFAULT_RSA_PUBLIC_KEY_DER = bytearray([
 	0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
