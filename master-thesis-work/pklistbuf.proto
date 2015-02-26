@@ -1,0 +1,15 @@
+package SyncDemo;
+
+message PublicKeyListMessage {
+  required string to = 1;
+  required string from = 2;
+  enum PublicKeyListMessageType {
+    LIST_UPDATE = 0;
+    SUBSCRIBE = 1;
+    UNSUBSCRIBE = 2;
+    OTHER = 3;
+  }
+  required PublicKeyListMessageType type = 3 [default = LIST_UPDATE];
+  optional string data = 4;
+  required int32 timestamp = 5;
+}

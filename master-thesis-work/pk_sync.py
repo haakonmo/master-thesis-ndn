@@ -33,7 +33,7 @@ class PublicKeySync(object):
 		self.keyChain = keyChain
 		self.certificateName = certificateName
 
-		self.messageCache = [] # of CachedMessage
+		self.syncDataCache = [] # of CachedSyncData
 		self.roster = [] # of str
 		self.maxMessageCacheLength = 100
 		self.isRecoverySyncState = True
@@ -167,6 +167,9 @@ class PublicKeySync(object):
 			To be written (TBW)
 		"""
 		dump("Time out for interest", interest.getName().toUri())
+
+	def syncDataCacheAppend(self, syncType, data):
+
 
 	@staticmethod
 	def getNowMilliseconds():
