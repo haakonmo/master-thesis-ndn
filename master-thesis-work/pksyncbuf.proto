@@ -1,0 +1,18 @@
+package PkSyncDemo;
+
+message PublicKeySync {
+  required string to = 1;
+  required string from = 2;
+
+  enum PublicKeySyncType {
+    PK_UPDATE = 0;
+    SUBSCRIBE = 1;
+    UNSUBSCRIBE = 2;
+    HELLO = 3;
+    OTHER = 4;
+  }
+  
+  required PublicKeySyncType dataType = 3 [default = PK_UPDATE];
+  optional string data = 4;
+  required int32 timestamp = 5;
+}
