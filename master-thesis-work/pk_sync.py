@@ -1,3 +1,4 @@
+import pksyncbuf_pb2
 import sys
 import logging
 import time
@@ -62,7 +63,7 @@ class PublicKeySync(object):
 
 		face.registerPrefix(self.pkListPrefix, self.onInterest, onRegisterFailed)
 
-	def sendUpdatedPublicKey(self):
+	def sendUpdatedPublicKey(self, data):
 		"""
 		PublicKeySync:
 			When a key pair is edited, i.e. renewed, the application will publish a new sequence number in ChronoSync2013
@@ -72,11 +73,11 @@ class PublicKeySync(object):
 
 		#Subscribe to public key sync "room" if not subscribing already
 		if len(self.syncDataCache) == 0:
-			self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
+			self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
 
 		#TODO: check wether the new public key is new.
 		self.sync.publishNextSequenceNo()
-		self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.UPDATE, pk)
+		self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.PK_UPDATE, data)
 		print "New public key published!"
 
 	# onInitialized
@@ -123,17 +124,28 @@ class PublicKeySync(object):
 			# ChronoSync2013: Get the application data prefix for this sync state message.
 			nameComponents = Name(syncState.getDataPrefix())
 
+			#TODO not used..
 			tempName = nameComponents.get(-1).toEscapedString()
-			dump("Temp name ",tempName)
 			# tempName is the random string 
 			# ChronoSync2013: Get the sequence number for this sync state message.
 			sequenceNo = syncState.getSequenceNo()
 			# ChronoSync2013: Get the session number associated with the application data prefix for this sync state message.
 			sessionNo = syncState.getSessionNo()
 
-			sendList.append(syncState.getDataPrefix());
-			sequenceNoList.append(sequenceNo);
-			sessionNoList.append(sessionNo);
+			#Loop through sendList for not adding duplcates
+			index = -1
+			for k in range(len(sendList)):
+				if sendList[k] == syncState.getDataPrefix():
+					index = k
+					break
+			if index != -1:
+				sessionNoList[index] = sessionNo
+				sequenceNoList[index] = sequenceNo
+			else:
+				#append to sendList for sending out interest
+				sendList.append(syncState.getDataPrefix())
+				sessionNoList.append(sessionNo)
+				sequenceNoList.append(sequenceNo)
 
 		# Loop through all syncStates and send an interest for all. 
 		for i in range(len(sendList)):
@@ -153,31 +165,32 @@ class PublicKeySync(object):
 		"""
 		dump("Got interest packet with name", interest.getName().toUri())
 
-		content = pklistbuf_pb2.PublicKeySync()
+		content = pksyncbuf_pb2.PublicKeySync()
 		sequenceNo = int(
 			interest.getName().get(self.pkListPrefix.size() + 1).toEscapedString())
 		gotContent = False
 		
-		#loop through all cached data and find out if you have some new data to respond with
+		#loop through all cached data and find out if you have some new content to respond with
 		for i in range(len(self.syncDataCache) - 1, -1, -1):
 			data = self.syncDataCache[i]
 			if data.sequenceNo == sequenceNo:
-				if data.dataType != pklistbuf_pb2.PublicKeySync.UPDATE:
+				if data.dataType != pksyncbuf_pb2.PublicKeySync.PK_UPDATE:
 					# Use setattr because "from" is a reserved keyword.
 					setattr(content, "from", self.screenName)
 					content.to = self.pkListName
 					content.type = data.dataType
-					content.timestamp = int(round(message.time / 1000.0))
+					content.timestamp = int(round(data.time / 1000.0))
 				else:
 					setattr(content, "from", self.screenName)
 					content.to = self.pkListName
 					content.type = data.dataType
 					content.data = data.data
-					content.timestamp = int(round(message.time / 1000.0))
+					content.timestamp = int(round(data.time / 1000.0))
 				gotContent = True
 				break
 		
 		if gotContent:
+			print "new content!"
 			#Serialize the pklistbuf
 			array = content.SerializeToString()
 			#Initialize the data with Name
@@ -201,8 +214,9 @@ class PublicKeySync(object):
 
 		"""
 		dump("Got data packet with name", data.getName().toUri())
-		# Use join to convert each byte to chr.
-		dump(data.getContent().toRawStr())
+		content = pksyncbuf_pb2.PublicKeySync()
+		content.ParseFromString(data.getContent().toRawStr())
+		print("Type: " + str(content.dataType) + ", data: "+content.data)
 
 	def onTimeout(self, interest):
 		"""
@@ -221,15 +235,13 @@ class PublicKeySync(object):
 			message, the sequence number from _sync.getSequenceNo() and the current
 			time. Also remove elements from the front of the cache as needed to keep
 			the size to _maxMessageCacheLength.
-        """
-        cachedData = self.CachedData(
-        	self.sync.getSequenceNo(), dataType, data,
-        	self.getNowMilliseconds())
+		"""
+		cachedData = self.CachedData(self.sync.getSequenceNo(), dataType, data, self.getNowMilliseconds())
 
-        self.syncDataCache.append(cachedData)
+		self.syncDataCache.append(cachedData)
 
-        while len(self.syncDataCache) > self.maxMessageCacheLength:
-          self.syncDataCache.pop(0)
+		while len(self.syncDataCache) > self.maxMessageCacheLength:
+			self.syncDataCache.pop(0)
 
 	@staticmethod
 	def getNowMilliseconds():
@@ -423,7 +435,14 @@ def main():
 	pkSync.initial()    
 
 	while True:
+		isReady, _, _ = select.select([sys.stdin], [], [], 0)
+		if len(isReady) != 0:
+			input = promptAndInput("")
+        
+			pkSync.sendUpdatedPublicKey(input)
+
 		pkSync.face.processEvents()
+		# We need to sleep for a few milliseconds so we don't use 100% of the CPU.
 		time.sleep(0.01)
 
 	pkSync.face.shutdown()
