@@ -69,11 +69,15 @@ class PublicKeySync(object):
 
 		"""
 		# When the application wants to publish data, it calls ChronoSync2013 method publishNextSequenceNo()
-		if len(self.syncDataCache) == 0:
-            self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
 
+		#Subscribe to public key sync "room" if not subscribing already
+		if len(self.syncDataCache) == 0:
+			self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
+
+		#TODO: check wether the new public key is new.
 		self.sync.publishNextSequenceNo()
 		self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.UPDATE, pk)
+		print "New public key published!"
 
 	# onInitialized
 	def initial(self):
@@ -86,7 +90,9 @@ class PublicKeySync(object):
 			This calls onInitialized() when the first sync data is received 
 			(or the interest times out because there are no other publishers yet).
 		"""
-		self.face.expressInterest(self.pkListPrefix, self.onData, self.onTimeout)
+		timeout = Interest(Name("/local/timeout"))
+		timeout.setInterestLifetimeMilliseconds(60000)
+		self.face.expressInterest(timeout, self.onData, self.onTimeout)
 
 	# onReceivedSyncState
 	def sendInterest(self, syncStates, isRecovery):
@@ -147,17 +153,45 @@ class PublicKeySync(object):
 		"""
 		dump("Got interest packet with name", interest.getName().toUri())
 
-		content = "this should be the newest public key list"
+		content = pklistbuf_pb2.PublicKeySync()
+		sequenceNo = int(
+			interest.getName().get(self.pkListPrefix.size() + 1).toEscapedString())
+		gotContent = False
 		
-		data = Data(interest.getName())
-		data.setContent(Blob(content))
-		self.keyChain.sign(data, self.certificateName)
-		try:
-			transport.send(data.wireEncode().toBuffer())
-		except Exception as ex:
-			logging.getLogger(__name__).error(
-			"Error in transport.send: %s", str(ex))
-			return
+		#loop through all cached data and find out if you have some new data to respond with
+		for i in range(len(self.syncDataCache) - 1, -1, -1):
+			data = self.syncDataCache[i]
+			if data.sequenceNo == sequenceNo:
+				if data.dataType != pklistbuf_pb2.PublicKeySync.UPDATE:
+					# Use setattr because "from" is a reserved keyword.
+					setattr(content, "from", self.screenName)
+					content.to = self.pkListName
+					content.type = data.dataType
+					content.timestamp = int(round(message.time / 1000.0))
+				else:
+					setattr(content, "from", self.screenName)
+					content.to = self.pkListName
+					content.type = data.dataType
+					content.data = data.data
+					content.timestamp = int(round(message.time / 1000.0))
+				gotContent = True
+				break
+		
+		if gotContent:
+			#Serialize the pklistbuf
+			array = content.SerializeToString()
+			#Initialize the data with Name
+			data = Data(interest.getName())
+			#Set content for the data --> the serialized content to bytes
+			data.setContent(Blob(array))
+			#Add sign the data
+			self.keyChain.sign(data, self.certificateName)
+			try:
+				transport.send(data.wireEncode().toBuffer())
+			except Exception as ex:
+				logging.getLogger(__name__).error(
+				"Error in transport.send: %s", str(ex))
+				return
 		
 
 	def onData(self, interest, data):
@@ -177,8 +211,25 @@ class PublicKeySync(object):
 		"""
 		dump("Time out for interest", interest.getName().toUri())
 
-	def syncDataCacheAppend(self, syncType, data):
+	def syncDataCacheAppend(self, dataType, data):
+		"""
+		PublicKeySync:
+			To be written (TBW)
 
+		ChronoChat:
+			Append a new CachedMessage to messageCache_, using given messageType and
+			message, the sequence number from _sync.getSequenceNo() and the current
+			time. Also remove elements from the front of the cache as needed to keep
+			the size to _maxMessageCacheLength.
+        """
+        cachedData = self.CachedData(
+        	self.sync.getSequenceNo(), dataType, data,
+        	self.getNowMilliseconds())
+
+        self.syncDataCache.append(cachedData)
+
+        while len(self.syncDataCache) > self.maxMessageCacheLength:
+          self.syncDataCache.pop(0)
 
 	@staticmethod
 	def getNowMilliseconds():
@@ -204,6 +255,13 @@ class PublicKeySync(object):
 			result += seed[position]
 
 		return result
+
+	class CachedData(object):
+		def __init__(self, sequenceNo, dataType, data, time):
+			self.sequenceNo = sequenceNo
+			self.dataType = dataType
+			self.data = data
+			self.time = time
 
 DEFAULT_RSA_PUBLIC_KEY_DER = bytearray([
 	0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
