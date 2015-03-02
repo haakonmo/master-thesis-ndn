@@ -1,15 +1,17 @@
-package SyncDemo;
+package PkSyncDemo;
 
-message PublicKeyListMessage {
+message PublicKeySync {
   required string to = 1;
   required string from = 2;
-  enum PublicKeyListMessageType {
-    LIST_UPDATE = 0;
+
+  enum PublicKeySyncType {
+    PK_UPDATE = 0;
     SUBSCRIBE = 1;
     UNSUBSCRIBE = 2;
     OTHER = 3;
   }
-  required PublicKeyListMessageType type = 3 [default = LIST_UPDATE];
+  
+  required PublicKeySyncType type = 3 [default = PK_UPDATE];
   optional string data = 4;
   required int32 timestamp = 5;
 }

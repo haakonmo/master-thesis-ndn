@@ -62,9 +62,18 @@ class PublicKeySync(object):
 
 		face.registerPrefix(self.pkListPrefix, self.onInterest, onRegisterFailed)
 
-	def sendUpdatedPublicKeyList(self):
+	def sendUpdatedPublicKey(self):
+		"""
+		PublicKeySync:
+			When a key pair is edited, i.e. renewed, the application will publish a new sequence number in ChronoSync2013
+
+		"""
 		# When the application wants to publish data, it calls ChronoSync2013 method publishNextSequenceNo()
+		if len(self.syncDataCache) == 0:
+            self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
+
 		self.sync.publishNextSequenceNo()
+		self.syncDataCacheAppend(pklistbuf_pb2.PublicKeySync.UPDATE, pk)
 
 	# onInitialized
 	def initial(self):
