@@ -1,7 +1,20 @@
 \chapter{Introduction}\label{chp:introduction} 
 
 \section{Motivation}
+The translation from name to address and location is a fundamental problem to all networks.
+\gls{NDN} is a proposal for content-centric discovery and routing approach to networking
+going on at the \gls{UCLA}, which is part of the inspiration and a contact point for this work.
 
+In general, the name to address resolution can either be maintained by a catalogue lookup service, 
+such as \gls{DNS} (internet) and \gls{HLR} (mobile networks), 
+or resolved on-the-fly by a protocol on request, such as \gls{ARP} (\gls{LAN}). 
+There has been a tremendous amount of work done on the naming problem in distributed systems, 
+some became big failures (e.g. X.500) others such as the web \gls{URL}s are very successful. 
+Bringing things even further, the \gls{DOI} system is a \gls{URI} directed at the content/object itself rather than a location. 
+Very much related to the name/address problem is the information security problem of efficient and practical public key distribution, 
+which remain unsolved in practice, even though a significant number of digital certificate and verification protocols and schemes have been proposed, and systems tested over the last two decades. 
+One notable and early theoretical proposal is Rivest and Lampson SDSI proposal~\cite{rivest1996sdsi},
+and subsequent work, that may be revisited for applicable to named data networking.
 
 \section{Problem and Scope}
 
