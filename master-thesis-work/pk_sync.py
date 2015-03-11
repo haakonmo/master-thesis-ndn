@@ -35,8 +35,8 @@ class PublicKeySync(object):
 		self.certificateName = certificateName
 
 		self.syncDataCache = [] # of CachedSyncData
-		self.roster = [] # of str
-		self.maxMessageCacheLength = 100
+		self.roster = [] # of str (list of all nodes that are subscribing)
+		self.maxDataCacheLength = 100
 		self.isRecoverySyncState = True
 		self.syncLifetime = 15000.0 # milliseconds
 
@@ -80,6 +80,14 @@ class PublicKeySync(object):
 		self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.PK_UPDATE, data)
 		print "New public key published!"
 
+	def unsubscribe(self):
+		"""
+		PublicKeySync:
+			Send the unsubscribe message and unsubscribe the public key.
+		"""
+		self.sync.publishNextSequenceNo()
+		self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.UNSUBSCRIBE, "xxx")
+
 	# onInitialized
 	def initial(self):
 		"""
@@ -93,7 +101,15 @@ class PublicKeySync(object):
 		"""
 		timeout = Interest(Name("/local/timeout"))
 		timeout.setInterestLifetimeMilliseconds(60000)
-		self.face.expressInterest(timeout, self.onData, self.onTimeout)
+		self.face.expressInterest(timeout, self.dummyOnData, self.onTimeout)
+
+		try:
+			self.roster.index(self.userName)
+		except ValueError:
+			self.roster.append(self.userName)
+			print("Member: " + self.screenName)
+			print(self.screenName + ": Subscribe")
+			self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
 
 	# onReceivedSyncState
 	def sendInterest(self, syncStates, isRecovery):
@@ -177,15 +193,15 @@ class PublicKeySync(object):
 				if data.dataType != pksyncbuf_pb2.PublicKeySync.PK_UPDATE:
 					# Use setattr because "from" is a reserved keyword.
 					setattr(content, "from", self.screenName)
-					content.to = self.pkListName
-					content.type = data.dataType
-					content.timestamp = int(round(data.time / 1000.0))
+					content.to 			= self.pkListName
+					content.dataType 	= data.dataType
+					content.timestamp 	= int(round(data.time / 1000.0))
 				else:
 					setattr(content, "from", self.screenName)
-					content.to = self.pkListName
-					content.type = data.dataType
-					content.data = data.data
-					content.timestamp = int(round(data.time / 1000.0))
+					content.to 			= self.pkListName
+					content.dataType 	= data.dataType
+					content.data 		= data.data
+					content.timestamp 	= int(round(data.time / 1000.0))
 				gotContent = True
 				break
 		
@@ -218,6 +234,67 @@ class PublicKeySync(object):
 		content.ParseFromString(data.getContent().toRawStr())
 		print("Type: " + str(content.dataType) + ", data: "+content.data)
 
+		if self.getNowMilliseconds() - content.timestamp * 1000.0 < 120000.0:
+			# Use getattr because "from" is a reserved keyword.
+			name = getattr(content, "from")
+			prefix = data.getName().getPrefix(-2).toUri()
+			sessionNo = int(data.getName().get(-2).toEscapedString())
+			sequenceNo = int(data.getName().get(-1).toEscapedString())
+			nameAndSession = name + str(sessionNo)
+
+
+			l = 0
+			# Update roster.
+			while l < len(self.roster):
+				entry = self.roster[l]
+				tempName = entry[0:len(entry) - 10]
+				tempSessionNo = int(entry[len(entry) - 10:])
+				if (name != tempName and
+					content.dataType != pksyncbuf_pb2.PublicKeySync.UNSUBSCRIBE):
+					l += 1
+				else:
+					if name == tempName and sessionNo > tempSessionNo:
+						self.roster[l] = nameAndSession
+					break
+
+			if l == len(self.roster):
+				self.roster.append(nameAndSession)
+				print(name + ": Subscribe")
+
+
+			# Use getattr because "from" is a reserved keyword.
+			if (content.dataType == pksyncbuf_pb2.PublicKeySync.PK_UPDATE and
+				not self.isRecoverySyncState and getattr(content, "from") != self.screenName):
+				print(getattr(content, "from") + ": " + content.data)
+			elif content.dataType == pksyncbuf_pb2.PublicKeySync.UNSUBSCRIBE:
+				# leave message
+				try:
+					n = self.roster.index(nameAndSession)
+					if name != self.screenName:
+						self.roster.pop(n)
+						print(name + ": Unsubscribe")
+				except ValueError:
+					pass
+
+	def heartbeat(self, interest):
+		"""
+		This repeatedly calls itself after a timeout to send a heartbeat message
+		(pksync message type HELLO). This method has an "interest" argument
+		because we use it as the onTimeout for Face.expressInterest.
+		"""
+		if len(self.syncDataCache) == 0:
+			self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.SUBSCRIBE, "xxx")
+
+		self.sync.publishNextSequenceNo()
+		self.syncDataCacheAppend(pksyncbuf_pb2.PublicKeySync.HELLO, "xxx")
+
+		# Call again.
+		# TODO: Are we sure using a "/local/timeout" interest is the best future call
+		# approach?
+		timeout = Interest(Name("/local/timeout"))
+		timeout.setInterestLifetimeMilliseconds(60000)
+		self.face.expressInterest(timeout, self.dummyOnData, self.heartbeat)
+
 	def onTimeout(self, interest):
 		"""
 		PublicKeySync:
@@ -240,7 +317,7 @@ class PublicKeySync(object):
 
 		self.syncDataCache.append(cachedData)
 
-		while len(self.syncDataCache) > self.maxMessageCacheLength:
+		while len(self.syncDataCache) > self.maxDataCacheLength:
 			self.syncDataCache.pop(0)
 
 	@staticmethod
@@ -267,6 +344,15 @@ class PublicKeySync(object):
 			result += seed[position]
 
 		return result
+
+
+	@staticmethod
+	def dummyOnData(interest, data):
+		"""
+		This is a do-nothing onData for using expressInterest for timeouts.
+		This should never be called.
+		"""
+		pass
 
 	class CachedData(object):
 		def __init__(self, sequenceNo, dataType, data, time):
@@ -424,25 +510,40 @@ def main():
 	keyName = Name("/testname/DSK-123")
 	
 	certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append(keyName[-1]).append("ID-CERT").append("0")
-	
 	identityStorage.addKey(keyName, KeyType.RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER))
-	
 	privateKeyStorage.setKeyPairForKeyName(keyName, KeyType.RSA, DEFAULT_RSA_PUBLIC_KEY_DER, DEFAULT_RSA_PRIVATE_KEY_DER)
-	
 	face.setCommandSigningInfo(keyChain, certificateName)
 
 	pkSync = PublicKeySync(screenName, pkListName, Name(hubPrefix), face, keyChain, certificateName)
 	pkSync.initial()    
 
+	# TODO:
+	#	1. Generate new public key or use existing?
+	#	2. Watch new public key
+	#	3. sendUpdatedPublicKey if key is changed
+	#	4. Download and store other keys
+	#	5. 
 	while True:
 		isReady, _, _ = select.select([sys.stdin], [], [], 0)
 		if len(isReady) != 0:
 			input = promptAndInput("")
-        
+			if input == "leave" or input == "exit":
+				# We will send the leave message below.
+				break
+
 			pkSync.sendUpdatedPublicKey(input)
 
 		pkSync.face.processEvents()
 		# We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+		time.sleep(0.01)
+
+	pkSync.unsubscribe()
+	startTime = PublicKeySync.getNowMilliseconds()
+	while True:
+		if PublicKeySync.getNowMilliseconds() - startTime >= 1000.0:
+			break
+
+		face.processEvents()
 		time.sleep(0.01)
 
 	pkSync.face.shutdown()
