@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import pksyncbuf_pb2
 import sys
 import logging
