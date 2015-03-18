@@ -4,6 +4,8 @@ import sys
 import logging
 import time
 import random
+import os.path
+import util
 from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
@@ -22,7 +24,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.events import FileModifiedEvent
 
 class FileSync(object):
-    def __init__(self, screenName, fileFolderName, hubPrefix, face, keyChain, certificateName):
+    def __init__(self, screenName, fileFolderName, hubPrefix, face, keyChain, certificateName, path):
         """
         FileSync:
             To be written (TBW)
@@ -30,7 +32,7 @@ class FileSync(object):
         """
         self.screenName = screenName
         self.fileFolderName = fileFolderName
-
+        self.path = path
         # ChronoSync2013: The Face for calling registerPrefix and expressInterest. 
         # The Face object must remain valid for the life of this ChronoSync2013 object.
         self.face = face
@@ -128,7 +130,7 @@ class FileSync(object):
             data for the sequence numbers in the sync state.
         """
         self.isRecoverySyncState = isRecovery
-        dump("onReceivedSyncState in recovery: ", self.isRecoverySyncState)
+        util.dump("onReceivedSyncState in recovery: ", self.isRecoverySyncState)
 
         sendList = []       # of str
         sessionNoList = []  # of int
@@ -169,7 +171,7 @@ class FileSync(object):
         for i in range(len(sendList)):
             uri = (sendList[i] + "/" + str(sessionNoList[i]) + "/" + str(sequenceNoList[i]))
             interestName = Name(uri)
-            dump("Sync - sending interest: ", interestName.toUri())
+            util.dump("Sync - sending interest: ", interestName.toUri())
 
             interest = Interest(interestName)
             interest.setInterestLifetimeMilliseconds(self.syncLifetime)
@@ -181,8 +183,9 @@ class FileSync(object):
             To be written (TBW)
 
         """
-        dump("Got interest packet with name", interest.getName().toUri())
-
+        util.dump("Got interest packet with name", interest.getName().toUri())
+        util.dumpInterest(interest)
+        
         content = file_sync_buf_pb2.FileSync()
         sequenceNo = int(
             interest.getName().get(self.fileFolderPrefix.size() + 1).toEscapedString())
@@ -234,7 +237,9 @@ class FileSync(object):
         # TODO: Verify packet
         self.keyChain.verifyData(data, self.onVerified, self.onVerifyFailed)
 
-        dump("Got data packet with name", data.getName().toUri())
+        util.dump("Got data packet with name", data.getName().toUri())
+        util.dumpData(data)
+
         content = file_sync_buf_pb2.FileSync()
         content.ParseFromString(data.getContent().toRawStr())
         print("Type: " + str(content.dataType) + ", data: "+content.data)
@@ -270,7 +275,7 @@ class FileSync(object):
             # Use getattr because "from" is a reserved keyword.
             if (content.dataType == file_sync_buf_pb2.FileSync.UPDATE and
                 not self.isRecoverySyncState and getattr(content, "from") != self.screenName):
-                print(getattr(content, "from") + ": " + content.data)
+                self.onRecievedFileUpdate(content)
             elif content.dataType == file_sync_buf_pb2.FileSync.UNSUBSCRIBE:
                 # leave message
                 try:
@@ -288,6 +293,22 @@ class FileSync(object):
     def onVerifyFailed(self, data):
         #TODO
         print("Data packet failed verification")
+
+    def onRecievedFileUpdate(self, content):
+        print(getattr(content, "from") + ": " + content.data)
+        fileName = self.path + getattr(content, "from")
+        if (os.path.isfile(fileName)):
+            # update file
+            logging.info("Updating file" + fileName)
+            fileTemp = open(fileName, 'r+')
+            fileTemp.write(content.data)
+            fileTemp.close()
+        else:
+            # create file
+            logging.info("Creating file" + fileName)
+            fileTemp = open(fileName, "w")
+            fileTemp.write(content.data)
+            fileTemp.close()
 
     def onRegisterFailed(prefix):
         print("Register failed for prefix " + prefix.toUri())
@@ -316,7 +337,7 @@ class FileSync(object):
         FileSync:
             To be written (TBW)
         """
-        dump("Time out for interest", interest.getName().toUri())
+        util.dump("Time out for interest", interest.getName().toUri())
 
     def syncDataCacheAppend(self, dataType, data):
         """
@@ -435,14 +456,7 @@ class FileWatch(FileSystemEventHandler):
         """
         if not event.is_directory:
             logging.info("A file changed:" + event.src_path)
-            keyFile = open(str(event.src_path), 'r')
-            key = keyFile.read()
-            self.watcher.onFileUpdate(key)
-            keyFile.close()
-
-# Print packets with this function
-def dump(*list):
-    result = ""
-    for element in list:
-        result += (element if type(element) is str else repr(element)) + " "
-    print(result)
+            fileTemp = open(str(event.src_path), 'r')
+            fileTempData = fileTemp.read()
+            self.watcher.onFileUpdate(fileTempData)
+            fileTemp.close()

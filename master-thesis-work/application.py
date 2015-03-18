@@ -3,8 +3,11 @@ import sys
 import logging
 import select
 import time
+import util
 from file_sync import FileSync
 from file_sync import FileWatch
+from sensor import SensorPull
+from sensor import SensorData
 from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
@@ -14,7 +17,9 @@ from pyndn.security import KeyChain
 from pyndn.security.identity import IdentityManager
 from pyndn.security.identity import MemoryIdentityStorage
 from pyndn.security.identity import MemoryPrivateKeyStorage
+from pyndn.security.identity import OSXPrivateKeyStorage
 from pyndn.security.policy import NoVerifyPolicyManager
+
 from pyndn.util import Blob
 
 DEFAULT_RSA_PUBLIC_KEY_DER = bytearray([
@@ -124,11 +129,7 @@ def promptAndInput(prompt):
     else:
         return input(prompt)
 
-def main():
-    logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-
+def startFileSync():
     screenName = promptAndInput("Enter your name: ")
 
     defaultHubPrefix = "ndn/no/ntnu"
@@ -150,21 +151,32 @@ def main():
 
     identityStorage = MemoryIdentityStorage()
     privateKeyStorage = MemoryPrivateKeyStorage()
-    
-    keyChain = KeyChain(IdentityManager(identityStorage, privateKeyStorage), NoVerifyPolicyManager())
+    # privateKeyStorage = OSXPrivateKeyStorage()
+    identityManager = IdentityManager(identityStorage, privateKeyStorage)
+    # identityManager.createIdentity(Name("/name/"))
+    keyChain = KeyChain(identityManager, NoVerifyPolicyManager())
     keyChain.setFace(face)
     
     keyName = Name("/testname/DSK-123")
-    
     certificateName = keyName.getSubName(0, keyName.size() - 1).append("KEY").append(keyName[-1]).append("ID-CERT").append("0")
     identityStorage.addKey(keyName, KeyType.RSA, Blob(DEFAULT_RSA_PUBLIC_KEY_DER))
     privateKeyStorage.setKeyPairForKeyName(keyName, KeyType.RSA, DEFAULT_RSA_PUBLIC_KEY_DER, DEFAULT_RSA_PRIVATE_KEY_DER)
     face.setCommandSigningInfo(keyChain, certificateName)
 
-    fileSyncer = FileSync(screenName, pkListName, Name(hubPrefix), face, keyChain, certificateName)
-    fileSyncer.initial()    
+    # keyName = Name("/ndn/no/ntnu/stud/haakonmo/ksk-1426537450856")
+    # certificateName = Name("/ndn/no/ntnu/KEY/stud/haakonmo/ksk-1426537450856/ID-CERT/%FD%00%00%01L%26%D9E%92")
+
+    # publicKey = privateKeyStorage.getPublicKey(keyName)
+    # identityStorage.addKey(keyName, publicKey.getKeyType(), publicKey.getKeyDer())
+    # face.setCommandSigningInfo(keyChain, certificateName)
+
+    # print(identityStorage.getCertificate(certificateName))
+    # print(identityStorage.getKey(keyName))
 
     path = './files/'
+    fileSyncer = FileSync(screenName, pkListName, Name(hubPrefix), face, keyChain, certificateName, path)
+    fileSyncer.initial()    
+
     fileWatcher = FileWatch(fileSyncer, path)
     # TODO:
     #    1. Generate new public key or use existing?
@@ -179,8 +191,7 @@ def main():
             if input == "leave" or input == "exit":
                 # We will send the leave message below.
                 break
-
-            fileSyncer.onFileUpdate(input)
+            #fileSyncer.onFileUpdate(input)
 
         fileSyncer.face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
@@ -199,4 +210,55 @@ def main():
     fileSyncer.face.shutdown()
     fileWatcher.stopFileWatch()
 
+def startSensorPull():
+    # The default Face will connect using a Unix socket, or to "localhost".
+    face = Face()
+
+    # Use the system default key chain and certificate name to sign commands.
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+    # util.dump(keyChain.getDefaultCertificateName())
+    # Also use the default certificate name to sign data packets.    
+    sensorPull = SensorPull(face, keyChain, keyChain.getDefaultCertificateName())
+
+    while True:
+        face.processEvents()
+        # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+        time.sleep(0.01)
+
+    face.shutdown()
+
+def startSensorData():
+    # The default Face will connect using a Unix socket, or to "localhost".
+    face = Face()
+
+    # Use the system default key chain and certificate name to sign commands.
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+    # util.dump(keyChain.getDefaultCertificateName())
+    # Also use the default certificate name to sign data packets.    
+    sensorData = SensorData(face, keyChain, keyChain.getDefaultCertificateName())
+
+    while True:
+        face.processEvents()
+        # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+        time.sleep(0.01)
+
+    face.shutdown()
+
+def main():
+    logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
+    while True:
+        isReady, _, _ = select.select([sys.stdin], [], [], 0)
+        if len(isReady) != 0:
+            input = promptAndInput("")
+            if input == "data":
+                startSensorData()
+            if input == "pull":
+                startSensorPull()
+        time.sleep(0.01)
+    
 main()
