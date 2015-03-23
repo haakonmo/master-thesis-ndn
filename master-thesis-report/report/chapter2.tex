@@ -1,24 +1,37 @@
 \chapter{Background}\label{chp:background} 
-Ingress. 
-Motivation for ICN and NDN
-This chapter presents...
+\chapterprecishere{"We model the future on the past. Sometimes that’s a mistake."\par\raggedleft--- \textup{Van Jacobsen}, SIGCOMM 2001}
 
-\section{IP/TCP}
+This chapter will give a brief overlook of the motivation for \gls{ICN},
+as well as explaining more details of how \gls{ICN} protocols, such as \gls{CCN} and \gls{NDN}, works. 
+It will also contain a quick summary of related works.
+
+\section{Motivation for \gls{ICN}}
 IP/TCP not designed for broadcast
+\todo{Find sources for content based traffic}
 Not designed for content, but rather point-to-point. 
 Why? Telecommunication architecture. 
 Natural and logical to design after these principles.
 Security? Not designed with security in mind. IPSec
 Nodes know nothing
 
-\section{Information-Centric networking}\label{chp2:sec:icn}
-\gls{ICN} ...
+Motivation for \gls{ICN}
+\gls{IRTF} established \gls{ICN} working group 2012
 
+\section{\gls{ICN} Protocols}\label{chp2:sec:icn}
+\gls{CCN} started in 2006
+\gls{PARC}
+Publicly presented by Van Jacobsen in 2006
+Jacobsen has contributed to TCP/IP, i.a. with his flow control algorithms and TCP header compression. 
 
-Named data networking~\cite{DBLP:journals/ccr/0001ABJcCPWZ14}
+\gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} started in 201*\todo{what year? 2012?}
+\gls{UCLA}
+Lixia Zhang
 
 \section{NDN Architecture}\label{chp2:sec:ndn_architecture}
 \gls{NDN} ...
+
+\todo{network illustation}
+\todo{node illustation}
 
 Describe the architecture ~\cite{NDN-0021}
 
@@ -30,15 +43,49 @@ Reduces unwanted traffic/content.
 
 Security aspects of the network protocol. 
 Demands security from application layer.
+
 Nodes know WHAT (name) they have. 
+Nodes know what content they have, hence can share relevant data.
+
+Face - what is a face? Ethernet, TCP/UDP, Websocket
+strip away link layer headers (if any)
+
+\gls{PIT} - All pending or recently satisfied interests are stored here.
+
+
+\gls{CS} - Cache of data packets. If match here, send back data packet, otherwise for Interest
+
+\gls{FIB} - 
+\gls{RIB} - 
+ 
+\subsection{Incoming Interest}
+Incoming Interest through a Face. Check \gls{PIT} for pending or recently satisfied interests. If no match, lookup in \gls{CS}s
+
+\subsection{Outgoing Interest}
+How to forward a Interest; routing strategy. A strategy per \gls{PIT} entry. I.e. whether, when , and where to forward Interest.
+
+\subsection{Incoming Data}
+--> check \gls{PIT}, if match., check data from local applications first cached in \gls{CS}, if not, store in \gls{CS} send data to all requesters (\gls{PIT})
+Send data via Face
+
+\subsection{Outgoing Data}
+
 
 \subsection{Naming}
 Naming is left to the application design.
 
+\gls{DNS} naming
+Email naming
+\gls{OS} naming
+
 \subsection{Anonymity}
 Describe the concept, based on the nature of the architecture.
 
+Tor network
+
 \section{Attacks}
+
+\subsection{\gls{DoS} attack}
 DDoS~\cite{DBLP:conf/icccn/GastiTU013}
 Summary:
 
@@ -54,6 +101,7 @@ Summary:
 Mitigating Interest Flooding DDoS Attacks~\cite{DBLP:journals/corr/abs-1303-4823}
 Summary:
 
+\subsection{Cache attack}
 
 Lightweight Integrity Verification and Content Access Control for Named Data Networking~\cite{DBLP:journals/tifs/LiZZSF15}
 Summary:
