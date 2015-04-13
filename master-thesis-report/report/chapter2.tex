@@ -6,40 +6,68 @@ as well as explaining more details of how \gls{ICN} protocols, such as \gls{CCN}
 It will also contain a quick summary of related works.
 
 \section{Motivation for \gls{ICN}}
-IP/TCP not designed for broadcast
-\todo{Find sources for content based traffic}
-Not designed for content, but rather point-to-point. 
-Why? Telecommunication architecture. 
-Natural and logical to design after these principles.
-Security? Not designed with security in mind. IPSec
-Nodes know nothing
+When Internet was created in the 1960's, the researchers where inspired by the existing communication network, the telecommunication network.
+Because it was not natural and logical to think that people would download content, but rather send and receive short messages and instructions, the node to node communication model was a logical architecture. 
+As internet have developed, we now know that close to 80\% \todo{find cite} of all \gls{IP} traffic is content download, and not communication. 
+With this in mind, the \gls{IP} architecture does not provide an effictient transport model for what we are actually using the network for.
 
-Motivation for \gls{ICN}
+The \gls{IP} network was not designed with security in mind. 
+Most of the protocols related to Internet have been designed and deployed mainly with the goal of functionality to work.
+\gls{IPsec} is a very good example. 
+
+A node in a \gls{IP} network does not know WHAT goes through, but rather the packet's endpoints, i.e. WHERE it goes and WHERE it comes from. 
+This makes every node dumb, hence the network is designed for redundancy.
+
+IP/TCP not designed for broadcast. 
+Wireless connection is not easy.
+\todo{Find sources for content based traffic}
+
+These concepts are the reason why we need \gls{ICN}. 
 \gls{IRTF} established \gls{ICN} working group 2012
 
 \section{\gls{ICN} Protocols}\label{chp2:sec:icn}
-\gls{CCN} started in 2006
-\gls{PARC}
-Publicly presented by Van Jacobsen in 2006
+\gls{CCN} was publicly presented by Van Jacobsen in 2006.
+The research project is lead by \gls{PARC}.
 Jacobsen has contributed to TCP/IP, i.a. with his flow control algorithms and TCP header compression. 
 
-\gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} started in 201*\todo{what year? 2012?}
-\gls{UCLA}
-Lixia Zhang
+A branch of \gls{CCN} is the \gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} research project started in 2012\todo{what year? 2012?}
+One of the biggest contributers is \gls{UCLA}, with Lixia Zhang in the lead.
 
 \section{NDN Architecture}\label{chp2:sec:ndn_architecture}
 \gls{NDN} ...
 
 \todo{network illustation}
-\todo{node illustation}
+
+\subsection{Node}
+\todo{draw own figure}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{ip_model_node.png}
+  \caption{\gls{IP} model}
+  \label{fig:ip-model-node}
+\end{figure}
+
+\todo{draw own figure}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{icn_model_node.png}
+  \caption{\gls{ICN} model }
+  \label{fig:icn-model-node}
+\end{figure}
 
 Describe the architecture ~\cite{NDN-0021}
 
-Interest packet
-Data packet
-
 Pull-based which means that there is no content in the network, that is not requested from someone.
 Reduces unwanted traffic/content. 
+Two types of packets in \gls{NDN}. Interest packet and the corresponding answer, i.e. data packet, illustrated in~\autoref{fig:packets}.
+
+\todo{draw own figure}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{packets.png}
+  \caption{Packets}
+  \label{fig:packets}
+\end{figure}
 
 Security aspects of the network protocol. 
 Demands security from application layer.
@@ -50,13 +78,21 @@ Nodes know what content they have, hence can share relevant data.
 Face - what is a face? Ethernet, TCP/UDP, Websocket
 strip away link layer headers (if any)
 
+\subsubsection{\gls{PIT}}
 \gls{PIT} - All pending or recently satisfied interests are stored here.
+~\autoref{fig:icn-model-node}
 
-
+\subsubsection{\gls{CS}}
 \gls{CS} - Cache of data packets. If match here, send back data packet, otherwise for Interest
+~\autoref{fig:icn-model-node}
 
+\subsubsection{\gls{FIB}}
 \gls{FIB} - 
+~\autoref{fig:icn-model-node}
+
+\subsubsection{\gls{RIB}}
 \gls{RIB} - 
+~\autoref{fig:icn-model-node}
  
 \subsection{Incoming Interest}
 Incoming Interest through a Face. Check \gls{PIT} for pending or recently satisfied interests. If no match, lookup in \gls{CS}s
