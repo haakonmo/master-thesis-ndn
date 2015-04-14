@@ -6,6 +6,16 @@ Instead of the PKI, where each pk is signed by a certificate authority and the g
 \subsection{Key Revocation}
 Key Revocation becomes obsolete with Public Key Sync. 
 
-\section{Identity-based cryptography}
-Identity-based cryptography, shamir~\cite{DBLP:conf/crypto/Shamir84}
-Identity-based cryptography~\cite{DBLP:conf/icnp/ZhangCXWSW11}
+\section{Information Based Cryptography}
+\gls{IBE} presented by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984.
+
+
+Identity-based cryptography~\cite{DBLP:conf/icnp/ZhangCXWSW11} in \gls{NDN}
+
+Drawbacks
+If \gls{PKG} is compromised. Adversary has private key to all nodes that used the compromised \gls{PKG}
+\gls{PKG} can read and write messages related to the node, because it has all private keys, i.e. \gls{MITM}.
+\gls{PKG} and the requesting node has to establish a secure channel. 
+
+\subsection{..}
+Name sync (same application as Public Key Sync).
