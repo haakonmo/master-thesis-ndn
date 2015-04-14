@@ -60,7 +60,7 @@ Describe the architecture ~\cite{NDN-0021}
 Pull-based which means that there is no content in the network, that is not requested from someone.
 Reduces unwanted traffic/content. 
 Two types of packets in \gls{NDN}. Interest packet and the corresponding answer, i.e. data packet, illustrated in~\autoref{fig:packets}.
-
+The interest packet specifies a content name. The name has a hierarchical structure, e.g. \"/ntnu/item/haakon\".  
 \todo{draw own figure}
 \begin{figure}[ht]
   \centering
@@ -70,42 +70,51 @@ Two types of packets in \gls{NDN}. Interest packet and the corresponding answer,
 \end{figure}
 
 Security aspects of the network protocol. 
-Demands security from application layer.
+The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
 
 Nodes know WHAT (name) they have. 
 Nodes know what content they have, hence can share relevant data.
 
-Face - what is a face? Ethernet, TCP/UDP, Websocket
+Face - an interface. Can be Ethernet, TCP/UDP, Websocket
 strip away link layer headers (if any)
 
 \subsubsection{\gls{PIT}}
-\gls{PIT} - All pending or recently satisfied interests are stored here.
-~\autoref{fig:icn-model-node}
+\gls{PIT}~\autoref{fig:icn-model-node}- All pending or recently satisfied Interests are stored here, together with the incoming and outgoing interface.
+If a new incoming Interest matches a entry in the \gls{PIT}, the incoming interface will be added to the entry. 
+
 
 \subsubsection{\gls{CS}}
-\gls{CS} - Cache of data packets. If match here, send back data packet, otherwise for Interest
-~\autoref{fig:icn-model-node}
+\gls{CS}~\autoref{fig:icn-model-node} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the data packet in the \gls{CS}. \gls{CS} is a cache of data packets.
+
 
 \subsubsection{\gls{FIB}}
-\gls{FIB} - 
-~\autoref{fig:icn-model-node}
+\gls{FIB}~\autoref{fig:icn-model-node} - Here a forwarding strategy is stored for each prefix. 
+When a node forwards a Interest, it will do a longest prefix lookup in the \gls{FIB} and send the interest further to the best matching interface.
+
 
 \subsubsection{\gls{RIB}}
-\gls{RIB} - 
-~\autoref{fig:icn-model-node}
+\gls{RIB}~\autoref{fig:icn-model-node} - \todo{where?}
+
  
 \subsection{Incoming Interest}
-Incoming Interest through a Face. Check \gls{PIT} for pending or recently satisfied interests. If no match, lookup in \gls{CS}s
-
-\subsection{Outgoing Interest}
-How to forward a Interest; routing strategy. A strategy per \gls{PIT} entry. I.e. whether, when , and where to forward Interest.
+Incoming Interest through a interface (Face). The node checks the \gls{PIT} for pending or recently satisfied interests. 
+If there is no match, the node will do a lookup in \gls{CS} to see if a corresponding Data packet is cached. 
+If there is a match in the \gls{PIT} it will anly add the interface to the \gls{PIT} entry. If there is a match in the \gls{CS} the node will return the Data. 
+If there is no match in either the \gls{PIT} or the \gls{CS} the node will make a new \gls{PIT} entry and do a longest prefix match lookup in the \gls{FIB} to decide which interface to forward the Interest.
+\todo{decision tree}
 
 \subsection{Incoming Data}
---> check \gls{PIT}, if match., check data from local applications first cached in \gls{CS}, if not, store in \gls{CS} send data to all requesters (\gls{PIT})
-Send data via Face
+The node will check  the \gls{PIT} for an entry, if match it will forward the data to all the interfaces registered in the \gls{PIT} entry.
+Check data from local applications first cached in \gls{CS}, if not, store in \gls{CS} send data to all requesters (\gls{PIT})
+\todo{decision tree}
+
+\subsection{Outgoing Interest}
+How to forward a Interest; routing strategy. A strategy per \gls{PIT} entry. I.e. whether, when, and where to forward Interest.
+\todo{decision tree}
 
 \subsection{Outgoing Data}
-
+Send data through all interfaces registered in the \gls{PIT} entry. I.e. all requesters.
+\todo{decision tree}
 
 \subsection{Naming}
 Naming is left to the application design.
