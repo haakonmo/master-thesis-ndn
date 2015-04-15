@@ -1,7 +1,13 @@
 \chapter{Discussion}
 In this chapter it will be discussed 
 
-\section{Trusting Trusted Third Party in Identity Based Cryptography}
+\section{Identity-Based Encryption}
+One suggestion has been to add a monthly timestamp~\cite{DBLP:journals/iacr/BoldyrevaGK12} ~\cite{DBLP:conf/ctrsa/LibertV09} \todo{find better cite} to the name, but the the \gls{PKG} has to renew private keys for everybody each month. 
+This solution scales very badly.
+With the \gls{PKG}s Name Sync application, every user will be notified when a identity is revoked.
+There is no use for periodically checking names.
+
+\section{Trusting Trusted Third Party in Identity-Based Cryptography}
 Issues of trusting the \gls{PKG}, i.e. a \gls{TTP}. 
 If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all private keys corresponding to all IDs that used the compromised \gls{PKG}. 
 Do every ID trust the \gls{PKG}? Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, will always be a problem for a user.
