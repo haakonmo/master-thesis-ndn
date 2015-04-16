@@ -1,0 +1,39 @@
+\chapter{File Synchronization over Named Data Network}\label{chp3:application}
+This chapter will present the work done in conjunction with this thesis. 
+Explaining what the synchronization application is built upon and its purpose over the \gls{NDN} network. 
+
+\section{ChronoSync}
+A distributed (server-less) synchronization application developed by the \gls{NDN} team. 
+
+ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}
+Encode data into crypto digest, i.e. a state digest, to exchange states between all parties. 
+If the state is equal to the one stored locally, then nothing should happen.
+If not, two options are available; 
+- the differences of the dataset state can be directly inferred
+and sent as the response to the sync interest if the state
+digest is the same as one of the previous local state
+digests;
+- a state reconciliation method is used to determine the differences of the knowledge if the state digest is unknown
+(for example, when recovering from a network partition).
+
+
+Sync interest
+Sync data
+Recovery interest
+Recovery data
+
+
+\section{Multicast By Nature}
+\todo{figure of multicast}
+
+
+\section{FileSync.py application}
+~\autoref{apx:file-sync-code}
+FileSync is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
+
+
+\subsection{ChronoSync}
+
+\subsection{File Watcher}
+A library that makes it possible to watch files in an \gls{OS} is WatchDog\todo{https://pypi.python.org/pypi/watchdog}.
+This library 

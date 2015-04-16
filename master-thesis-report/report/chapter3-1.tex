@@ -1,12 +1,9 @@
-\chapter{..}
+\chapter{Key Infrastructure}
 
-\section{Public Key Distribution}
-Instead of the PKI, where each pk is signed by a certificate authority and the generated certificate is sent as a response in https, then validated by the the client, we want to make the certificate authority obsolete by distributing every PK and rather trust the name (e.g. /ntnu/). 
+\section{Public Key Infrastructure}
+\gls{PKI}
 
-\subsection{Key Revocation}
-Key Revocation becomes obsolete with Public Key Sync. 
-
-\section{Information Based Cryptography}
+\section{Identity-Based Cryptography}
 \gls{IBE} presented by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984.
 
 Thoroughness of the name allocation \gls{NRS} 
@@ -21,3 +18,10 @@ If \gls{PKG} is compromised. Adversary has private key to all nodes that used th
 
 \subsection{..}
 Name sync (same application as Public Key Sync).
+
+
+\section{Key Distribution}
+Instead of in \gls{PKI}, where each pk is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS}, then validated by the the client, we want to make the certificate authority obsolete by distributing every PK and rather trust the name (e.g. /ntnu/). 
+
+\section{Key Revocation}
+Key Revocation becomes obsolete with Public Key Sync. 
