@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import file_sync_buf_pb2
+import fileSyncBuf_pb2
 import sys
 import logging
 import time
@@ -78,11 +78,11 @@ class FileSync(object):
 
         #Subscribe to "file folder" if not subscribing already
         if len(self.syncDataCache) == 0:
-            self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.SUBSCRIBE, "xxx")
+            self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.SUBSCRIBE, "xxx")
 
         #TODO: check wether the new public key is new.
         self.sync.publishNextSequenceNo()
-        self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.UPDATE, data)
+        self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.UPDATE, data)
 
     def unsubscribe(self):
         """
@@ -90,7 +90,7 @@ class FileSync(object):
             Send the unsubscribe message and unsubscribe the public key.
         """
         self.sync.publishNextSequenceNo()
-        self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.UNSUBSCRIBE, "xxx")
+        self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.UNSUBSCRIBE, "xxx")
 
     # onInitialized
     def initial(self):
@@ -113,7 +113,7 @@ class FileSync(object):
             self.roster.append(self.userName)
             print("Member: " + self.screenName)
             print(self.screenName + ": Subscribe")
-            self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.SUBSCRIBE, "xxx")
+            self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.SUBSCRIBE, "xxx")
 
     # onReceivedSyncState
     def sendInterest(self, syncStates, isRecovery):
@@ -186,7 +186,7 @@ class FileSync(object):
         util.dump("Got interest packet with name", interest.getName().toUri())
         util.dumpInterest(interest)
         
-        content = file_sync_buf_pb2.FileSync()
+        content = fileSyncBuf_pb2.FileSync()
         sequenceNo = int(
             interest.getName().get(self.fileFolderPrefix.size() + 1).toEscapedString())
         gotContent = False
@@ -195,7 +195,7 @@ class FileSync(object):
         for i in range(len(self.syncDataCache) - 1, -1, -1):
             data = self.syncDataCache[i]
             if data.sequenceNo == sequenceNo:
-                if data.dataType != file_sync_buf_pb2.FileSync.UPDATE:
+                if data.dataType != fileSyncBuf_pb2.FileSync.UPDATE:
                     # Use setattr because "from" is a reserved keyword.
                     setattr(content, "from", self.screenName)
                     content.to              = self.fileFolderName
@@ -211,7 +211,7 @@ class FileSync(object):
                 break
         
         if gotContent:
-            print "new content!"
+            logging.info("new content!")
             #Serialize the pklistbuf
             array = content.SerializeToString()
             #Initialize the data with Name
@@ -240,7 +240,7 @@ class FileSync(object):
         util.dump("Got data packet with name", data.getName().toUri())
         util.dumpData(data)
 
-        content = file_sync_buf_pb2.FileSync()
+        content = fileSyncBuf_pb2.FileSync()
         content.ParseFromString(data.getContent().toRawStr())
         print("Type: " + str(content.dataType) + ", data: "+content.data)
 
@@ -260,7 +260,7 @@ class FileSync(object):
                 tempName = entry[0:len(entry) - 10]
                 tempSessionNo = int(entry[len(entry) - 10:])
                 if (name != tempName and
-                    content.dataType != file_sync_buf_pb2.FileSync.UNSUBSCRIBE):
+                    content.dataType != fileSyncBuf_pb2.FileSync.UNSUBSCRIBE):
                     l += 1
                 else:
                     if name == tempName and sessionNo > tempSessionNo:
@@ -273,10 +273,10 @@ class FileSync(object):
 
 
             # Use getattr because "from" is a reserved keyword.
-            if (content.dataType == file_sync_buf_pb2.FileSync.UPDATE and
+            if (content.dataType == fileSyncBuf_pb2.FileSync.UPDATE and
                 not self.isRecoverySyncState and getattr(content, "from") != self.screenName):
                 self.onRecievedFileUpdate(content)
-            elif content.dataType == file_sync_buf_pb2.FileSync.UNSUBSCRIBE:
+            elif content.dataType == fileSyncBuf_pb2.FileSync.UNSUBSCRIBE:
                 # leave message
                 try:
                     n = self.roster.index(nameAndSession)
@@ -320,10 +320,10 @@ class FileSync(object):
         because we use it as the onTimeout for Face.expressInterest.
         """
         if len(self.syncDataCache) == 0:
-            self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.SUBSCRIBE, "xxx")
+            self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.SUBSCRIBE, "xxx")
 
         self.sync.publishNextSequenceNo()
-        self.syncDataCacheAppend(file_sync_buf_pb2.FileSync.HELLO, "xxx")
+        self.syncDataCacheAppend(fileSyncBuf_pb2.FileSync.HELLO, "xxx")
 
         # Call again.
         # TODO: Are we sure using a "/local/timeout" interest is the best future call

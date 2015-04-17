@@ -116,3 +116,13 @@ def dumpInterest(interest):
     dump("lifetimeMilliseconds:",
          "<none>" if interest.getInterestLifetimeMilliseconds() == None
                   else interest.getInterestLifetimeMilliseconds())
+
+@staticmethod
+def getNowMilliseconds():
+    """
+    Get the current time in milliseconds.
+    
+    :return: The current time in milliseconds since 1/1/1970, including fractions of a millisecond.
+    :rtype: float
+    """
+    return time.time() * 1000.0

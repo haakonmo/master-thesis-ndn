@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+import messageBuf_pb2
 import sys
 import logging
 import time
@@ -23,14 +24,14 @@ from watchdog.events import FileModifiedEvent
 
 class SensorPull(object):
 
-    def __init__(self, face, keyChain, certificateName):
+    def __init__(self, face, keyChain, certificateName, baseName):
         self.face = face
         self.keyChain = keyChain
         self.certificateName = certificateName
 
-        name = Name("/ndn/no/ntnu/sensor_pull")
+        self.name = Name(baseName)
         util.dump("Expressing interest name: ", name.toUri())
-        self.face.expressInterest(name, self.onData, self.onTimeout)
+        self.face.expressInterest(self.name, self.onData, self.onTimeout)
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)
@@ -44,16 +45,18 @@ class SensorPull(object):
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
 
+
 class SensorData(object):
 
-    def __init__(self, face, keyChain, certificateName):
+    def __init__(self, face, keyChain, certificateName, baseName):
         self.face = face
         self.keyChain = keyChain
         self.certificateName = certificateName
 
-        prefix = Name("/ndn/no/ntnu/sensor_pull")
+        self.baseName = Name(baseName)
+        self.prefix = self.baseName.append("sensor_pull")
         util.dump("Register prefix", prefix.toUri())
-        self.face.registerPrefix(prefix, self.onInterest, self.onRegisterFailed)
+        self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)
@@ -68,10 +71,30 @@ class SensorData(object):
         transport.send(encodedData.toBuffer())
 
     def onData(self, interest, data):
-        util.dumpData(data)
+        """
+        if Message.INIT_RESPONSE then decrypt and store privateKey, store master_public_key
+        """
+        message = messageBuf_pb2.Message()
+        message.ParseFromString(data.getContent().toRawStr())
+        if (message.type == Message.INIT_RESPONSE):
+            util.dump(message)
+            self.privateKey = message.data
+            self.master_public_key = message.master_public_key
+        
 
     def onTimeout(self, interest):
         util.dump("Time out for interest", interest.getName().toUri())
 
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
+
+    def requestIdentityBasedPrivateKey(self):
+        """
+        Create PK/SK for initialization
+        Message.INIT 
+        send name and PK
+        """
+
+        name = self.baseName.append("pkg").append("initDevice")
+        util.dump("Expressing interest name: ", name.toUri())
+        self.face.expressInterest(name, self.onData, self.onTimeout)

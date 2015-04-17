@@ -4,10 +4,13 @@ import logging
 import select
 import time
 import util
-from file_sync import FileSync
-from file_sync import FileWatch
-from sensor import SensorPull
-from sensor import SensorData
+
+from fileSync import FileSync
+from fileSync import FileWatch
+from device import SensorPull
+from device import SensorData
+from publicKeyGenerator import PublicKeyGenerator
+
 from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
@@ -219,7 +222,7 @@ def startSensorPull():
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
-    sensorPull = SensorPull(face, keyChain, keyChain.getDefaultCertificateName())
+    sensorPull = SensorPull(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
 
     while True:
         face.processEvents()
@@ -237,7 +240,25 @@ def startSensorData():
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
-    sensorData = SensorData(face, keyChain, keyChain.getDefaultCertificateName())
+    sensorData = SensorData(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
+    sensorData.requestIdentityBasedPrivateKey()
+    while True:
+        face.processEvents()
+        # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+        time.sleep(0.01)
+
+    face.shutdown()
+
+def startPKG():
+    # The default Face will connect using a Unix socket, or to "localhost".
+    face = Face()
+
+    # Use the system default key chain and certificate name to sign commands.
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+    # util.dump(keyChain.getDefaultCertificateName())
+    # Also use the default certificate name to sign data packets.    
+    pkg = PublicKeyGenerator(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
 
     while True:
         face.processEvents()
@@ -259,6 +280,8 @@ def main():
                 startSensorData()
             if input == "pull":
                 startSensorPull()
+            if input == "pkg":
+                startPKG()
         time.sleep(0.01)
     
 main()

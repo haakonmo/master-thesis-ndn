@@ -1,0 +1,19 @@
+package SensorDemo;
+
+message Message {
+  required string to = 1;
+  required string from = 2;
+
+  enum MessageType {
+    INIT = 0;
+    INIT_RESPONSE = 1;
+    GET_SENSOR = 2;
+    GET_SENSOR_RESPONSE = 3;
+    OTHER = 4;
+  }
+  
+  required MessageType type = 3 [default = GET_SENSOR];
+  optional string masterPublicKey = 4;
+  optional string data = 5;
+  required int32 timestamp = 6;
+}
