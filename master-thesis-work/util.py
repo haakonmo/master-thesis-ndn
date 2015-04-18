@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # A copy of the GNU Lesser General Public License is in the file COPYING.
-
+import messageBuf_pb2
+import logging
+import time
 from pyndn import Name
 from pyndn import Data
 from pyndn import ContentType
@@ -117,7 +119,6 @@ def dumpInterest(interest):
          "<none>" if interest.getInterestLifetimeMilliseconds() == None
                   else interest.getInterestLifetimeMilliseconds())
 
-@staticmethod
 def getNowMilliseconds():
     """
     Get the current time in milliseconds.
@@ -126,3 +127,13 @@ def getNowMilliseconds():
     :rtype: float
     """
     return time.time() * 1000.0
+
+def parse_dict(message, values):
+    length = len(values)
+    for k,v in values.iteritems():
+        try:
+            pair = message.masterPublicKey.add()
+            setattr(pair, "key", k)
+            setattr(pair, "value", str(v))
+        except AttributeError:
+            logging.warning('try to access invalid attributes %r.%r = %r',message,k,v)

@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='messageBuf.proto',
   package='SensorDemo',
-  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xf8\x01\n\x07Message\x12\n\n\x02to\x18\x01 \x02(\t\x12\x0c\n\x04\x66rom\x18\x02 \x02(\t\x12\x39\n\x04type\x18\x03 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\nGET_SENSOR\x12\x17\n\x0fmasterPublicKey\x18\x04 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x05 \x01(\t\x12\x11\n\ttimestamp\x18\x06 \x02(\x05\"^\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x11\n\rINIT_RESPONSE\x10\x01\x12\x0e\n\nGET_SENSOR\x10\x02\x12\x17\n\x13GET_SENSOR_RESPONSE\x10\x03\x12\t\n\x05OTHER\x10\x04')
+  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xde\x01\n\x07Message\x12\x39\n\x04type\x18\x01 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\nGET_SENSOR\x12\x17\n\x0fmasterPublicKey\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\t\x12\x11\n\ttimestamp\x18\x04 \x02(\x05\"^\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x11\n\rINIT_RESPONSE\x10\x01\x12\x0e\n\nGET_SENSOR\x10\x02\x12\x17\n\x13GET_SENSOR_RESPONSE\x10\x03\x12\t\n\x05OTHER\x10\x04')
 
 
 
@@ -46,8 +46,8 @@ _MESSAGE_MESSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=187,
-  serialized_end=281,
+  serialized_start=161,
+  serialized_end=255,
 )
 
 
@@ -59,43 +59,29 @@ _MESSAGE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='to', full_name='SensorDemo.Message.to', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='from', full_name='SensorDemo.Message.from', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      has_default_value=False, default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='type', full_name='SensorDemo.Message.type', index=2,
-      number=3, type=14, cpp_type=8, label=2,
+      name='type', full_name='SensorDemo.Message.type', index=0,
+      number=1, type=14, cpp_type=8, label=2,
       has_default_value=True, default_value=2,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='masterPublicKey', full_name='SensorDemo.Message.masterPublicKey', index=3,
-      number=4, type=9, cpp_type=9, label=1,
+      name='masterPublicKey', full_name='SensorDemo.Message.masterPublicKey', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='data', full_name='SensorDemo.Message.data', index=4,
-      number=5, type=9, cpp_type=9, label=1,
+      name='data', full_name='SensorDemo.Message.data', index=2,
+      number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='SensorDemo.Message.timestamp', index=5,
-      number=6, type=5, cpp_type=1, label=2,
+      name='timestamp', full_name='SensorDemo.Message.timestamp', index=3,
+      number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -111,7 +97,7 @@ _MESSAGE = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=33,
-  serialized_end=281,
+  serialized_end=255,
 )
 
 _MESSAGE.fields_by_name['type'].enum_type = _MESSAGE_MESSAGETYPE

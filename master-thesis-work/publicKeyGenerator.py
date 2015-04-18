@@ -2,39 +2,54 @@
 import messageBuf_pb2
 import logging
 import util
-from charm.toolbox.pairinggroup import PairingGroup
+import ast
 
+from pyndn import Name
+from pyndn import Interest
+from pyndn import Data
+from pyndn import Face
+from pyndn.security import KeyType
+from pyndn.security import KeyChain
+from pyndn.security.identity import IdentityManager
+from pyndn.security.identity import MemoryIdentityStorage
+from pyndn.security.identity import MemoryPrivateKeyStorage
+from pyndn.security.policy import NoVerifyPolicyManager
+from pyndn.util import Blob
+
+from charm.core.engine.util import serializeObject, deserializeObject
+from charm.toolbox.pairinggroup import PairingGroup
 # all ID-based encryption schemes implemented in Charm
-from charm.schemes.ibenc.ibenc_CW13_z import IBE_CW13
+# from charm.schemes.ibenc.ibenc_CW13_z import IBE_CW13
 from charm.schemes.ibenc.ibenc_bb03 import IBE_BB04
 from charm.schemes.ibenc.ibenc_bf01 import IBE_BonehFranklin
 from charm.schemes.ibenc.ibenc_ckrs09 import IBE_CKRS
-from charm.schemes.ibenc.ibenc_cllww12_z import IBE_Chen12_z
+# from charm.schemes.ibenc.ibenc_cllww12_z import IBE_Chen12_z
 from charm.schemes.ibenc.ibenc_lsw08 import IBE_Revoke
 from charm.schemes.ibenc.ibenc_sw05 import IBE_SW05
 from charm.schemes.ibenc.ibenc_waters05 import IBE_N04
-from charm.schemes.ibenc.ibenc_waters05_z import IBE_N04_z
+# from charm.schemes.ibenc.ibenc_waters05_z import IBE_N04_z
 from charm.schemes.ibenc.ibenc_waters09 import DSE09
-from charm.schemes.ibenc.ibenc_waters09_z import DSE09_z
+# from charm.schemes.ibenc.ibenc_waters09_z import DSE09_z
 
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
-        group = PairingGroup('MNT224', secparam=1024)
-        ibe = IBE_BonehFranklin(group)
-        (self.master_public_key, self.master_secret_key) = ibe.setup()
-
+        self.group = PairingGroup('MNT224', secparam=1024)
+        self.ibe = IBE_BonehFranklin(self.group)
+        (master_public_key, master_secret_key) = self.ibe.setup()
+        self.master_public_key = master_public_key
+        self.master_secret_key = master_secret_key
         self.face = face
         self.keyChain = keyChain
         self.certificateName = certificateName
 
         self.baseName = Name(baseName)
-        self.prefix = self.baseName.append("pkg").append("initDevice")
-        logging.info("PKG: Register prefix " + prefix.toUri())
+        self.prefix = Name(baseName).append("pkg").append("initDevice")
+        logging.info("PKG: Register prefix " + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInitInterest, self.onRegisterFailed)
 
-        self.prefix = self.baseName.append("pkg")
-        logging.info("PKG: Register prefix " + prefix.toUri())
+        self.prefix = Name(baseName).append("pkg")
+        logging.info("PKG: Register prefix " + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
     def onInitInterest(self, prefix, interest, transport, registeredPrefixId):
@@ -43,21 +58,26 @@ class PublicKeyGenerator(object):
         encrypt privateKey
         send encrypted message and master_public_key
         """
-        device_private_key = ibe.extract(master_secret_key, ID)
+        ID = interest.getName().toUri()
+        device_private_key = self.ibe.extract(self.master_secret_key, ID)
 
         data = Data(interest.getName())
         
         message = messageBuf_pb2.Message()
-        message.master_public_key = master_public_key
-        message.data = device_private_key
-        message.timestamp = util.getNowMilliseconds()
+        #set masterPublicKey
+        # util.parse_dict(message, self.master_public_key)
+        message.masterPublicKey = str(serializeObject(self.master_public_key, self.group))
+        message.data = str(serializeObject(device_private_key, self.group))
+        message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
+        message.type = messageBuf_pb2.Message.INIT_RESPONSE
         
-        data.setContent(message)
+        content = message.SerializeToString()
+        data.setContent(Blob(content))
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
+        logging.info("Sent InitResponse")
         transport.send(encodedData.toBuffer())
-        logger.info("Sent InitResponse")
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)
