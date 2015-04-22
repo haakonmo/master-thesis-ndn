@@ -62,6 +62,15 @@ class SensorPull(object):
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
 
+    def requestData(self):
+        """
+        Request data
+        """
+        #Session used in namePrefix
+        session = int(round(self.getNowMilliseconds() / 1000.0))
+        self.name = Name(self.baseName).append("sensor_pull").append(session)
+        util.dump("Expressing interest name: ", self.name.toUri())
+        self.face.expressInterest(self.name, self.onData, self.onTimeout)
 
 class SensorData(object):
 
@@ -122,6 +131,7 @@ class SensorData(object):
         Message.INIT 
         send name and PK
         """
+        
 
         name = self.baseName.append("pkg").append("initDevice")
         util.dump("Expressing interest name: ", name.toUri())
