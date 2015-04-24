@@ -1,39 +1,42 @@
 \chapter{File Synchronization over Named Data Network}\label{chp3:application}
-This chapter will present the work done in conjunction with this thesis. 
-Explaining what the synchronization application is built upon and its purpose over the \gls{NDN} network. 
+This chapter will present some of the work done in conjunction with this thesis. 
+Explaining what the file synchronization application is built upon and its purpose over the \gls{NDN} network. 
 
-\section{ChronoSync}
-A distributed (server-less) synchronization application developed by the \gls{NDN} team. 
+\section{File Synchronization Application}\label{file-sync}
+Since \gls{NDN} provides multicast in network layer as explained in~\autoref{ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
+One of the benefits is that we can distribute lots of data, to many people. 
+In our case, synchronization of file(s) to a large group of nodes. 
+For example we want to be able to distribute a list of public keys to a large set of nodes that wants to have every public key up-to-date.
+Lets say there is a list owner, e.g. a trusted third party. 
+When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with this new list.
+Now since \gls{NDN} is pulled based (~\autoref{chp2:sec:ndn_architecture}), there is no way for the list owner to send the list to everyone.
+To achieve the goal of synchronization, the \gls{NDN}-team has developed an application over \gls{NDN}, ChronoSync.
 
-ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}
-Encode data into crypto digest, i.e. a state digest, to exchange states between all parties. 
-If the state is equal to the one stored locally, then nothing should happen.
-If not, two options are available; 
-- the differences of the dataset state can be directly inferred
-and sent as the response to the sync interest if the state
-digest is the same as one of the previous local state
-digests;
-- a state reconciliation method is used to determine the differences of the knowledge if the state digest is unknown
-(for example, when recovering from a network partition).
+\section{ChronoSync}\label{chronosync}
+ChronoSync is a distributed (server-less) synchronization application developed by the \gls{NDN}-team. 
+Each node in a ChronoSync application broadcasts its sync state in a Sync Interest (e.g. /ndn/sync/fileSyncFolder/<username>/<state>).
+When a node receives a Sync Interest, it will inspect the state of the interest, and compare with its own state.
+Each node holds a state tree that is used to detect new and outdated states.
+If the incoming interests state is equal to the receiving node, the node has no reason to do anything, as the system is in a \textit{stable state}.
+If not, the receiving node has to find out whether the incoming interest is 1) a state the node itself has been in, or if its 2) a new state.
+In case of 1), the receiving node has new data and should provide the new content as a response to the incoming interest. In case of 2), the receiving node should send out a Recovery Interest for the new state.
 
+\begin{enumerate}
+  \item \textit{Sync Interest} is an interest a participating node sends out to discover new data.
+  \item \textit{Sync Data} is a response to 1), if another participating node has new data.
+  \item \textit{Recovery Interest} is an interest sent out if a node discovers that another node has a newer state.
+  \item \textit{Recovery Data} is a response to 3).
+\end{enumerate}
 
-Sync interest
-Sync data
-Recovery interest
-Recovery data
+ChronoSync is only taking care of data discovery, and leaves other logic to the application. 
+Such logic can be for instance; what should happen when a new participant enters the room.
+Should all history be download?
 
+As mentioned in~\autoref{naming}, the \gls{NDN} protocol leaves the naming rules up to each application to decide.
+ChronoSync have to forms of rules in this matter. 
 
-\section{Multicast By Nature}
-\todo{figure of multicast}
+ChronoSync is explained in detail here~\cite{DBLP:conf/icnp/ZhuA13}.
 
-
-\section{FileSync.py application}
-~\autoref{apx:file-sync-code}
-FileSync is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
-
-
-\subsection{ChronoSync}
-
-\subsection{File Watcher}
-A library that makes it possible to watch files in an \gls{OS} is WatchDog\todo{https://pypi.python.org/pypi/watchdog}.
-This library 
+\section{File Watcher}
+The application should trigger synchronization when files that are watched is changed, or when a file is added/removed.
+A library that makes it possible to watch files in an \gls{OS} is Watchdog~\cite{watchdog}. 

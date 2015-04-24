@@ -61,6 +61,7 @@ Pull-based which means that there is no content in the network, that is not requ
 Reduces unwanted traffic/content. 
 Two types of packets in \gls{NDN}. Interest packet and the corresponding answer, i.e. data packet, illustrated in~\autoref{fig:packets}.
 The interest packet specifies a content name. The name has a hierarchical structure, e.g. \"/ntnu/item/haakon\".  
+An interest can also contain a selector that can be used to decide which data to satisfy the interest in case of multiple matches.
 \todo{draw own figure}
 \begin{figure}[ht]
   \centering
@@ -78,21 +79,21 @@ Nodes know what content they have, hence can share relevant data.
 Face - an interface. Can be Ethernet, TCP/UDP, Websocket
 strip away link layer headers (if any)
 
-\subsubsection{\gls{PIT}}
+\subsubsection{\gls{PIT}}\label{pit}
 \gls{PIT}~\autoref{fig:icn-model-node}- All pending or recently satisfied Interests are stored here, together with the incoming and outgoing interface.
 If a new incoming Interest matches a entry in the \gls{PIT}, the incoming interface will be added to the entry. 
 
 
-\subsubsection{\gls{CS}}
+\subsubsection{\gls{CS}}\label{content-store}
 \gls{CS}~\autoref{fig:icn-model-node} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the data packet in the \gls{CS}. \gls{CS} is a cache of data packets.
 
 
-\subsubsection{\gls{FIB}}
+\subsubsection{\gls{FIB}}\label{fib}
 \gls{FIB}~\autoref{fig:icn-model-node} - Here a forwarding strategy is stored for each prefix. 
 When a node forwards a Interest, it will do a longest prefix lookup in the \gls{FIB} and send the interest further to the best matching interface.
 
 
-\subsubsection{\gls{RIB}}
+\subsubsection{\gls{RIB}}\label{rib}
 \gls{RIB}~\autoref{fig:icn-model-node} - \todo{where?}
 
  
@@ -116,7 +117,7 @@ How to forward a Interest; routing strategy. A strategy per \gls{PIT} entry. I.e
 Send data through all interfaces registered in the \gls{PIT} entry. I.e. all requesters.
 \todo{decision tree}
 
-\subsection{Naming}
+\subsection{Naming}\label{naming}
 Naming is left to the application design.
 
 \gls{DNS} naming
@@ -129,6 +130,16 @@ Same concept as Tor network\todo{cite} and anonymity.
 If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. Unless monitoring a complete network, it should be close to impossible to track packets.  
 
 Secure data VS secure channel
+
+\section{Multicast By Nature}\label{ndn-multicast}
+
+In~\autoref{fig:ndn-multicast} we can se that the network does not nearly have to send equal amount of traffic if every node is a \gls{NDN} node.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{ndn-multicast.png}
+  \caption{Multicast in NDN.}
+  \label{fig:ndn-multicast}
+\end{figure}
 
 \section{Attacks}
 
