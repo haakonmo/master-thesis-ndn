@@ -1,10 +1,31 @@
 \chapter{Key Infrastructure}
+This chapter will present the concept of \gls{PKI} and \gls{IBE}, as well as problems and possible solutions. 
 
 \section{Public Key Infrastructure}
+
 X.509 (i.e. \gls{PKI}). Issues: ... ... .. . . ..
 
 \section{Identity-Based Cryptography}\label{ibc}
-\gls{IBE} presented by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984.
+\gls{IBE} was first presented by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
+Shamir did propose a scheme for \gls{IBS}, but it was not until recently a scheme of the concept was implemented. 
+The \gls{IBE} implementation remained unsolved until 2001, when Dan Boneh and Matthew K. Franklin proposed~\cite{DBLP:conf/crypto/BonehF01}.
+
+\gls{IBE} is based upon performing cryptography with a publicly know ID.
+The ID, can be practically anything.
+This makes it highly applicable for \gls{NDN} where the ID can be a Name (/ndn/no/ntnu/haakon).
+Hence the Name becomes the public key. 
+
+There is a \gls{TTP} in \gls{IBE} that is called \gls{PKG}.
+The \gls{PKG}s task is to produce a private key that corresponds to a given ID and provide 
+
+\begin{enumerate}
+  \item Setup
+  \item Extract
+  \item Encrypt
+  \item Decrypt
+\end{enumerate}
+
+\todo{figure of PKG and nodes}
 
 Thoroughness of the name allocation \gls{NRS} 
 Identity-based cryptography~\cite{DBLP:conf/icnp/ZhangCXWSW11} in \gls{NDN}
