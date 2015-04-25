@@ -41,6 +41,9 @@ from charm.schemes.ibenc.ibenc_waters09 import DSE09
 class SensorPull(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
+        self.group = PairingGroup('MNT224', secparam=1024)
+        self.ibe = IBE_BonehFranklin(self.group)
+
         self.face = face
         self.keyChain = keyChain
         self.certificateName = certificateName
@@ -56,11 +59,22 @@ class SensorPull(object):
     def onData(self, interest, data):
         util.dumpData(data)
 
+        self.keyChain.verifyData(data, self.onVerified, self.onVerifyFailed)
+        message = self.ibe.decodeFromZn(data.content)
+
     def onTimeout(self, interest):
         util.dump("Time out for interest", interest.getName().toUri())
 
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
+
+    def onVerified(self, data):
+        #TODO
+        print("Data packet verified")
+
+    def onVerifyFailed(self, data):
+        #TODO
+        print("Data packet failed verification")
 
     def requestData(self):
         """
@@ -94,8 +108,10 @@ class SensorData(object):
         msg = "This should be sensordata"
         ID = interest.getName().toUri()
         logging.info(ID)
-        encrypted_msg = self.ibe.encrypt(self.master_public_key, ID, msg)
+        encoded_msg = self.ibe.encodeToZn(msg)
+        encrypted_msg = self.ibe.encrypt(self.master_public_key, ID, encoded_msg)
         encrypted_content = str(serializeObject(encrypted_msg, self.group))
+
         logging.info(encrypted_content)
         data.setContent(Blob(encrypted_content))
         self.keyChain.sign(data, self.certificateName)
@@ -124,6 +140,14 @@ class SensorData(object):
 
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
+
+    def onVerified(self, data):
+        #TODO
+        print("Data packet verified")
+
+    def onVerifyFailed(self, data):
+        #TODO
+        print("Data packet failed verification")
 
     def requestIdentityBasedPrivateKey(self):
         """
