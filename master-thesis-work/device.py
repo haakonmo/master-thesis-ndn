@@ -57,10 +57,17 @@ class SensorPull(object):
         util.dumpInterest(interest)
 
     def onData(self, interest, data):
+        """
+        1. Decrypt message
+        2. Decode message
+        """
         util.dumpData(data)
 
         self.keyChain.verifyData(data, self.onVerified, self.onVerifyFailed)
+        cipher = data.content
+        encoded_msg = self.ibe.decrypt(self.master_public_key, ID, cipher)
         message = self.ibe.decodeFromZn(data.content)
+        logging.info(message)
 
     def onTimeout(self, interest):
         util.dump("Time out for interest", interest.getName().toUri())
@@ -102,18 +109,22 @@ class SensorData(object):
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
+        """
+        1. Encode message
+        2. Encrypt message = cipher
+        """
         util.dumpInterest(interest)
 
         data = Data(interest.getName())
-        msg = "This should be sensordata"
+        msg = "This should be sensordata blablabla"
         ID = interest.getName().toUri()
         logging.info(ID)
         encoded_msg = self.ibe.encodeToZn(msg)
-        encrypted_msg = self.ibe.encrypt(self.master_public_key, ID, encoded_msg)
-        encrypted_content = str(serializeObject(encrypted_msg, self.group))
+        cipher = self.ibe.encrypt(self.master_public_key, ID, encoded_msg)
+        cipher = str(serializeObject(cipher, self.group))
 
-        logging.info(encrypted_content)
-        data.setContent(Blob(encrypted_content))
+        logging.info(cipher)
+        data.setContent(Blob(cipher))
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
