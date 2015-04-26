@@ -88,6 +88,7 @@ This reduces unwanted traffic compared to \gls{UDP} in \gls{IP}.
 
 \subsection{Node}
 If we take a look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and comparing it to a \gls{NDN} node~\autoref{fig:icn-model-node}, they are very alike.
+However, the logic behind a \gls{NDN} node is a bit more complex, explained in~\autoref{incoming-interest}
 
 \begin{figure}[ht]
   \centering
@@ -104,17 +105,6 @@ If we take a look at an existing model of an \gls{IP} node~\autoref{fig:ip-model
   The node checks whether the Interest is already queried in the \gls{PIT}, }
   \label{fig:icn-model-node}
 \end{figure}
-
-However, the logic behind a \gls{NDN} node is a bit more complex. 
-In~\autoref{fig:icn-model-node-decision} we see that an incoming Interest.
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1\textwidth]{ndn-node-decision-tree.png}
-  \caption{Decision tree for a \gls{NDN} node when receiving an Interest.}
-  \label{fig:icn-model-node-decision}
-\end{figure}
-
-
 
 Security aspects of the network protocol. 
 The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
@@ -143,12 +133,18 @@ When a node forwards a Interest, it will do a longest prefix lookup in the \gls{
 \gls{RIB}~\autoref{fig:icn-model-node} - \todo{where?}
 
  
-\subsection{Incoming Interest}
+\subsection{Incoming Interest}\label{incoming-interest}
+In~\autoref{fig:icn-model-node-decision} we see that an incoming Interest.
 Incoming Interest through a interface (Face). The node checks the \gls{PIT} for pending or recently satisfied interests. 
 If there is no match, the node will do a lookup in \gls{CS} to see if a corresponding Data packet is cached. 
 If there is a match in the \gls{PIT} it will only add the interface to the \gls{PIT} entry. If there is a match in the \gls{CS} the node will return the Data. 
 If there is no match in either the \gls{PIT} or the \gls{CS} the node will make a new \gls{PIT} entry and do a longest prefix match lookup in the \gls{FIB} to decide which interface to forward the Interest.
-\todo{decision tree}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{ndn-node-decision-tree.png}
+  \caption{Decision tree for a \gls{NDN} node when receiving an Interest.}
+  \label{fig:icn-model-node-decision}
+\end{figure}
 
 \subsection{Incoming Data}
 The node will check  the \gls{PIT} for an entry, if match it will forward the data to all the interfaces registered in the \gls{PIT} entry.
