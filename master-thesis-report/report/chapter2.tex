@@ -5,7 +5,7 @@ This chapter will give a brief overlook of the motivation for \gls{ICN},
 as well as explaining more details of how \gls{ICN} protocols, such as \gls{CCN} and \gls{NDN}, works. 
 It will also contain a quick summary of related works.
 
-\section{Motivation for \gls{ICN}}
+\section{Motivation for Information-Centric Networking}
 When Internet was created in the 1960's, the researchers where inspired by the existing communication network, the telecommunication network.
 Because it was not natural and logical to think that people would download content, but rather send and receive short messages and instructions, the point-to-point communication model was a logical architecture. 
 As Internet have developed, the traffic has increased enormously over the past few years. 
@@ -78,7 +78,7 @@ Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{packets.png}
-  \caption{Packets}
+  \caption{Interest packet and Data packet}
   \label{fig:packets}
 \end{figure}
 
@@ -86,52 +86,54 @@ Because only a Data packet can exists if there is a corresponding Interest, \gls
 This which means that there is no content in the network, that is not requested from someone.
 This reduces unwanted traffic compared to \gls{UDP} in \gls{IP}.
 
-\subsection{Node}
-If we take a look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and comparing it to a \gls{NDN} node~\autoref{fig:icn-model-node}, they are very alike.
-However, the logic behind a \gls{NDN} node is a bit more complex, explained in~\autoref{incoming-interest}
+\subsection{Network Node}
+If we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and compare it to a \gls{NDN} node~\autoref{fig:icn-model-node}, we see that they look much the same.
+However, the logic behind a \gls{NDN} node is a bit more complex, thus lead to more knowledge about WHAT content the node has to offer.
+To understand this, the following entities in a \gls{NDN} node should be understood:
+\begin{enumerate}
+  \item \gls{PIT} - All pending or recently satisfied Interests are stored here, together with the incoming and outgoing interface.
+  If a new incoming Interest matches a entry in the \gls{PIT}, the incoming interface will be added to the entry. 
+  \item \gls{CS} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the Data packet in the \gls{CS}. 
+  \item \gls{FIB} - Here a forwarding strategy is stored for each Name prefix. 
+  When a node forwards an Interest, it will do a longest prefix lookup in the \gls{FIB} and send the Interest further to the best matching interface.
+\end{enumerate}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=1\textwidth]{ip_model_node.png}
+  \includegraphics[width=0.8\textwidth]{ip_model_node.png}
   \caption{Model of \gls{IP} node. A packets enters the node through an interface. 
-  The node decides whether the packet is for the node itself, or passes it further to next step, found in the \gls{FIB}.}
+  The node decides whether the packet is for the node itself, or passes it further to next node, found in the \gls{FIB}.}
   \label{fig:ip-model-node}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=1\textwidth]{icn_model_node.png}
+  \includegraphics[width=0.8\textwidth]{icn_model_node.png}
   \caption{Model of \gls{NDN} node. A packet enters through an interface called Face. 
-  The node checks whether the Interest is already queried in the \gls{PIT}, }
+  The node checks whether the Interest is already queried in the \gls{PIT}, or stored in the \gls{CS}, or passes it further to next node, found in the \gls{FIB}.}
   \label{fig:icn-model-node}
 \end{figure}
 
-Security aspects of the network protocol. 
-The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
+Since all content is associated with a Name, a \gls{NDN} node knows 
+\begin{description}
+  \item[WHAT] is requested, but not satisfied (i.e. \gls{PIT})
+  \item[WHAT] has been satisfied earlier, and still available (i.e. \gls{CS})
+\end{description}
+This leads to multicast by nature.
+In~\autoref{fig:ndn-multicast} we can see that the network does not nearly have to send equal amount of traffic if every node is a \gls{NDN} node.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{ndn-multicast.png}
+  \caption{Multicast in NDN.}
+  \label{fig:ndn-multicast}
+\end{figure}
 
-Nodes know WHAT (name) they have. 
-Nodes know what content they have, hence can share relevant data.
+Security aspects of the network protocol. 
+Secure data VS secure channel.
+The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
 
 Face - an interface. Can be Ethernet, \gls{TCP}/\gls{UDP}, Websocket
 strip away link layer headers (if any)
-
-\subsubsection{\gls{PIT}}\label{pit}
-\gls{PIT}~\autoref{fig:icn-model-node}- All pending or recently satisfied Interests are stored here, together with the incoming and outgoing interface.
-If a new incoming Interest matches a entry in the \gls{PIT}, the incoming interface will be added to the entry. 
-
-
-\subsubsection{\gls{CS}}\label{content-store}
-\gls{CS}~\autoref{fig:icn-model-node} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the data packet in the \gls{CS}. \gls{CS} is a cache of data packets.
-
-
-\subsubsection{\gls{FIB}}\label{fib}
-\gls{FIB}~\autoref{fig:icn-model-node} - Here a forwarding strategy is stored for each prefix. 
-When a node forwards a Interest, it will do a longest prefix lookup in the \gls{FIB} and send the interest further to the best matching interface.
-
-
-\subsubsection{\gls{RIB}}\label{rib}
-\gls{RIB}~\autoref{fig:icn-model-node} - \todo{where?}
-
  
 \subsection{Incoming Interest}\label{incoming-interest}
 In~\autoref{fig:icn-model-node-decision} we see that an incoming Interest.
@@ -148,16 +150,13 @@ If there is no match in either the \gls{PIT} or the \gls{CS} the node will make 
 
 \subsection{Incoming Data}
 The node will check  the \gls{PIT} for an entry, if match it will forward the data to all the interfaces registered in the \gls{PIT} entry.
-Check data from local applications first cached in \gls{CS}, if not, store in \gls{CS} send data to all requesters (\gls{PIT})
+Check data from local applications first cached in \gls{CS}, if not, store in \gls{CS} send data to all requesters (i.e. all interfaces stored in the \gls{PIT} entry)
 \todo{decision tree}
 
 \subsection{Outgoing Interest}
 How to forward a Interest; routing strategy. A strategy per \gls{PIT} entry. I.e. whether, when, and where to forward Interest.
 \todo{decision tree}
 
-\subsection{Outgoing Data}
-Send data through all interfaces registered in the \gls{PIT} entry. I.e. all requesters.
-\todo{decision tree}
 
 The architecture of \gls{NDN} is explained in detail in~\cite{NDN-0021}.
 
@@ -172,18 +171,6 @@ Email naming
 Based on the nature of the architecture, \gls{NDN} facilitates the practice of anonymity in the network. 
 Same concept as Tor network\todo{cite} and anonymity.
 If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. Unless monitoring a complete network, it should be close to impossible to track packets.  
-
-Secure data VS secure channel
-
-\section{Multicast By Nature}\label{ndn-multicast}
-
-In~\autoref{fig:ndn-multicast} we can se that the network does not nearly have to send equal amount of traffic if every node is a \gls{NDN} node.
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1\textwidth]{ndn-multicast.png}
-  \caption{Multicast in NDN.}
-  \label{fig:ndn-multicast}
-\end{figure}
 
 \section{Attacks}
 
