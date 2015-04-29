@@ -85,8 +85,7 @@ class SensorPull(object):
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
                 identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibeScheme.group)
                 key = self.ibeScheme.decryptKey(self.private_key, identityBasedEncryptedKey)
-                util.dump(identityBasedEncryptedKey)
-                
+
                 #Decrypt encryptedMessage
                 a = SymmetricCryptoAbstraction(extractor(key))
                 data = a.decrypt(message.encryptedMessage)
@@ -188,17 +187,18 @@ class SensorData(object):
 
         data = Data(interest.getName())
         message = "This should be sensordata blablabla"
-        self.encryptionKey = self.ibeScheme.getRandomKey()
-        identityBasedEncryptedKey = self.ibeScheme.encryptKey(self.master_public_key, ID, self.encryptionKey)
+        self.key = self.ibeScheme.getRandomKey()
+        identityBasedEncryptedKey = self.ibeScheme.encryptKey(self.master_public_key, ID, self.key)
         identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibeScheme.group))
+        identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
 
-        a = SymmetricCryptoAbstraction(extractor(self.encryptionKey))
+        a = SymmetricCryptoAbstraction(extractor(self.key))
         encryptedMessage = a.encrypt(message)
 
         logging.info(encryptedMessage)
 
         message = messageBuf_pb2.Message()
-        message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
+        message.identityBasedMasterPublicKey = identityBasedMasterPublicKey
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encryptionType = messageBuf_pb2.Message.AES

@@ -41,6 +41,7 @@ class IbeWaters09(object):
 
     def decryptKey(self, secret_key, cipher):
         key = self.ibe.decrypt(cipher, secret_key)
+        return key
 
 def ibe_waters05():
     group = PairingGroup('SS512')
