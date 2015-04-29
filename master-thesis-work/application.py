@@ -223,7 +223,8 @@ def startSensorPull():
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
     sensorPull = SensorPull(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
-
+    sensorPull.requestIdentityBasedPrivateKey()
+    sensorPull.requestData()
     while True:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.

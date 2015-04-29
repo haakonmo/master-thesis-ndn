@@ -8,6 +8,7 @@ from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
 from pyndn import Face
+from pyndn.key_locator import KeyLocator, KeyLocatorType
 from pyndn.security import KeyType
 from pyndn.security import KeyChain
 from pyndn.security.identity import IdentityManager
@@ -31,12 +32,14 @@ from charm.schemes.ibenc.ibenc_waters05 import IBE_N04
 from charm.schemes.ibenc.ibenc_waters09 import DSE09
 # from charm.schemes.ibenc.ibenc_waters09_z import DSE09_z
 
+from keyGeneration import IbeWaters09
+
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
-        self.group = PairingGroup('MNT224', secparam=1024)
-        self.ibe = IBE_BonehFranklin(self.group)
-        (master_public_key, master_secret_key) = self.ibe.setup()
+        self.ibeScheme = IbeWaters09()
+
+        (master_public_key, master_secret_key) = self.ibeScheme.setup()
         self.master_public_key = master_public_key
         self.master_secret_key = master_secret_key
         self.face = face
@@ -58,18 +61,24 @@ class PublicKeyGenerator(object):
         encrypt privateKey
         send encrypted message and master_public_key
         """
-        ID = interest.getName().toUri()
-        device_private_key = self.ibe.extract(self.master_secret_key, ID)
+        ID = ""
+        if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
+            ID = interest.getKeyLocator().getKeyName().toUri()
+        logging.info("Extracting private key for ID: " + ID)
+
+        device_private_key = self.ibeScheme.extract(self.master_public_key, self.master_secret_key, ID)
 
         data = Data(interest.getName())
         
         message = messageBuf_pb2.Message()
         #set masterPublicKey
         # util.parse_dict(message, self.master_public_key)
-        message.masterPublicKey = str(serializeObject(self.master_public_key, self.group))
-        message.data = str(serializeObject(device_private_key, self.group))
+        message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
+        #TODO private key MUST be encrypted somehow..
+        message.encryptedMessage = str(serializeObject(device_private_key, self.ibeScheme.group))
+        message.encryptionType = messageBuf_pb2.Message.NONE
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
-        message.type = messageBuf_pb2.Message.INIT_RESPONSE
+        message.type = messageBuf_pb2.Message.INIT
         
         content = message.SerializeToString()
         data.setContent(Blob(content))

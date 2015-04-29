@@ -91,10 +91,10 @@ If we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} 
 However, the logic behind a \gls{NDN} node is a bit more complex, thus lead to more knowledge about WHAT content the node has to offer.
 To understand this, the following entities in a \gls{NDN} node should be understood:
 \begin{enumerate}
-  \item Face - A term used for different interfaces, e.g. \gls{TCP}, \gls{UDP}, Ethernet, Websocket.
+  \item Face - A term used for generalization of different interfaces, e.g. physical like Ethernet, or overlay like \gls{TCP} and \gls{UDP}. A Face can also be a UNIX-domain socket for communication with a local application.
   \item \gls{PIT} - All pending or recently satisfied Interests are stored here, together with the incoming and outgoing Face.
   If a new incoming Interest matches a entry in the \gls{PIT}, the incoming Face will be added to the entry. 
-  \item \gls{CS} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the Data packet in the \gls{CS}. 
+  \item \gls{CS} - When a node receives a Data packet that has a corresponding entry in the \gls{PIT}, it stores the Data packet as long as possible in the \gls{CS}. 
   \item \gls{FIB} - Here a forwarding strategy is stored for each Name prefix. 
   When a node forwards an Interest, it will do a longest prefix lookup in the \gls{FIB} and send the Interest further to the best matching Face.
 \end{enumerate}
@@ -121,6 +121,8 @@ Since all content is associated with a Name, a \gls{NDN} node can know
   \item[WHAT] is requested, but not satisfied (i.e. \gls{PIT})
   \item[WHAT] has been satisfied earlier, and still available (i.e. \gls{CS})
 \end{description}
+
+Unicast (TcpFace, UdpFace) vs Multicast (MulticastUdp, Ethernet)
 This leads to multicast by nature.
 In~\autoref{fig:ndn-multicast} we can see that the network does not nearly have to send equal amount of traffic if every node is a \gls{NDN} node.
 \begin{figure}[H]
@@ -156,7 +158,6 @@ Check data from local applications first cached in \gls{CS}, if not, store in \g
   \caption{Decision tree for a \gls{NDN} node when receiving Data.}
   \label{fig:icn-model-node-decision-data}
 \end{figure}
-
 
 \subsection{Naming}\label{naming}
 Naming is left to the application design.

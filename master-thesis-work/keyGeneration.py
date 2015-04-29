@@ -18,6 +18,30 @@ from charm.schemes.ibenc.ibenc_waters05 import IBE_N04
 from charm.toolbox.pairinggroup import PairingGroup,GT
 from charm.toolbox.hash_module import Waters,Hash,int2Bytes,integer
 
+class IbeWaters09(object):
+
+    def __init__(self):
+        self.group = PairingGroup('SS512')
+        self.ibe = DSE09(self.group)
+
+    def setup(self):
+        return self.ibe.setup()
+
+    def extract(self, master_public_key, master_secret_key, ID):
+        secret_key = self.ibe.keygen(master_public_key, master_secret_key, ID)
+        return secret_key
+
+    def getRandomKey(self):
+        key = self.group.random(GT)
+        return key
+
+    def encryptKey(self, master_public_key, ID, key):
+        cipher_key = self.ibe.encrypt(master_public_key, key, ID)
+        return cipher_key
+
+    def decryptKey(self, secret_key, cipher):
+        key = self.ibe.decrypt(cipher, secret_key)
+
 def ibe_waters05():
     group = PairingGroup('SS512')
     waters_hash = Waters(group)
@@ -27,10 +51,6 @@ def ibe_waters05():
     kID = waters_hash.hash(ID)
     secret_key = ibe.extract(master_key, kID)
     msg = group.random(GT)
-
-    msg = integer("fsdjklfhdjkslhfsdjkhfsdjkhfsdjkhfsdjk")
-    msg1 = int2Bytes(msg)
-    print(msg1)
 
     cipher_text = ibe.encrypt(master_public_key, kID, msg)
     decrypted_msg = ibe.decrypt(master_public_key, secret_key, cipher_text)
@@ -65,8 +85,3 @@ def ibe_bf01():
     cipher_text = ibe.encrypt(master_public_key, ID, msg)
     print(cipher_text)
     print(ibe.decrypt(master_public_key, private_key, cipher_text))
-
-def main():
-    ibe_waters05()
-
-main()

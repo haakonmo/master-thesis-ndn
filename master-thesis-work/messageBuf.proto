@@ -4,15 +4,22 @@ package SensorDemo;
 message Message {
   enum MessageType {
     INIT = 0;
-    INIT_RESPONSE = 1;
-    GET_SENSOR = 2;
-    GET_SENSOR_RESPONSE = 3;
-    OTHER = 4;
+    SENSOR_DATA = 1;
+    OTHER = 2;
   }
 
-  required MessageType type = 1 [default = GET_SENSOR];
-  optional string masterPublicKey = 2;
-  optional string data = 3;
-  required int32 timestamp = 4;
+  enum MessageEncryption {
+    AES = 0;
+    DES = 1;
+    DES3 = 2;
+    NONE = 3;
+  }
+
+  required MessageType type = 1 [default = SENSOR_DATA];
+  required MessageEncryption encryptionType = 2 [default = AES];
+  optional string identityBasedMasterPublicKey = 3;
+  optional string identityBasedEncryptedKey = 4;
+  optional string encryptedMessage = 5;
+  required int32 timestamp = 6;
 }
 
