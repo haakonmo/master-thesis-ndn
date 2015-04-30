@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='messageBuf.proto',
   package='SensorDemo',
-  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xef\x02\n\x07Message\x12:\n\x04type\x18\x01 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\x0bSENSOR_DATA\x12\x42\n\x0e\x65ncryptionType\x18\x02 \x02(\x0e\x32%.SensorDemo.Message.MessageEncryption:\x03\x41\x45S\x12$\n\x1cidentityBasedMasterPublicKey\x18\x03 \x01(\t\x12!\n\x19identityBasedEncryptedKey\x18\x04 \x01(\t\x12\x18\n\x10\x65ncryptedMessage\x18\x05 \x01(\t\x12\x11\n\ttimestamp\x18\x06 \x02(\x05\"3\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x0f\n\x0bSENSOR_DATA\x10\x01\x12\t\n\x05OTHER\x10\x02\"9\n\x11MessageEncryption\x12\x07\n\x03\x41\x45S\x10\x00\x12\x07\n\x03\x44\x45S\x10\x01\x12\x08\n\x04\x44\x45S3\x10\x02\x12\x08\n\x04NONE\x10\x03')
+  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xfe\x02\n\x07Message\x12:\n\x04type\x18\x01 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\x0bSENSOR_DATA\x12\x42\n\x0e\x65ncryptionType\x18\x02 \x02(\x0e\x32%.SensorDemo.Message.MessageEncryption:\x03\x41\x45S\x12$\n\x1cidentityBasedMasterPublicKey\x18\x03 \x01(\t\x12!\n\x19identityBasedEncryptedKey\x18\x04 \x01(\t\x12\x18\n\x10\x65ncryptedMessage\x18\x05 \x01(\t\x12\r\n\x05nonce\x18\x06 \x02(\t\x12\x11\n\ttimestamp\x18\x07 \x02(\x05\"3\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x0f\n\x0bSENSOR_DATA\x10\x01\x12\t\n\x05OTHER\x10\x02\"9\n\x11MessageEncryption\x12\x07\n\x03\x41\x45S\x10\x00\x12\x07\n\x03\x44\x45S\x10\x01\x12\x08\n\x04\x44\x45S3\x10\x02\x12\x08\n\x04NONE\x10\x03')
 
 
 
@@ -38,8 +38,8 @@ _MESSAGE_MESSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=290,
-  serialized_end=341,
+  serialized_start=305,
+  serialized_end=356,
 )
 
 _MESSAGE_MESSAGEENCRYPTION = _descriptor.EnumDescriptor(
@@ -67,8 +67,8 @@ _MESSAGE_MESSAGEENCRYPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=343,
-  serialized_end=400,
+  serialized_start=358,
+  serialized_end=415,
 )
 
 
@@ -115,8 +115,15 @@ _MESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='SensorDemo.Message.timestamp', index=5,
-      number=6, type=5, cpp_type=1, label=2,
+      name='nonce', full_name='SensorDemo.Message.nonce', index=5,
+      number=6, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='SensorDemo.Message.timestamp', index=6,
+      number=7, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -133,7 +140,7 @@ _MESSAGE = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=33,
-  serialized_end=400,
+  serialized_end=415,
 )
 
 _MESSAGE.fields_by_name['type'].enum_type = _MESSAGE_MESSAGETYPE

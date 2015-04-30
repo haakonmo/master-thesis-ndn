@@ -68,11 +68,12 @@ class PublicKeyGenerator(object):
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
         
-        logging.info("Extracting private key for ID: " + ID)
+        logging.info("Extracting PrivateKey for ID: " + ID)
         device_private_key = self.ibe_scheme.extract(self.master_public_key, self.master_secret_key, ID)
 
         # Encrypt key with the device_master_public_key and ID
         keyName = interest.getName()
+        session = keyName.get(keyName.size()-2).toEscapedString()
         tempMasterPublicKeyEncoded = keyName.get(keyName.size()-1).toEscapedString()
         tempMasterPublicKey = bytesToObject(tempMasterPublicKeyEncoded, self.ibe_scheme.group)
         key = self.ibe_scheme.getRandomKey()
@@ -91,6 +92,7 @@ class PublicKeyGenerator(object):
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encryptionType = messageBuf_pb2.Message.AES
+        message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.INIT
         

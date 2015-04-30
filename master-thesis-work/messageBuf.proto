@@ -1,6 +1,5 @@
 package SensorDemo;
 
-
 message Message {
   enum MessageType {
     INIT = 0;
@@ -20,6 +19,7 @@ message Message {
   optional string identityBasedMasterPublicKey = 3;
   optional string identityBasedEncryptedKey = 4;
   optional string encryptedMessage = 5;
-  required int32 timestamp = 6;
+  required string nonce = 6;
+  required int32 timestamp = 7;
 }
 

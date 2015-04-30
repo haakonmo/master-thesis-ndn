@@ -89,6 +89,9 @@ class Device(object):
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
 
+        # TODO: compare nonce
+        session = message.nonce
+
         if (message.type == messageBuf_pb2.Message.SENSOR_DATA):
             if (message.encryptionType == messageBuf_pb2.Message.AES):
                 #Compare master_public_key
@@ -145,6 +148,8 @@ class Device(object):
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
         
+        keyName = interest.getName()
+        session = keyName.get(keyName.size()-1).toEscapedString()
 
         data = Data(interest.getName())
         contentData = "This should be sensordata blablabla"
@@ -166,6 +171,7 @@ class Device(object):
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encryptionType = messageBuf_pb2.Message.AES
+        message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.SENSOR_DATA
         
@@ -253,6 +259,9 @@ class Device(object):
         
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
+
+        # TODO: Compare session
+        session = message.nonce
 
         if (message.type == messageBuf_pb2.Message.INIT):
             if (message.encryptionType == messageBuf_pb2.Message.AES):
