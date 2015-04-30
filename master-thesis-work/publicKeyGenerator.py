@@ -46,15 +46,29 @@ class PublicKeyGenerator(object):
 
     def onInitInterest(self, prefix, interest, transport, registeredPrefixId):
         """
-        extract privateKey
-        encrypt privateKey
-        send encrypted message and master_public_key
+        Interest:
+            Name: /ndn/no/ntnu/initDevice/<nonce>/<tempMasterPublicKey>
+            Selector: KeyLocator = ID
+
+        The ID of the requesting Device is stored in KeyLocator in the Interest, 
+        and the TemporaryMasterPublicKey to the device is sent in the Interest Name as shown above.
+
+        Extract the PrivateKey for the ID, and encrypt a symmetric key with the TemporaryMasterPublicKey and the ID.
+        Encrypt the PrivateKey with symmetric encryption, using the symmetric key.
+        
+        Data:
+            Content: 
+                master_public_key to PKG
+                ibeKey = ibe(randomKey)
+                cipher = encrypt(PrivateKey, randomKey)
+
+        Sign the Data and send.
         """
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
+        
         logging.info("Extracting private key for ID: " + ID)
-
         device_private_key = self.ibe_scheme.extract(self.master_public_key, self.master_secret_key, ID)
 
         # Encrypt key with the device_master_public_key and ID
@@ -72,10 +86,7 @@ class PublicKeyGenerator(object):
         encryptedMessage = a.encrypt(encodedData)
 
         data = Data(interest.getName())
-        
         message = messageBuf_pb2.Message()
-        #set masterPublicKey
-        # util.parse_dict(message, self.master_public_key)
         message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
@@ -89,17 +100,16 @@ class PublicKeyGenerator(object):
         encodedData = data.wireEncode()
 
         transport.send(encodedData.toBuffer())
-        logging.info("Sent InitResponse")
+        logging.info("Sent Init Data with encrypted Device PrivateKey")
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)
 
     def onData(self, interest, data):
-
         util.dumpData(data)
 
     def onTimeout(self, interest):
-        util.dump("Time out for interest", interest.getName().toUri())
+        logging.info("Time out for interest", interest.getName().toUri())
 
     def onRegisterFailed(self, prefix):
-        util.dump("Register failed for prefix", prefix.toUri())
+        logging.info("Register failed for prefix", prefix.toUri())

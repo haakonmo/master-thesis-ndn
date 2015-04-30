@@ -224,10 +224,17 @@ def startSensorPull():
     # Also use the default certificate name to sign data packets.    
     sensorPull = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device1")
     sensorPull.requestIdentityBasedPrivateKey()
-    sensorPull.requestData()
     while True:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+        isReady, _, _ = select.select([sys.stdin], [], [], 0)
+        if len(isReady) != 0:
+            input = promptAndInput("")
+            if input == "r":
+                sensorPull.requestData()
+            if input == "leave" or input == "exit":
+                print("type leave or exit again to exit")
+                break
         time.sleep(0.01)
 
     face.shutdown()
@@ -287,6 +294,7 @@ def main():
             if input == "pkg":
                 startPKG()
             if input == "leave" or input == "exit":
+                print("you left.")
                 break
         time.sleep(0.01)
     

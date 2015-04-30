@@ -45,11 +45,13 @@ class Device(object):
     # Methods for a device that requests Data
     def requestData(self):
         """
-        Request data
+        Interest:
+            Name: /ndn/no/ntnu/<device>/sensor_pull/<nonce>
+            Selector: KeyLocator = ID
 
-        The suffix components count includes the implicit digest component of the full name in the data packet. 
-        For example, if the interest name is the prefix /a/b and the data packet name is /a/b/c, 
-        then the data packet name has 2 suffix components: 'c' and the implicit digest which is not shown.
+        The ID of the requesting Device is stored in KeyLocator in the Interest, 
+
+        Sign the Interest and send.
         """
         # Session used in namePrefix
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
@@ -63,17 +65,24 @@ class Device(object):
         keyLocator.setKeyName(self.deviceName)
         interest.setKeyLocator(keyLocator)
 
-        util.dump(self.certificateName)
         self.keyChain.sign(interest, self.certificateName)
         interest.wireEncode()
 
-        util.dump("Expressing interest name: ", interest.toUri())
+        logging.info("Expressing interest name: " + interest.toUri())
         self.face.expressInterest(interest, self.onData, self.onTimeout)
 
     def onData(self, interest, data):
         """
-        1. Decrypt message
-        2. Decode message
+        Data:
+            Content: 
+                master_public_key to PKG
+                ibeKey = ibe(randomKey)
+                cipher = encrypt(PrivateKey, randomKey)
+
+        Decode the master_public_key and compare it to the device.master_public_key (if they match, they trust the same PKG)
+        Decrypt the symmetric key, and decrypt the cipher
+
+        Sensor Data reveiced! 
         """
         self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
         
@@ -98,18 +107,36 @@ class Device(object):
                 data = a.decrypt(message.encryptedMessage)
 
                 # Use data from device to something ..
-                util.dump(str(data))
+                logging.info("Data received: " + str(data))
 
     # Methods for a device that offers Data
     def registerPrefix(self):
+        """
+        Announce that this device can be reached at a prefix
+        """
         self.prefix = Name(self.deviceName).append("sensor_pull")
-        util.dump("Register prefix", self.prefix.toUri())
+        logging.info("Register prefix" + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         """
-        1. Encode message
-        2. Encrypt message = cipher
+        Interest:
+            Name: /ndn/no/ntnu/<device>/sensor_pull/<nonce>
+            Selector: KeyLocator = ID
+
+        The ID of the requesting Device is stored in KeyLocator in the Interest, 
+        and the TemporaryMasterPublicKey to the device is sent in the Interest Name as shown above.
+
+        Encrypt a symmetric key with the MasterPublicKey and the ID.
+        Encrypt the SensorData with symmetric encryption, using the symmetric key.
+        
+        Data:
+            Content: 
+                master_public_key to PKG
+                ibeKey = ibe(randomKey)
+                cipher = encrypt(sensorData, randomKey)
+
+        Sign the Data and send.
         """
         #util.dumpInterest(interest)
         self.keyChain.verifyInterest(interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
@@ -149,39 +176,45 @@ class Device(object):
 
         logging.info("Encrypting with ID: " + ID)
         transport.send(encodedData.toBuffer())
-        logging.info("Sent encrypted data..")
+        logging.info("Sent encrypted Data")
 
     def onRegisterFailed(self, prefix):
-        util.dump("Register failed for prefix", prefix.toUri())
+        logging.info("Register failed for prefix" + prefix.toUri())
+
 
     # General methods for all devices
-
     def onTimeout(self, interest):
-        util.dump("Time out for interest", interest.getName().toUri())
+        logging.info("Time out for interest" + interest.getName().toUri())
 
     def onVerifiedData(self, data):
         #TODO
-        print("Data packet verified")
+        logging.info("Data packet verified")
 
     def onVerifyDataFailed(self, data):
         #TODO
-        print("Data packet failed verification")
+        logging.info("Data packet failed verification")
 
     def onVerifiedInterest(self, data):
         #TODO
-        print("Data packet verified")
+        logging.info("Data packet verified")
 
     def onVerifyInterestFailed(self, data):
         #TODO
-        print("Data packet failed verification")
+        logging.info("Data packet failed verification")
 
     def requestIdentityBasedPrivateKey(self):
         """
-        Create PK/SK for initialization
-        Message.INIT 
-        send name and PK
-        """
+        Setup a local PKG only for this Device to be able to do initialization with a PKG.
 
+        Set the KeyLocator to the ID of the requesting Device.
+        Append the TemporaryMasterPublicKey to the Interest.
+
+        Interest:
+            Name: /ndn/no/ntnu/initDevice/<nonce>/<tempMasterPublicKey>
+            Selector: KeyLocator = ID
+
+        Send the Interest
+        """
         # Create a keyPair for initialization process
         (master_public_key, master_secret_key) = self.ibe_scheme.setup()
         self.temp_master_public_key = master_public_key
@@ -205,8 +238,16 @@ class Device(object):
 
     def onInitData(self, interest, data):
         """
-        1. Decrypt message
-        2. Decode message
+        Data:
+            Content: 
+                master_public_key to PKG
+                ibeKey = ibe(randomKey)
+                cipher = encrypt(PrivateKey, randomKey)
+
+        Decrypt the symmetric key with the TemporaryMasterPublicKey and the device ID.
+        Use the symmetric key to decrypt the PrivateKey.
+
+        Device is now added to the PKG        
         """
         self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
         
@@ -223,8 +264,6 @@ class Device(object):
                 #Decrypt encryptedMessage
                 a = SymmetricCryptoAbstraction(extractor(key))
                 privateKeyEncoded = a.decrypt(message.encryptedMessage)
-
-                logging.info(privateKeyEncoded)
 
                 masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
                 self.private_key        = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
