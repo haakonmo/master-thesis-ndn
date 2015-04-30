@@ -7,8 +7,7 @@ import util
 
 from fileSync import FileSync
 from fileSync import FileWatch
-from device import SensorPull
-from device import SensorData
+from device import Device
 from publicKeyGenerator import PublicKeyGenerator
 
 from pyndn import Name
@@ -219,10 +218,11 @@ def startSensorPull():
 
     # Use the system default key chain and certificate name to sign commands.
     keyChain = KeyChain()
+    keyChain.setFace(face)
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
-    sensorPull = SensorPull(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
+    sensorPull = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device1")
     sensorPull.requestIdentityBasedPrivateKey()
     sensorPull.requestData()
     while True:
@@ -238,11 +238,13 @@ def startSensorData():
 
     # Use the system default key chain and certificate name to sign commands.
     keyChain = KeyChain()
+    keyChain.setFace(face)
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
-    sensorData = SensorData(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
+    sensorData = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device2")
     sensorData.requestIdentityBasedPrivateKey()
+    sensorData.registerPrefix()
     while True:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
@@ -256,6 +258,7 @@ def startPKG():
 
     # Use the system default key chain and certificate name to sign commands.
     keyChain = KeyChain()
+    keyChain.setFace(face)
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
     # util.dump(keyChain.getDefaultCertificateName())
     # Also use the default certificate name to sign data packets.    
@@ -283,6 +286,8 @@ def main():
                 startSensorPull()
             if input == "pkg":
                 startPKG()
+            if input == "leave" or input == "exit":
+                break
         time.sleep(0.01)
     
 main()

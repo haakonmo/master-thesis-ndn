@@ -29,9 +29,9 @@ from charm.toolbox.symcrypto import SymmetricCryptoAbstraction
 from charm.core.math.pairing import hashPair as extractor
 from identityBasedCrypto import IbeWaters09
 
-class SensorPull(object):
+class Device(object):
 
-    def __init__(self, face, keyChain, certificateName, baseName):
+    def __init__(self, face, keyChain, certificateName, baseName, deviceName):
         self.ibeScheme = IbeWaters09()
 
         self.face = face
@@ -39,14 +39,35 @@ class SensorPull(object):
         self.certificateName = certificateName
 
         self.baseName = Name(baseName)
-        self.deviceName = Name(self.baseName).append("device1")
-        
-        #self.name = Name(baseName).append("sensor_pull")
-        #util.dump("Expressing interest name: ", self.name.toUri())
-        #self.face.expressInterest(self.name, self.onData, self.onTimeout)
+        self.deviceName = Name(self.baseName).append(deviceName)
 
-    def onInterest(self, prefix, interest, transport, registeredPrefixId):
-        util.dumpInterest(interest)
+    # Methods for a device that requests Data
+    def requestData(self):
+        """
+        Request data
+
+        The suffix components count includes the implicit digest component of the full name in the data packet. 
+        For example, if the interest name is the prefix /a/b and the data packet name is /a/b/c, 
+        then the data packet name has 2 suffix components: 'c' and the implicit digest which is not shown.
+        """
+        # Session used in namePrefix
+        session = str(int(round(util.getNowMilliseconds() / 1000.0)))
+        self.name = Name(self.baseName).append("device2").append("sensor_pull").append(session)
+
+        interest = Interest(self.name)
+        # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
+        #interest.setMinSuffixComponents(3)
+        keyLocator = KeyLocator()
+        keyLocator.setType(KeyLocatorType.KEYNAME)
+        keyLocator.setKeyName(self.deviceName)
+        interest.setKeyLocator(keyLocator)
+
+        util.dump(self.certificateName)
+        self.keyChain.sign(interest, self.certificateName)
+        interest.wireEncode()
+
+        util.dump("Expressing interest name: ", interest.toUri())
+        self.face.expressInterest(interest, self.onData, self.onTimeout)
 
     def onData(self, interest, data):
         """
@@ -64,7 +85,7 @@ class SensorPull(object):
                 masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
                 messageMPK = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
                 if not (self.master_public_key == messageMPK):
-                    logging.error("MPK doesnt match!!")
+                    logging.error("MasterPulicKey doesnt match!!")
 
                 #Decrypt identityBasedEncrypedKey
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
@@ -74,85 +95,12 @@ class SensorPull(object):
                 #Decrypt encryptedMessage
                 a = SymmetricCryptoAbstraction(extractor(key))
                 data = a.decrypt(message.encryptedMessage)
+
+                # Use data from device to something ..
                 util.dump(str(data))
 
-        if (message.type == messageBuf_pb2.Message.INIT):
-            #TODO private key MUST be encrypted somehow..
-            if (message.encryptionType == messageBuf_pb2.Message.NONE):
-                privateKeyDict = ast.literal_eval(message.encryptedMessage)
-                masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
-                self.private_key = deserializeObject(privateKeyDict, self.ibeScheme.group)
-                self.master_public_key = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
-
-    def onTimeout(self, interest):
-        util.dump("Time out for interest", interest.getName().toUri())
-
-    def onRegisterFailed(self, prefix):
-        util.dump("Register failed for prefix", prefix.toUri())
-
-    def onVerifiedData(self, data):
-        #TODO
-        print("Data packet verified")
-
-    def onVerifyDataFailed(self, data):
-        #TODO
-        print("Data packet failed verification")
-
-    def requestIdentityBasedPrivateKey(self):
-        """
-        Create PK/SK for initialization
-        Message.INIT 
-        send name and PK
-        """
-        name = Name(self.baseName).append("pkg").append("initDevice")
-        interest = Interest(name)
-        keyLocator = KeyLocator()
-        keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(self.deviceName)
-        interest.setKeyLocator(keyLocator)
-
-        util.dump("Expressing interest name: ", name.toUri())
-        self.face.expressInterest(interest, self.onData, self.onTimeout)
-
-    def requestData(self):
-        """
-        Request data
-
-        The suffix components count includes the implicit digest component of the full name in the data packet. 
-        For example, if the interest name is the prefix /a/b and the data packet name is /a/b/c, 
-        then the data packet name has 2 suffix components: 'c' and the implicit digest which is not shown.
-        """
-        # Session used in namePrefix
-        session = int(round(util.getNowMilliseconds() / 1000.0))
-        self.name = Name(self.baseName).append("device2").append("sensor_pull").append(str(session))
-
-        interest = Interest(self.name)
-        # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
-        #interest.setMinSuffixComponents(3)
-        keyLocator = KeyLocator()
-        keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(self.deviceName)
-        interest.setKeyLocator(keyLocator)
-
-        util.dump(self.certificateName)
-        self.keyChain.sign(interest, self.certificateName)
-        interest.wireEncode()
-
-        util.dump("Expressing interest name: ", interest.toUri())
-        self.face.expressInterest(interest, self.onData, self.onTimeout)
-
-class SensorData(object):
-
-    def __init__(self, face, keyChain, certificateName, baseName):
-        self.ibeScheme = IbeWaters09()
-
-        self.face = face
-        self.keyChain = keyChain
-        self.certificateName = certificateName
-
-        self.baseName = Name(baseName)
-        self.deviceName = Name(self.baseName).append("device2")
-
+    # Methods for a device that offers Data
+    def registerPrefix(self):
         self.prefix = Name(self.deviceName).append("sensor_pull")
         util.dump("Register prefix", self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
@@ -168,7 +116,7 @@ class SensorData(object):
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
-        logging.info("Encrypting with ID: " + ID)
+        
 
         data = Data(interest.getName())
         contentData = "This should be sensordata blablabla"
@@ -185,8 +133,6 @@ class SensorData(object):
         a = SymmetricCryptoAbstraction(extractor(self.key))
         encryptedMessage = a.encrypt(contentData)
 
-        logging.info(encryptedMessage)
-
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = identityBasedMasterPublicKey
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
@@ -200,36 +146,17 @@ class SensorData(object):
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
-        logging.info("Sent data..")
+        logging.info("Encrypting with ID: " + ID)
         transport.send(encodedData.toBuffer())
-
-    def onData(self, interest, data):
-        """
-        if Message.INIT_RESPONSE then decrypt and store privateKey, store master_public_key
-        """
-        message = messageBuf_pb2.Message()
-        message.ParseFromString(data.getContent().toRawStr())
-        if (message.type == messageBuf_pb2.Message.INIT):
-            #TODO private key MUST be encrypted somehow..
-            if (message.encryptionType == messageBuf_pb2.Message.NONE):
-                privateKeyDict = ast.literal_eval(message.encryptedMessage)
-                masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
-                self.private_key = deserializeObject(privateKeyDict, self.ibeScheme.group)
-                self.master_public_key = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
-
-    def onTimeout(self, interest):
-        util.dump("Time out for interest", interest.getName().toUri())
+        logging.info("Sent encrypted data..")
 
     def onRegisterFailed(self, prefix):
         util.dump("Register failed for prefix", prefix.toUri())
 
-    def onVerifiedInterest(self, interest):
-        #TODO
-        print("Interest packet verified")
+    # General methods for all devices
 
-    def onVerifyInterestFailed(self, interest):
-        #TODO
-        print("Interest packet failed verification")
+    def onTimeout(self, interest):
+        util.dump("Time out for interest", interest.getName().toUri())
 
     def onVerifiedData(self, data):
         #TODO
@@ -239,13 +166,23 @@ class SensorData(object):
         #TODO
         print("Data packet failed verification")
 
+    def onVerifiedInterest(self, data):
+        #TODO
+        print("Data packet verified")
+
+    def onVerifyInterestFailed(self, data):
+        #TODO
+        print("Data packet failed verification")
+
     def requestIdentityBasedPrivateKey(self):
         """
         Create PK/SK for initialization
         Message.INIT 
         send name and PK
         """
-        name = self.baseName.append("pkg").append("initDevice")
+        # Make each init unique with a session
+        session = str(int(round(util.getNowMilliseconds() / 1000.0)))
+        name = Name(self.baseName).append("pkg").append("initDevice").append(session)
         interest = Interest(name)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
@@ -253,4 +190,23 @@ class SensorData(object):
         interest.setKeyLocator(keyLocator)
 
         util.dump("Expressing interest name: ", name.toUri())
-        self.face.expressInterest(interest, self.onData, self.onTimeout)
+        self.face.expressInterest(interest, self.onInitData, self.onTimeout)
+
+    def onInitData(self, interest, data):
+        """
+        1. Decrypt message
+        2. Decode message
+        """
+        self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        
+        message = messageBuf_pb2.Message()
+        message.ParseFromString(data.getContent().toRawStr())
+
+        if (message.type == messageBuf_pb2.Message.INIT):
+            #TODO private key MUST be encrypted somehow..
+            if (message.encryptionType == messageBuf_pb2.Message.NONE):
+                privateKeyDict          = ast.literal_eval(message.encryptedMessage)
+                masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
+                self.private_key        = deserializeObject(privateKeyDict, self.ibeScheme.group)
+                self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
+                logging.info("Initialization success! PrivateKey and MasterPublicKey received.")
