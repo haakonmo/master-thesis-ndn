@@ -137,13 +137,13 @@ class SensorPull(object):
         For example, if the interest name is the prefix /a/b and the data packet name is /a/b/c, 
         then the data packet name has 2 suffix components: 'c' and the implicit digest which is not shown.
         """
-        #Session used in namePrefix
+        # Session used in namePrefix
         session = int(round(util.getNowMilliseconds() / 1000.0))
         self.name = Name(self.baseName).append("device2").append("sensor_pull").append(str(session))
 
         interest = Interest(self.name)
+        # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
         #interest.setMinSuffixComponents(3)
-        #interest.setMaxSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
         keyLocator.setKeyName(self.deviceName)
@@ -186,14 +186,19 @@ class SensorData(object):
         logging.info("Encrypting with ID: " + ID)
 
         data = Data(interest.getName())
-        message = "This should be sensordata blablabla"
+        contentData = "This should be sensordata blablabla"
+
+        # Symmetric ey for encryption
         self.key = self.ibeScheme.getRandomKey()
+        # Identity-Based Encryption of symmetric key
         identityBasedEncryptedKey = self.ibeScheme.encryptKey(self.master_public_key, ID, self.key)
         identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibeScheme.group))
+        # Master Public Key
         identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
 
+        # Symmetric AES encryption of contentData
         a = SymmetricCryptoAbstraction(extractor(self.key))
-        encryptedMessage = a.encrypt(message)
+        encryptedMessage = a.encrypt(contentData)
 
         logging.info(encryptedMessage)
 
