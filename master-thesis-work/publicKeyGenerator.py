@@ -18,14 +18,17 @@ from pyndn.security.policy import NoVerifyPolicyManager
 from pyndn.util import Blob
 
 from charm.core.engine.util import serializeObject, deserializeObject
+from charm.core.engine.util import objectToBytes, bytesToObject
+from charm.toolbox.symcrypto import SymmetricCryptoAbstraction
+from charm.core.math.pairing import hashPair as extractor
 from identityBasedCrypto import IbeWaters09
 
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
-        self.ibeScheme = IbeWaters09()
+        self.ibe_scheme = IbeWaters09()
+        (master_public_key, master_secret_key) = self.ibe_scheme.setup()
 
-        (master_public_key, master_secret_key) = self.ibeScheme.setup()
         self.master_public_key = master_public_key
         self.master_secret_key = master_secret_key
         self.face = face
@@ -52,17 +55,31 @@ class PublicKeyGenerator(object):
             ID = interest.getKeyLocator().getKeyName().toUri()
         logging.info("Extracting private key for ID: " + ID)
 
-        device_private_key = self.ibeScheme.extract(self.master_public_key, self.master_secret_key, ID)
+        device_private_key = self.ibe_scheme.extract(self.master_public_key, self.master_secret_key, ID)
+
+        # Encrypt key with the device_master_public_key and ID
+        keyName = interest.getName()
+        tempMasterPublicKeyEncoded = keyName.get(keyName.size()-1).toEscapedString()
+        tempMasterPublicKey = bytesToObject(tempMasterPublicKeyEncoded, self.ibe_scheme.group)
+        key = self.ibe_scheme.getRandomKey()
+        identityBasedEncryptedKey = self.ibe_scheme.encryptKey(tempMasterPublicKey, ID, key)
+        identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
+
+        # Symmetric AES encryption of contentData
+        a = SymmetricCryptoAbstraction(extractor(key))
+        
+        encodedData = objectToBytes(device_private_key, self.ibe_scheme.group)
+        encryptedMessage = a.encrypt(encodedData)
 
         data = Data(interest.getName())
         
         message = messageBuf_pb2.Message()
         #set masterPublicKey
         # util.parse_dict(message, self.master_public_key)
-        message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
-        #TODO private key MUST be encrypted somehow..
-        message.encryptedMessage = str(serializeObject(device_private_key, self.ibeScheme.group))
-        message.encryptionType = messageBuf_pb2.Message.NONE
+        message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
+        message.identityBasedEncryptedKey = identityBasedEncryptedKey
+        message.encryptedMessage = encryptedMessage
+        message.encryptionType = messageBuf_pb2.Message.AES
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.INIT
         
@@ -71,8 +88,8 @@ class PublicKeyGenerator(object):
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
-        logging.info("Sent InitResponse")
         transport.send(encodedData.toBuffer())
+        logging.info("Sent InitResponse")
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)

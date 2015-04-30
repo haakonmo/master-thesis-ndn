@@ -25,6 +25,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.events import FileModifiedEvent
 
 from charm.core.engine.util import serializeObject, deserializeObject
+from charm.core.engine.util import objectToBytes, bytesToObject
 from charm.toolbox.symcrypto import SymmetricCryptoAbstraction
 from charm.core.math.pairing import hashPair as extractor
 from identityBasedCrypto import IbeWaters09
@@ -32,7 +33,7 @@ from identityBasedCrypto import IbeWaters09
 class Device(object):
 
     def __init__(self, face, keyChain, certificateName, baseName, deviceName):
-        self.ibeScheme = IbeWaters09()
+        self.ibe_scheme = IbeWaters09()
 
         self.face = face
         self.keyChain = keyChain
@@ -83,14 +84,14 @@ class Device(object):
             if (message.encryptionType == messageBuf_pb2.Message.AES):
                 #Compare master_public_key
                 masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
-                messageMPK = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
+                messageMPK = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
                 if not (self.master_public_key == messageMPK):
                     logging.error("MasterPulicKey doesnt match!!")
 
                 #Decrypt identityBasedEncrypedKey
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
-                identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibeScheme.group)
-                key = self.ibeScheme.decryptKey(self.master_public_key, self.private_key, identityBasedEncryptedKey)
+                identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibe_scheme.group)
+                key = self.ibe_scheme.decryptKey(self.master_public_key, self.private_key, identityBasedEncryptedKey)
 
                 #Decrypt encryptedMessage
                 a = SymmetricCryptoAbstraction(extractor(key))
@@ -121,13 +122,13 @@ class Device(object):
         data = Data(interest.getName())
         contentData = "This should be sensordata blablabla"
 
-        # Symmetric ey for encryption
-        self.key = self.ibeScheme.getRandomKey()
+        # Symmetric key for encryption
+        self.key = self.ibe_scheme.getRandomKey()
         # Identity-Based Encryption of symmetric key
-        identityBasedEncryptedKey = self.ibeScheme.encryptKey(self.master_public_key, ID, self.key)
-        identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibeScheme.group))
+        identityBasedEncryptedKey = self.ibe_scheme.encryptKey(self.master_public_key, ID, self.key)
+        identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
         # Master Public Key
-        identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibeScheme.group))
+        identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
 
         # Symmetric AES encryption of contentData
         a = SymmetricCryptoAbstraction(extractor(self.key))
@@ -180,16 +181,26 @@ class Device(object):
         Message.INIT 
         send name and PK
         """
+
+        # Create a keyPair for initialization process
+        (master_public_key, master_secret_key) = self.ibe_scheme.setup()
+        self.temp_master_public_key = master_public_key
+        ID = self.deviceName.toUri()
+        self.temp_private_key = self.ibe_scheme.extract(master_public_key, master_secret_key, ID)
+
         # Make each init unique with a session
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
-        name = Name(self.baseName).append("pkg").append("initDevice").append(session)
+
+        #TODO append tempMpk to name , as base64 encoded
+        encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
+        name = Name(self.baseName).append("pkg").append("initDevice").append(session).append(encodedTempMasterPublicKey)
         interest = Interest(name)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
         keyLocator.setKeyName(self.deviceName)
         interest.setKeyLocator(keyLocator)
 
-        util.dump("Expressing interest name: ", name.toUri())
+        logging.info("Expressing interest name: " + name.toUri())
         self.face.expressInterest(interest, self.onInitData, self.onTimeout)
 
     def onInitData(self, interest, data):
@@ -203,10 +214,19 @@ class Device(object):
         message.ParseFromString(data.getContent().toRawStr())
 
         if (message.type == messageBuf_pb2.Message.INIT):
-            #TODO private key MUST be encrypted somehow..
-            if (message.encryptionType == messageBuf_pb2.Message.NONE):
-                privateKeyDict          = ast.literal_eval(message.encryptedMessage)
+            if (message.encryptionType == messageBuf_pb2.Message.AES):
+                #Decrypt identityBasedEncrypedKey
+                identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
+                identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibe_scheme.group)
+                key = self.ibe_scheme.decryptKey(self.temp_master_public_key, self.temp_private_key, identityBasedEncryptedKey)
+                
+                #Decrypt encryptedMessage
+                a = SymmetricCryptoAbstraction(extractor(key))
+                privateKeyEncoded = a.decrypt(message.encryptedMessage)
+
+                logging.info(privateKeyEncoded)
+
                 masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
-                self.private_key        = deserializeObject(privateKeyDict, self.ibeScheme.group)
-                self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibeScheme.group)
+                self.private_key        = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
+                self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
                 logging.info("Initialization success! PrivateKey and MasterPublicKey received.")
