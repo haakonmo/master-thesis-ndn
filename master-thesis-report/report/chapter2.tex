@@ -69,11 +69,6 @@ This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} a
 \subsection{Packets}
 There is two types of packets in \gls{NDN};
 \textit{Interest packet} and the corresponding answer, i.e. the \textit{Data packet}, illustrated in~\autoref{fig:packets}.
-The Interest packet specifies a content name. 
-The name has a hierarchical structure, e.g. ``/netflix/movie/1'' .  
-An interest can also contain a selector that can be used to decide which data to satisfy the interest in case of multiple matches.
-The Data packet it a response to the Interest packet, and contains the content for the name.
-Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the response will have the same name, but also containing the movie. 
 
 \begin{figure}[H]
   \centering
@@ -81,6 +76,23 @@ Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the 
   \caption{Interest packet and Data packet}
   \label{fig:packets}
 \end{figure}
+
+The Interest packet specifies a Content Name. 
+The name can have a hierarchical structure and signatures can be added after the \gls{URI}, e.g. ``/netflix/movie/1/<signature>''.
+An Interest can also contain a set of different Selectors to specify original requirements for the Data response. 
+Some of the Selector fields are:
+\begin{itemize}
+  \item KeyLocator - can be used to specify where the Public Key for the signature can be found.
+  \item Exclude - can be used to specify a list or a range of names that should be excluded from the Name. 
+  I.e. if the Name is ``/ndn/no/ntnu'' og the Exclude contains ``/item'', the returned Data does not contain ``/ndn/no/ntnu/item''.
+  \item MustBeFresh - if True, a node cannot answer with a Data packet where the FreshnessPeriod has expired.
+\end{itemize}
+The Nonce field sets automatically. 
+This is used to uniquely identify an Interest and prevent looping in the network.
+
+The Data packet it a response to the Interest packet, and contains the Content Name and the Content itself.
+It also has a MetaInfo field that is used to specify the FreshnessPeriod amongst other things. 
+Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the response will have the same name, but also containing the movie. 
 
 Because only a Data packet can exists if there is a corresponding Interest, \gls{NDN} is pull-based.
 Hence unsolicited Data packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.

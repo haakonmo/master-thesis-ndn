@@ -19,13 +19,13 @@ Hacking insulin pump~\cite{radcliffe2011hacking}
 
 \begin{enumerate}
   \item First device, e.g. a mobile, connects to the \gls{PKG} through physical connection (discussed in~\autoref{physical_connection_initialization}) as showed in~\autoref{fig:init_ibe_1}.
-  \item Additional devices, can connect through physical connection (discussed in~\autoref{physical_connection_initialization}) via another authorized device~\autoref{fig:init_ibe_2}, or the \gls{PKG} itself~\autoref{fig:init_ibe_1}. 
-  \item Data pulling from existing nodes in network
+  \item Additional devices can connect through physical connection (discussed in~\autoref{physical_connection_initialization}) via another authorized device~\autoref{fig:init_ibe_2}, or the \gls{PKG} itself~\autoref{fig:init_ibe_1}. 
+  \item Data pulling from existing nodes in network~\autoref{fig:data_pull_ibe}
 \end{enumerate}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=1\textwidth]{init_ibe_1.png}
+  \includegraphics[width=1\textwidth]{Initialization.png}
   \caption{Initialization IBE}
   \label{fig:init_ibe_1}
 \end{figure}
@@ -51,8 +51,6 @@ This results in a physical authentication between the device, and the mobile (i.
 % \end{lstlisting}
 
 
-\subsection{Public Key Infrastructure}
-
 \subsection{Identity-Based Cryptography}
 
 \section{Integrity and Authenticity}
@@ -61,7 +59,7 @@ Each device will obtain a private key allocated by its superior \gls{PKG}, as ex
 With the concept from~\autoref{physical_connection_initialization} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s network. Hence all signed packets can be verified by anyone with the \gls{MPK}.
 
 \subsection{Replay Attack}
-Every Interest has a timestamp attached to the Name (e.g. /ndn/no/ntnu/sensor/1/\textbf{1429710873778}), i.e. milliseconds from UTC 1970-01-01 00:00:00, that is used for protection against replay attack. 
+Every Interest has a timestamp attached to the Name (e.g. /ndn/no/ntnu/device/name2/sensor\_pull/\textbf{1429710873778}), i.e. milliseconds from UTC 1970-01-01 00:00:00, that is used for protection against replay attack. 
 
 \section{Confidentiality}
 
@@ -80,7 +78,7 @@ When a device retrieves an Interest for its sensor data, there should be a autho
 In~\autoref{fig:data_pull_ibe} 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=1\textwidth]{data_pull_ibe.png}
+  \includegraphics[width=1\textwidth]{DataPull.png}
   \caption{Mobile performing a data pull from a device in the network.}
   \label{fig:data_pull_ibe}
 \end{figure}
