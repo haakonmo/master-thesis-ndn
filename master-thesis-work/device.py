@@ -47,7 +47,7 @@ class Device(object):
     def requestData(self):
         """
         Interest:
-            Name: /ndn/no/ntnu/<device>/sensor_pull/<nonce>
+            Name: /ndn/no/ntnu/<device>/sensorPull/<nonce>
             Selector: KeyLocator = ID
 
         The ID of the requesting Device is stored in KeyLocator in the Interest, 
@@ -56,7 +56,7 @@ class Device(object):
         """
         # Session used in namePrefix
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
-        self.name = Name(self.baseName).append("device2").append("sensor_pull").append(session)
+        self.name = Name(self.baseName).append("device2").append("sensorPull").append(session)
 
         interest = Interest(self.name)
         # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
@@ -118,14 +118,14 @@ class Device(object):
         """
         Announce that this device can be reached at a prefix
         """
-        self.prefix = Name(self.deviceName).append("sensor_pull")
+        self.prefix = Name(self.deviceName).append("sensorPull")
         logging.info("Register prefix" + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         """
         Interest:
-            Name: /ndn/no/ntnu/<device>/sensor_pull/<nonce>
+            Name: /ndn/no/ntnu/<device>/sensorPull/<nonce>
             Selector: KeyLocator = ID
 
         The ID of the requesting Device is stored in KeyLocator in the Interest, 
