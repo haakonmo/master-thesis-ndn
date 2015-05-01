@@ -54,7 +54,7 @@ In 2012 \gls{IRTF} established \gls{ICN} working group.
 \section{Content Centric Network \& Named Data Network}\label{chp2:sec:icn}
 The first network protocol purposed for \gls{ICN}, \gls{CCN}, was presented by Van Jacobsen at Google Talk in 2006. 
 He, amongst other contributors of \gls{CCN}, has been working on developing the Internet as we know since the early start.
-Jacobsen has contributed to \gls{TCP}/\gls{IP}, i.a. with his flow control algorithms and \gls{TCP} header compression. 
+Jacobsen has contributed to \gls{TCP}/\gls{IP}, i.e. with his flow control algorithms and \gls{TCP} header compression. 
 
 \gls{CCN} focuses on naming content, instead of naming \gls{IP}-addresses. 
 The research project is lead by \gls{PARC}.
@@ -91,8 +91,8 @@ The Nonce field sets automatically.
 This is used to uniquely identify an Interest and prevent looping in the network.
 
 The Data packet it a response to the Interest packet, and contains the Content Name and the Content itself.
-It also has a MetaInfo field that is used to specify the FreshnessPeriod amongst other things. 
-Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the response will have the same name, but also containing the movie. 
+It also has a MetaInfo field that is used to specify the FreshnessPeriod (milliseconds), ContentType and FinalBlockId. 
+Now when somebody requests the movie ``/netflix/movie/1'' with an Interest, the response will have the same name, but also containing the movie.
 
 Because only a Data packet can exists if there is a corresponding Interest, \gls{NDN} is pull-based.
 Hence unsolicited Data packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.

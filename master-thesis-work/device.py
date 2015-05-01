@@ -11,6 +11,7 @@ from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
 from pyndn import Face
+from pyndn import MetaInfo
 from pyndn.key_locator import KeyLocator, KeyLocatorType
 from pyndn.security import KeyType
 from pyndn.security import KeyChain
@@ -176,7 +177,10 @@ class Device(object):
         message.type = messageBuf_pb2.Message.SENSOR_DATA
         
         content = message.SerializeToString()
+        metaInfo = MetaInfo()
+        metaInfo.setFreshnessPeriod(30000) # 30 seconds
         data.setContent(Blob(content))
+        data.setMetaInfo(metaInfo)
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 

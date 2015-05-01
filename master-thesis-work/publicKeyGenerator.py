@@ -96,8 +96,11 @@ class PublicKeyGenerator(object):
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.INIT
         
+        metaInfo = MetaInfo()
+        metaInfo.setFreshnessPeriod(10000) # 10 seconds
         content = message.SerializeToString()
         data.setContent(Blob(content))
+        data.setMetaInfo(metaInfo)
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 

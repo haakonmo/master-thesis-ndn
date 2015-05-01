@@ -24,6 +24,8 @@ from pyndn.security.policy import NoVerifyPolicyManager
 
 from pyndn.util import Blob
 
+EXIT = False
+
 DEFAULT_RSA_PUBLIC_KEY_DER = bytearray([
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
     0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00, 0x30, 0x82, 0x01, 0x0a, 0x02, 0x82, 0x01, 0x01,
@@ -132,6 +134,7 @@ def promptAndInput(prompt):
         return input(prompt)
 
 def startFileSync():
+    global EXIT
     screenName = promptAndInput("Enter your name: ")
 
     defaultHubPrefix = "ndn/no/ntnu"
@@ -186,12 +189,12 @@ def startFileSync():
     #    3. sendUpdatedPublicKey if key is changed
     #    4. Download and store other keys
     #    5. Verify data packet
-    while True:
+    while not EXIT:
         isReady, _, _ = select.select([sys.stdin], [], [], 0)
         if len(isReady) != 0:
             input = promptAndInput("")
             if input == "leave" or input == "exit":
-                # We will send the leave message below.
+                EXIT = True
                 break
             #fileSyncer.onFileUpdate(input)
 
@@ -213,6 +216,7 @@ def startFileSync():
     fileWatcher.stopFileWatch()
 
 def startSensorPull():
+    global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
 
@@ -224,22 +228,23 @@ def startSensorPull():
     # Also use the default certificate name to sign data packets.    
     sensorPull = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device1")
     sensorPull.requestIdentityBasedPrivateKey()
-    while True:
+    while not EXIT:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
+        time.sleep(0.01)
         isReady, _, _ = select.select([sys.stdin], [], [], 0)
         if len(isReady) != 0:
             input = promptAndInput("")
             if input == "r":
                 sensorPull.requestData()
             if input == "leave" or input == "exit":
-                print("type leave or exit again to exit")
+                EXIT = True
                 break
-        time.sleep(0.01)
 
     face.shutdown()
 
 def startSensorData():
+    global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
 
@@ -252,14 +257,22 @@ def startSensorData():
     sensorData = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device2")
     sensorData.requestIdentityBasedPrivateKey()
     sensorData.registerPrefix()
-    while True:
+    while not EXIT:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
         time.sleep(0.01)
-
+        isReady, _, _ = select.select([sys.stdin], [], [], 0)
+        if len(isReady) != 0:
+            input = promptAndInput("")
+            if input == "r":
+                sensorPull.requestData()
+            if input == "leave" or input == "exit":
+                EXIT = True
+                break
     face.shutdown()
 
 def startPKG():
+    global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
 
@@ -271,19 +284,27 @@ def startPKG():
     # Also use the default certificate name to sign data packets.    
     pkg = PublicKeyGenerator(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
 
-    while True:
+    while not EXIT:
         face.processEvents()
         # We need to sleep for a few milliseconds so we don't use 100% of the CPU.
         time.sleep(0.01)
-
+        isReady, _, _ = select.select([sys.stdin], [], [], 0)
+        if len(isReady) != 0:
+            input = promptAndInput("")
+            if input == "r":
+                sensorPull.requestData()
+            if input == "leave" or input == "exit":
+                EXIT = True
+                break
     face.shutdown()
 
 def main():
+    global EXIT
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-    while True:
+    while not EXIT:
         isReady, _, _ = select.select([sys.stdin], [], [], 0)
         if len(isReady) != 0:
             input = promptAndInput("")
@@ -294,7 +315,7 @@ def main():
             if input == "pkg":
                 startPKG()
             if input == "leave" or input == "exit":
-                print("you left.")
+                EXIT = True
                 break
         time.sleep(0.01)
     
