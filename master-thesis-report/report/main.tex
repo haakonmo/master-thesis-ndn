@@ -2,19 +2,26 @@
 
 % this package is just to generate text for demo-purposes
 
+\usepackage{color}
 \usepackage{blindtext}
 \usepackage{mathtools} % math packages
 \usepackage{todonotes}
 \usepackage{hyperref}
 \usepackage{subcaption}
-\usepackage{listings}
 \usepackage{wrapfig}
 \usepackage{pgfplots}
 \usepackage{filecontents}
 \usepackage{url}
 \usepackage{float}
+\usepackage{listings}
+%\usepackage[procnames]{listings}
 
 %\pgfplotsset{compat=1.11}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
 
 \lstset{
 	numbers=left,
@@ -28,6 +35,7 @@
 	tabsize=2, 
 	breaklines=true,
 	captionpos=b,}
+
 
 \title{Named Data Networking} % The title of your assignement; NB use \newlinetitle to start a newline
 \author{Haakon Garseg Mørk} % Your firstname and lastname

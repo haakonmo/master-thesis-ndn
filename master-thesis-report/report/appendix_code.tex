@@ -1,9 +1,54 @@
 \chapter{Code}\label{apx:code}
 
-\section{File Sync Application}\label{apx:file-sync-code}
+\lstset{language=Python, 
+    basicstyle=\ttfamily\small, 
+    keywordstyle=\color{keywords},
+    commentstyle=\color{comments},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    %procnamekeys={def,class}
+    identifierstyle=\color{green}
+    }
+
+\section{File Sync}\label{apx:file-sync-code}
 
 Using watchdog to observe files
 
 \begin{lstinputlisting}
-[language=Python]{code/pk-sync.py}
+[language=Python]{../../master-thesis-work/fileSync.py}
 \end{lstinputlisting}
+
+\section{Device}\label{apx:device-code}
+
+Device, e.g. a sensro device or a mobile.
+
+\begin{lstinputlisting}
+[language=Python]{../../master-thesis-work/device.py}
+\end{lstinputlisting}
+
+\section{Public Key Generator}\label{apx:pkg-code}
+
+\gls{PKG}
+
+\begin{lstinputlisting}
+[language=Python]{../../master-thesis-work/publicKeyGenerator.py}
+\end{lstinputlisting}
+
+\section{Identity-Based Encryption}\label{apx:ibe-code}
+
+\gls{IBE}
+
+\begin{lstinputlisting}
+[language=Python]{../../master-thesis-work/identityBasedCrypto.py}
+\end{lstinputlisting}
+
+\section{Main}\label{apx:main-code}
+
+Main..
+
+\begin{lstinputlisting}
+[language=Python]{../../master-thesis-work/application.py}
+\end{lstinputlisting}
+
+\section{Message Buffer Protocol}\label{apx:msgBuf-code}
+[language=protobuf]{../../master-thesis-work/messageBuf.proto}

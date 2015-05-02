@@ -13,13 +13,18 @@ Application flow explained in~\autoref{sensor-application}
 Initialization packets are limited to the structure in~\autoref{fig:init_interest-data}
 Sensor packets are limited to the structure in~\autoref{fig:sensor_interest-data}
 \begin{description}
-	\item[Init Interest]
-	\item[Init Data]
-	\item[Sensor Interest]
-	KeyLocator can be of type Name. 
-	As described in the \gls{NDN} Packet Format, generally this field can be used to specify where to download the certificate used to sign the Interest.
-	However, in our trust model we use this field to publish the requesters Name, i.e. the requesters public key. 
-	\item[Sensor Data]
+	\item[Init Interest] - 
+  The initialization Interest seen in~\autoref{fig:init_interest-data}
+  KeyLocator can be of type Name. 
+  As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the Interest.
+  However, in our trust model we use this field to publish the requesters Name, i.e. the requesters public key. 
+  This is very useful when using \gls{IBE} and \gls{IBS}.
+	\item[Init Data] - 
+  The Data response the the initialization Interest contains data with a structure defined in~\autoref{apx:msgBuf-code} and illustrated in~\autoref{fig:init_interest-data}.
+	\item[Sensor Interest] -
+	As in the initialization Interest the KeyLocator field is used to define the requesters Name. ~\autoref{fig:sensor_interest-data}
+	\item[Sensor Data] - 
+  The Data response to the Sensor Interest uses the same structure as the initialization Data. It is illustrated in~\autoref{fig:sensor_interest-data}
 \end{description}
 
 \begin{figure}[ht]
