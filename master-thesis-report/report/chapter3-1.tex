@@ -16,7 +16,7 @@ However the scheme has only been shown to be secure with a random oracles model~
 
 
 \gls{IBE} is based upon performing cryptography with a publicly know \gls{ID}.
-Since the \gls{ID} can be practically anything it is highly applicable for \gls{NDN} where the \gls{ID} can be a Name (``/ndn/no/ntnu/haakon").
+Since the \gls{ID} can be practically anything it is highly applicable for \gls{NDN} where the \gls{ID} can be a Name (``/ndn/no/ntnu/haakon'').
 Hence the Name becomes the public key. 
 
 There is a \gls{TTP} in \gls{IBE} that is called \gls{PKG}.
@@ -41,15 +41,24 @@ Key Revocation in IBE ~\cite{DBLP:journals/iacr/BoldyrevaGK12}
 To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{IBE} public key.
 Then the user encrypts the message with the \gls{CEK}~\cite[section 2.2.2]{rfc5408}
 
-Drawbacks
-If \gls{PKG} is compromised. Adversary has private key to all nodes that used the compromised \gls{PKG}
-\gls{PKG} can read and write messages related to the node, because it has all private keys, i.e. \gls{MITM}.
-\gls{PKG} and the requesting node has to establish a secure channel. 
-
+Some drawbacks related to \gls{IBE} are listed below:
+\begin{enumerate}
+	\item If \gls{PKG} is compromised. Adversary has private key to all nodes that used the compromised \gls{PKG}
+	\item \gls{PKG} can read and write messages related to the node, because it has all private keys, i.e. \gls{MITM}.
+	\item \gls{PKG} and the requesting node has to establish a secure channel. 
+\end{enumerate}
 
 \section{Key Distribution}
 Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, we want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.
 This can be done through an IDSync application built upon the application presented in~\autoref{file-sync}.
+In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the domain.
+Each device can verify the integrity and authenticity of the sync state Data and be sure that the \gls{ID} list surely originates from its own \gls{PKG}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{pkg_sync.png}
+  \caption{IDSync with tree devices and a \gls{PKG}.}
+  \label{fig:pkg_sync}
+\end{figure}
 
 \section{Key Revocation}
 Few alternatives to revocation scheme in \gls{IBE}.
