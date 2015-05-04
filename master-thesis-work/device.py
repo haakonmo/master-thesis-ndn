@@ -94,12 +94,16 @@ class Device(object):
         session = message.nonce
 
         if (message.type == messageBuf_pb2.Message.SENSOR_DATA):
-            if (message.encryptionType == messageBuf_pb2.Message.AES):
+            if (message.encAlgorithm == messageBuf_pb2.Message.AES):
+                # Check if IBE algorithm is the same
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                    logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
+
                 #Compare master_public_key
                 masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
                 messageMPK = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
                 if not (self.master_public_key == messageMPK):
-                    logging.error("MasterPulicKey doesnt match!!")
+                    logging.error("MasterPulicKey doesnt match!")
 
                 #Decrypt identityBasedEncrypedKey
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
@@ -171,7 +175,8 @@ class Device(object):
         message.identityBasedMasterPublicKey = identityBasedMasterPublicKey
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
-        message.encryptionType = messageBuf_pb2.Message.AES
+        message.encAlgorithm = messageBuf_pb2.Message.AES
+        message.ibeAlgorithm = self.ibe_scheme.algorithm
         message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.SENSOR_DATA
@@ -240,7 +245,7 @@ class Device(object):
         interest = Interest(name)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(self.deviceName)
+        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)))
         interest.setKeyLocator(keyLocator)
 
         logging.info("Expressing interest name: " + name.toUri())
@@ -268,7 +273,12 @@ class Device(object):
         session = message.nonce
 
         if (message.type == messageBuf_pb2.Message.INIT):
-            if (message.encryptionType == messageBuf_pb2.Message.AES):
+            if (message.encAlgorithm == messageBuf_pb2.Message.AES):
+
+                # Check if IBE algorithm is the same
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                    logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
+
                 #Decrypt identityBasedEncrypedKey
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
                 identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibe_scheme.group)

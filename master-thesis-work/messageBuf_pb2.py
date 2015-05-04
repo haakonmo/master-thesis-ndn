@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='messageBuf.proto',
   package='SensorDemo',
-  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xfe\x02\n\x07Message\x12:\n\x04type\x18\x01 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\x0bSENSOR_DATA\x12\x42\n\x0e\x65ncryptionType\x18\x02 \x02(\x0e\x32%.SensorDemo.Message.MessageEncryption:\x03\x41\x45S\x12$\n\x1cidentityBasedMasterPublicKey\x18\x03 \x01(\t\x12!\n\x19identityBasedEncryptedKey\x18\x04 \x01(\t\x12\x18\n\x10\x65ncryptedMessage\x18\x05 \x01(\t\x12\r\n\x05nonce\x18\x06 \x02(\t\x12\x11\n\ttimestamp\x18\x07 \x02(\x05\"3\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x0f\n\x0bSENSOR_DATA\x10\x01\x12\t\n\x05OTHER\x10\x02\"9\n\x11MessageEncryption\x12\x07\n\x03\x41\x45S\x10\x00\x12\x07\n\x03\x44\x45S\x10\x01\x12\x08\n\x04\x44\x45S3\x10\x02\x12\x08\n\x04NONE\x10\x03')
+  serialized_pb='\n\x10messageBuf.proto\x12\nSensorDemo\"\xfc\x03\n\x07Message\x12:\n\x04type\x18\x01 \x02(\x0e\x32\x1f.SensorDemo.Message.MessageType:\x0bSENSOR_DATA\x12\x42\n\x0c\x65ncAlgorithm\x18\x02 \x02(\x0e\x32\'.SensorDemo.Message.MessageEncAlgorithm:\x03\x41\x45S\x12G\n\x0cibeAlgorithm\x18\x03 \x02(\x0e\x32\'.SensorDemo.Message.MessageIbeAlgorithm:\x08WATERS09\x12$\n\x1cidentityBasedMasterPublicKey\x18\x04 \x01(\t\x12!\n\x19identityBasedEncryptedKey\x18\x05 \x01(\t\x12\x18\n\x10\x65ncryptedMessage\x18\x06 \x01(\t\x12\r\n\x05nonce\x18\x07 \x02(\t\x12\x11\n\ttimestamp\x18\x08 \x02(\x05\"3\n\x0bMessageType\x12\x08\n\x04INIT\x10\x00\x12\x0f\n\x0bSENSOR_DATA\x10\x01\x12\t\n\x05OTHER\x10\x02\";\n\x13MessageEncAlgorithm\x12\x07\n\x03\x41\x45S\x10\x00\x12\x07\n\x03\x44\x45S\x10\x01\x12\x08\n\x04\x44\x45S3\x10\x02\x12\x08\n\x04NONE\x10\x03\"1\n\x13MessageIbeAlgorithm\x12\x0c\n\x08WATERS05\x10\x00\x12\x0c\n\x08WATERS09\x10\x01')
 
 
 
@@ -38,13 +38,13 @@ _MESSAGE_MESSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=305,
-  serialized_end=356,
+  serialized_start=378,
+  serialized_end=429,
 )
 
-_MESSAGE_MESSAGEENCRYPTION = _descriptor.EnumDescriptor(
-  name='MessageEncryption',
-  full_name='SensorDemo.Message.MessageEncryption',
+_MESSAGE_MESSAGEENCALGORITHM = _descriptor.EnumDescriptor(
+  name='MessageEncAlgorithm',
+  full_name='SensorDemo.Message.MessageEncAlgorithm',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -67,8 +67,29 @@ _MESSAGE_MESSAGEENCRYPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=358,
-  serialized_end=415,
+  serialized_start=431,
+  serialized_end=490,
+)
+
+_MESSAGE_MESSAGEIBEALGORITHM = _descriptor.EnumDescriptor(
+  name='MessageIbeAlgorithm',
+  full_name='SensorDemo.Message.MessageIbeAlgorithm',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='WATERS05', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='WATERS09', index=1, number=1,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=492,
+  serialized_end=541,
 )
 
 
@@ -87,43 +108,50 @@ _MESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='encryptionType', full_name='SensorDemo.Message.encryptionType', index=1,
+      name='encAlgorithm', full_name='SensorDemo.Message.encAlgorithm', index=1,
       number=2, type=14, cpp_type=8, label=2,
       has_default_value=True, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='identityBasedMasterPublicKey', full_name='SensorDemo.Message.identityBasedMasterPublicKey', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=unicode("", "utf-8"),
+      name='ibeAlgorithm', full_name='SensorDemo.Message.ibeAlgorithm', index=2,
+      number=3, type=14, cpp_type=8, label=2,
+      has_default_value=True, default_value=1,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='identityBasedEncryptedKey', full_name='SensorDemo.Message.identityBasedEncryptedKey', index=3,
+      name='identityBasedMasterPublicKey', full_name='SensorDemo.Message.identityBasedMasterPublicKey', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='encryptedMessage', full_name='SensorDemo.Message.encryptedMessage', index=4,
+      name='identityBasedEncryptedKey', full_name='SensorDemo.Message.identityBasedEncryptedKey', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='nonce', full_name='SensorDemo.Message.nonce', index=5,
-      number=6, type=9, cpp_type=9, label=2,
+      name='encryptedMessage', full_name='SensorDemo.Message.encryptedMessage', index=5,
+      number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='SensorDemo.Message.timestamp', index=6,
-      number=7, type=5, cpp_type=1, label=2,
+      name='nonce', full_name='SensorDemo.Message.nonce', index=6,
+      number=7, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='SensorDemo.Message.timestamp', index=7,
+      number=8, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -134,19 +162,22 @@ _MESSAGE = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
     _MESSAGE_MESSAGETYPE,
-    _MESSAGE_MESSAGEENCRYPTION,
+    _MESSAGE_MESSAGEENCALGORITHM,
+    _MESSAGE_MESSAGEIBEALGORITHM,
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
   serialized_start=33,
-  serialized_end=415,
+  serialized_end=541,
 )
 
 _MESSAGE.fields_by_name['type'].enum_type = _MESSAGE_MESSAGETYPE
-_MESSAGE.fields_by_name['encryptionType'].enum_type = _MESSAGE_MESSAGEENCRYPTION
+_MESSAGE.fields_by_name['encAlgorithm'].enum_type = _MESSAGE_MESSAGEENCALGORITHM
+_MESSAGE.fields_by_name['ibeAlgorithm'].enum_type = _MESSAGE_MESSAGEIBEALGORITHM
 _MESSAGE_MESSAGETYPE.containing_type = _MESSAGE;
-_MESSAGE_MESSAGEENCRYPTION.containing_type = _MESSAGE;
+_MESSAGE_MESSAGEENCALGORITHM.containing_type = _MESSAGE;
+_MESSAGE_MESSAGEIBEALGORITHM.containing_type = _MESSAGE;
 DESCRIPTOR.message_types_by_name['Message'] = _MESSAGE
 
 class Message(_message.Message):

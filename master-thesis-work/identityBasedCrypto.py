@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import ast
+import messageBuf_pb2
 
 from charm.core.engine.util import serializeObject, deserializeObject, objectToBytes, bytesToObject
 
@@ -18,6 +19,7 @@ class IbeWaters09(object):
     def __init__(self):
         self.group = PairingGroup('SS512')
         self.ibe = DSE09(self.group)
+        self.algorithm = messageBuf_pb2.Message.WATERS09
 
     def setup(self):
         return self.ibe.setup()
@@ -39,12 +41,15 @@ class IbeWaters09(object):
         key = self.ibe.decrypt(cipher, secret_key)
         return key
 
+
+"""Implementation of David Naccahe Identity Based Encryption"""
 class IbeWaters05(object):
 
     def __init__(self):
         self.group = PairingGroup('SS512')
         self.waters_hash = Waters(group)
         self.ibe = IBE_N04(self.group)
+        self.algorithm = messageBuf_pb2.Message.WATERS05
 
     def setup(self):
         return self.ibe.setup()
