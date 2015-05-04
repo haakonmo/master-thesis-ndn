@@ -15,5 +15,10 @@ Secure channel for private key exchange.
 
 \section{Sensor Application}
 
+\subsection{Sync}
+The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
+One drawback with the IDSync solution is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has reveiced the latest sync state available from the \gls{PKG}.
+Likewise when a receiver verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
+
 \subsection{Attacks}
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible denial of service attacks, suck as radio jamming and battery exhaustion. 
