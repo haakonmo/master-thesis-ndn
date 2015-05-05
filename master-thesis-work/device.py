@@ -187,6 +187,10 @@ class Device(object):
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
         self.keyChain.sign(data, self.certificateName)
+        # signature =  # subclass of signature.py
+        # data.setSignature(signature)
+        #
+        #
         encodedData = data.wireEncode()
 
         logging.info("Encrypting with ID: " + ID)
