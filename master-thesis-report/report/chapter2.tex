@@ -203,43 +203,17 @@ DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBened
 
 \section{Attacks}
 
-\subsection{Denial of Service attack}
-Paolo Gasti et al. identifies several \gls{DoS} attacks on \gls{NDN} in their paper about \gls{DoS} \& \gls{DDoS} in \gls{NDN} ~\cite{DBLP:conf/icccn/GastiTU013}. 
+Paolo Gasti et al. identifies several \gls{DoS} attacks on \gls{NDN} in their paper about \gls{DoS} \& \gls{DDoS} in \gls{NDN} ~\cite{DBLP:conf/icccn/GastiTU013}. Other works have been done related to \gls{DoS} in \gls{NDN}~\cite{DBLP:journals/ijcomsys/WangCZQZ14, DBLP:conf/ancs/SoNO13, DBLP:journals/corr/abs-1303-4823}
 
-
-modeling ddos~\cite{DBLP:journals/ijcomsys/WangCZQZ14}
-Summary:
-
-
-DDoS-resistant forwarding with hash tables~\cite{DBLP:conf/ancs/SoNO13}
-Summary:
-
-
-Mitigating Interest Flooding DDoS Attacks~\cite{DBLP:journals/corr/abs-1303-4823}
-Summary:
-
-\subsection{Cache attack}
-
-Lightweight Integrity Verification and Content Access Control for Named Data Networking~\cite{DBLP:journals/tifs/LiZZSF15}
-Summary:
-
-
-Network-Layer Trust in Named-Data Networking~\cite{DBLP:journals/ccr/GhaliTU14}
-Summary:
-
+In~\cite{DBLP:journals/tifs/LiZZSF15} Zhang et al. proposes an extension of the \gls{NDN} protocol for addressing the access problem of cached data in nodes.  
+The \gls{NDN} network is also potentially susceptible to content poisoning attacks which Ghali et al. addresses in~\cite{DBLP:journals/ccr/GhaliTU14}.
 
 \section{Related work}
-iSync~\cite{DBLP:conf/acmicn/FuAC14}
-Summary:
+Synchronization application over \gls{NDN} called iSync~\cite{DBLP:conf/acmicn/FuAC14}.
+A synchronization application build by the \gls{NDN} team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
 
+Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} proposes a solution for reliable retrieval of data from different wireless producers which can answer to the same Interest packet. This is highly applicable to a sensor network where you want to communicate with closest sensor, e.g. the light in \textit{this} room.
+In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate data aggregation in wireless sensor networks.
+Burke et al. addresses efficient and secure Sensing over \gls{NDN} in~\cite{DBLP:conf/nca/BurkeGNT14}
 
-Reliable retrieval of data from different wireless producers which can answer to the same Interest packet~\cite{DBLP:conf/acmicn/AmadeoCM14}
-Summary:
-
-
-Named data aggregation in wireless sensor networks~\cite{DBLP:conf/noms/AbidySLF14}
-Summary:
-
-
-Secure Sensing over Named Data Networking~\cite{DBLP:conf/nca/BurkeGNT14}
-Summary:
+There is done some research with \gls{IBC} in \gls{NDN}. In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Zhang et al. proposes a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
