@@ -8,6 +8,7 @@ from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
 from pyndn import Face
+from pyndn import MetaInfo
 from pyndn.key_locator import KeyLocator, KeyLocatorType
 from pyndn.security import KeyType
 from pyndn.security import KeyChain
@@ -26,10 +27,12 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
+        self.deviceName = Name(baseName).append("pkg")
+
         self.ibe_scheme = IbeWaters09()
         self.ibs_scheme = IbsWaters()
         (master_public_key, master_secret_key) = self.ibe_scheme.setup()
-        (signature_master_public_key, signature_master_secret_key) self.ibs_scheme.setup()
+        (signature_master_public_key, signature_master_secret_key) = self.ibs_scheme.setup()
 
         # KeyPair for Identity-Based Encryption
         self.master_public_key = master_public_key
@@ -38,6 +41,7 @@ class PublicKeyGenerator(object):
         # KeyPair for Identity-Based Signature
         self.signature_master_public_key = signature_master_public_key
         self.signature_master_secret_key = signature_master_secret_key
+        self.signature_private_key = self.ibs_scheme.extract(self.signature_master_public_key, self.signature_master_secret_key, self.deviceName.toUri())
 
         self.face = face
         self.keyChain = keyChain
@@ -48,7 +52,7 @@ class PublicKeyGenerator(object):
         logging.info("PKG: Register prefix " + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInitInterest, self.onRegisterFailed)
 
-        self.prefix = Name(baseName).append("pkg")
+        self.prefix = Name(self.deviceName)
         logging.info("PKG: Register prefix " + self.prefix.toUri())
         self.face.registerPrefix(self.prefix, self.onInterest, self.onRegisterFailed)
 
@@ -74,9 +78,9 @@ class PublicKeyGenerator(object):
         """
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
-            keyLocator = interest.getKeyLocator().getKeyName().toUri()
-            tempIbeAlgorithm = int(keyLocator.get(keyName.size()-1).toEscapedString())
-            ID = keyLocator.getPrefix(keyName.size()-2).toUri()
+            keyLocator = interest.getKeyLocator().getKeyName()
+            tempIbeAlgorithm = int(keyLocator.get(keyLocator.size()-1).toEscapedString())
+            ID = keyLocator.getPrefix(keyLocator.size()-1).toUri()
         
         # TODO: check the tempIbeAlgorithm for using right ibe_scheme
         logging.info("Extracting PrivateKeys for ID: " + ID)
@@ -97,17 +101,21 @@ class PublicKeyGenerator(object):
         
         encodedPrivateKey = objectToBytes(device_private_key, self.ibe_scheme.group)
         encodedSignaturePrivateKey = objectToBytes(device_signature_private_key, self.ibs_scheme.group)
-        keyDict = {'pk':encodedPrivateKey, 'spk':encodedSignaturePrivateKey}
-        encryptedMessage = a.encrypt(keyDict)
+        encryptedPK = a.encrypt(encodedPrivateKey)
+        encryptedSPK = a.encrypt(encodedSignaturePrivateKey)
+        keyDict = str({'pk':encryptedPK, 'spk':encryptedSPK})
+
+        # data = Data(keyName.getPrefix(keyName.size()-1))
 
         data = Data(interest.getName())
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
         message.identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
-        message.encryptedMessage = encryptedMessage
+        message.encryptedMessage = keyDict
         message.encAlgorithm = messageBuf_pb2.Message.AES
         message.ibeAlgorithm = self.ibe_scheme.algorithm
+        message.ibsAlgorithm = self.ibs_scheme.algorithm
         message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.INIT
@@ -117,11 +125,12 @@ class PublicKeyGenerator(object):
         content = message.SerializeToString()
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
+        #self.ibs_scheme.signData(self.signature_master_public_key, self.signature_private_key, self.deviceName, data)
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
         transport.send(encodedData.toBuffer())
-        logging.info("Sent Init Data with encrypted Device PrivateKey")
+        logging.info("Sent Init Data with encrypted Device PrivateKeys")
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         util.dumpInterest(interest)

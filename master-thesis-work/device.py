@@ -100,7 +100,7 @@ class Device(object):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
 
                 # Check if IBS algorithm is the same
-                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm)
+                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm):
                     logging.error("IBS algorithm doesnt match! Receiver: "+self.ibs_scheme.algorithm+", Sender: "+message.ibsAlgorithm)
 
                 #Compare signature_master_public_key
@@ -110,7 +110,7 @@ class Device(object):
                     logging.error("SignatureMasterPulicKey does not match!")
 
                 # Check if IBE algorithm is the same
-                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
                 
                 #Compare master_public_key
@@ -192,22 +192,19 @@ class Device(object):
         message.encryptedMessage = encryptedMessage
         message.encAlgorithm = messageBuf_pb2.Message.AES
         message.ibeAlgorithm = self.ibe_scheme.algorithm
+        message.ibsAlgorithm = self.ibs_scheme.algorithm
         message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.SENSOR_DATA
         
         content = message.SerializeToString()
         metaInfo = MetaInfo()
-        metaInfo.setFreshnessPeriod(30000) # 30 seconds
+        # metaInfo.setFreshnessPeriod(30000) # 30 seconds
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
 
         self.ibs_scheme.signData(self.signature_master_public_key, self.signature_private_key, self.deviceName, data)
         #self.keyChain.sign(data, self.certificateName)
-        # signature =  # subclass of signature.py
-        # data.setSignature(signature)
-        #
-        #
         encodedData = data.wireEncode()
 
         logging.info("Encrypting with ID: " + ID)
@@ -285,7 +282,8 @@ class Device(object):
 
         Device is now added to the PKG        
         """
-        self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        #util.dumpData(data)
         
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
@@ -295,12 +293,13 @@ class Device(object):
 
         if (message.type == messageBuf_pb2.Message.INIT):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
+                logging.info("Received Init message with AES encryption")
                 # Check if IBS algorithm is the same
-                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm)
+                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm):
                     logging.error("IBS algorithm doesnt match! Receiver: "+self.ibs_scheme.algorithm+", Sender: "+message.ibsAlgorithm)
 
                 # Check if IBE algorithm is the same
-                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
 
                 #Decrypt identityBasedEncrypedKey
@@ -309,11 +308,11 @@ class Device(object):
                 key = self.ibe_scheme.decryptKey(self.temp_master_public_key, self.temp_private_key, identityBasedEncryptedKey)
                 
                 #Decrypt encryptedMessage
+                keyDict = ast.literal_eval(message.encryptedMessage)
                 a = SymmetricCryptoAbstraction(extractor(key))
-                keyDict = a.decrypt(message.encryptedMessage)
                 # PrivateKeys
-                privateKeyEncoded           = keyDict['pk']
-                signaturePrivateKeyEncoded  = keyDict['spk']
+                privateKeyEncoded           = a.decrypt(keyDict['pk'])
+                signaturePrivateKeyEncoded  = a.decrypt(keyDict['spk'])
                 self.private_key            = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
                 self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
                 
