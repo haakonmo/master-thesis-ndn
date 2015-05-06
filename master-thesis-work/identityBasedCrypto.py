@@ -267,7 +267,7 @@ class IbsWaters09(object):
         else:
             onVerifyFailed(data)
 
-class Sha256WithIbsWaters09Signature(signature):
+class Sha256WithIbsWaters09Signature(Signature):
 
     """
     Create a new Sha256WithIbsWaters09Signature object, possibly copying values from

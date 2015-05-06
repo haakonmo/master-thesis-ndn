@@ -8,6 +8,7 @@ from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
 from pyndn import Face
+from pyndn import MetaInfo
 from pyndn.key_locator import KeyLocator, KeyLocatorType
 from pyndn.security import KeyType
 from pyndn.security import KeyChain
@@ -66,9 +67,9 @@ class PublicKeyGenerator(object):
         """
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
-            keyLocator = interest.getKeyLocator().getKeyName().toUri()
-            tempIbeAlgorithm = int(keyLocator.get(keyName.size()-1).toEscapedString())
-            ID = keyLocator.getPrefix(keyName.size()-2).toUri()
+            keyLocator = interest.getKeyLocator().getKeyName()#.toUri()
+            tempIbeAlgorithm = int(keyLocator.get(keyLocator.size()-1).toEscapedString())
+            ID = keyLocator.getPrefix(keyLocator.size()-1).toUri()
         
         # TODO: check the tempIbeAlgorithm for using right ibe_scheme
         logging.info("Extracting PrivateKey for ID: " + ID)

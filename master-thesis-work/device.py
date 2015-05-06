@@ -96,7 +96,7 @@ class Device(object):
         if (message.type == messageBuf_pb2.Message.SENSOR_DATA):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
                 # Check if IBE algorithm is the same
-                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
 
                 #Compare master_public_key
@@ -280,7 +280,7 @@ class Device(object):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
 
                 # Check if IBE algorithm is the same
-                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm)
+                if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
 
                 #Decrypt identityBasedEncrypedKey
@@ -291,7 +291,6 @@ class Device(object):
                 #Decrypt encryptedMessage
                 a = SymmetricCryptoAbstraction(extractor(key))
                 privateKeyEncoded = a.decrypt(message.encryptedMessage)
-
                 masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
                 self.private_key        = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
                 self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
