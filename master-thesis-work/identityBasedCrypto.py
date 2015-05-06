@@ -55,11 +55,12 @@ class IbeWaters09(object):
         key = self.ibe.decrypt(cipher, secret_key)
         return key
 
-class IbsWaters09(object):
+class IbsWaters(object):
 
     def __init__(self):
         self.group = PairingGroup('SS512')
         self.water = WatersSig(group)
+        self.algorithm = messageBuf_pb2.Message.WATERS
 
     def setup(self):
         return self.water.setup(5)
@@ -149,7 +150,7 @@ class IbsWaters09(object):
             return signature
 
     def makeSignatureByID(self, ID, digestAlgorithm):
-        signature = Sha256WithIbsWaters09Signature()
+        signature = Sha256WithIbsWatersSignature()
         digestAlgorithm[0] = DigestAlgorithm.SHA256
         signature.getKeyLocator().setType(KeyLocatorType.KEYNAME)
         signature.getKeyLocator().setKeyName(ID)
@@ -267,16 +268,16 @@ class IbsWaters09(object):
         else:
             onVerifyFailed(data)
 
-class Sha256WithIbsWaters09Signature(signature):
+class Sha256WithIbsWatersSignature(signature):
 
     """
-    Create a new Sha256WithIbsWaters09Signature object, possibly copying values from
+    Create a new Sha256WithIbsWatersSignature object, possibly copying values from
     another object.
 
-    :param value: (optional) If value is a Sha256WithIbsWaters09Signature, copy its
+    :param value: (optional) If value is a Sha256WithIbsWatersSignature, copy its
       values.  If value is omitted, the keyLocator is the default with
       unspecified values and the signature is unspecified.
-    :param value: Sha256WithIbsWaters09Signature
+    :param value: Sha256WithIbsWatersSignature
     """
     def __init__(self, value = None):
 
@@ -289,7 +290,7 @@ class Sha256WithIbsWaters09Signature(signature):
             self._signature = value._signature
         else:
             raise RuntimeError(
-              "Unrecognized type for Sha256WithIbsWaters09Signature constructor: " +
+              "Unrecognized type for Sha256WithIbsWatersSignature constructor: " +
               str(type(value)))
 
         self._changeCount = 0
@@ -298,12 +299,12 @@ class Sha256WithIbsWaters09Signature(signature):
 
     def clone(self):
         """
-        Create a new Sha256WithIbsWaters09Signature which is a copy of this signature.
+        Create a new Sha256WithIbsWatersSignature which is a copy of this signature.
 
         :return: A new object which is a copy of this object.
-        :rtype: Sha256WithIbsWaters09Signature
+        :rtype: Sha256WithIbsWatersSignature
         """
-        return Sha256WithIbsWaters09Signature(self)
+        return Sha256WithIbsWatersSignature(self)
 
     def getSignature(self):
         """

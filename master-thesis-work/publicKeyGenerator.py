@@ -21,16 +21,24 @@ from charm.core.engine.util import serializeObject, deserializeObject
 from charm.core.engine.util import objectToBytes, bytesToObject
 from charm.toolbox.symcrypto import SymmetricCryptoAbstraction
 from charm.core.math.pairing import hashPair as extractor
-from identityBasedCrypto import IbeWaters09
+from identityBasedCrypto import IbeWaters09, IbsWaters
 
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
         self.ibe_scheme = IbeWaters09()
+        self.ibs_scheme = IbsWaters()
         (master_public_key, master_secret_key) = self.ibe_scheme.setup()
+        (signature_master_public_key, signature_master_secret_key) self.ibs_scheme.setup()
 
+        # KeyPair for Identity-Based Encryption
         self.master_public_key = master_public_key
         self.master_secret_key = master_secret_key
+
+        # KeyPair for Identity-Based Signature
+        self.signature_master_public_key = signature_master_public_key
+        self.signature_master_secret_key = signature_master_secret_key
+
         self.face = face
         self.keyChain = keyChain
         self.certificateName = certificateName
@@ -71,8 +79,9 @@ class PublicKeyGenerator(object):
             ID = keyLocator.getPrefix(keyName.size()-2).toUri()
         
         # TODO: check the tempIbeAlgorithm for using right ibe_scheme
-        logging.info("Extracting PrivateKey for ID: " + ID)
+        logging.info("Extracting PrivateKeys for ID: " + ID)
         device_private_key = self.ibe_scheme.extract(self.master_public_key, self.master_secret_key, ID)
+        device_signature_private_key = self.ibs_scheme.extract(self.signature_master_public_key, self.signature_master_secret_key, ID)
 
         # Encrypt key with the device_master_public_key and ID
         keyName = interest.getName()
@@ -86,12 +95,15 @@ class PublicKeyGenerator(object):
         # Symmetric AES encryption of contentData
         a = SymmetricCryptoAbstraction(extractor(key))
         
-        encodedData = objectToBytes(device_private_key, self.ibe_scheme.group)
-        encryptedMessage = a.encrypt(encodedData)
+        encodedPrivateKey = objectToBytes(device_private_key, self.ibe_scheme.group)
+        encodedSignaturePrivateKey = objectToBytes(device_signature_private_key, self.ibs_scheme.group)
+        keyDict = {'pk':encodedPrivateKey, 'spk':encodedSignaturePrivateKey}
+        encryptedMessage = a.encrypt(keyDict)
 
         data = Data(interest.getName())
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
+        message.identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encAlgorithm = messageBuf_pb2.Message.AES
