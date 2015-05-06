@@ -15,8 +15,11 @@ Device code~\autoref{apx:device-code}
 Main code~\autoref{apx:main-code}
 
 \subsection{Packet Design}
-Initialization packets are limited to the structure in~\autoref{fig:init_interest-data}
-Sensor packets are limited to the structure in~\autoref{fig:sensor_interest-data}
+Initialization packets are limited to the structure in~\autoref{fig:init_interest-data}.
+
+Sensor packets are limited to the structure in~\autoref{fig:sensor_interest-data}.
+
+Data packets have a \textit{MAX_NDN_PACKET_SIZE} of 8800 bytes.
 \begin{description}
 	\item[Init Interest] - 
   The initialization Interest seen in~\autoref{fig:init_interest-data}

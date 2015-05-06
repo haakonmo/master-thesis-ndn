@@ -31,7 +31,9 @@ message Message {
   optional string identityBasedSignatureMasterPublicKey = 6;
   optional string identityBasedEncryptedKey = 7;
   optional string encryptedMessage = 8;
-  required string nonce = 9;
-  required int32 timestamp = 10;
+  optional string encryptedPK = 9;
+  optional string encryptedSPK = 10;
+  required string nonce = 11;
+  required int32 timestamp = 12;
 }
 

@@ -97,22 +97,27 @@ class PublicKeyGenerator(object):
         identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
 
         # Symmetric AES encryption of contentData
-        a = SymmetricCryptoAbstraction(extractor(key))
-        
         encodedPrivateKey = objectToBytes(device_private_key, self.ibe_scheme.group)
         encodedSignaturePrivateKey = objectToBytes(device_signature_private_key, self.ibs_scheme.group)
+        # logging.info(encodedPrivateKey)
+        # logging.info(encodedSignaturePrivateKey)
+
+        a = SymmetricCryptoAbstraction(extractor(key))
         encryptedPK = a.encrypt(encodedPrivateKey)
         encryptedSPK = a.encrypt(encodedSignaturePrivateKey)
-        keyDict = str({'pk':encryptedPK, 'spk':encryptedSPK})
+        # logging.info(encryptedPK)
+        # logging.info(encryptedSPK)
 
-        # data = Data(keyName.getPrefix(keyName.size()-1))
-
-        data = Data(interest.getName())
+        responseName = Name(interest.getName().getPrefix(interest.getName().size()-1))
+        logging.info("Interest Name: " + interest.getName().toUri())
+        logging.info("Response Name: " + responseName.toUri())
+        data = Data(responseName)
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
         message.identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
-        message.encryptedMessage = keyDict
+        message.encryptedPK = encryptedPK
+        message.encryptedSPK = encryptedSPK
         message.encAlgorithm = messageBuf_pb2.Message.AES
         message.ibeAlgorithm = self.ibe_scheme.algorithm
         message.ibsAlgorithm = self.ibs_scheme.algorithm
@@ -123,12 +128,14 @@ class PublicKeyGenerator(object):
         metaInfo = MetaInfo()
         metaInfo.setFreshnessPeriod(10000) # 10 seconds
         content = message.SerializeToString()
+
+        
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
-        #self.ibs_scheme.signData(self.signature_master_public_key, self.signature_private_key, self.deviceName, data)
+        self.ibs_scheme.signData(self.signature_master_public_key, self.signature_private_key, self.deviceName, data)
         self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
-
+        logging.info(len(encodedData))
         transport.send(encodedData.toBuffer())
         logging.info("Sent Init Data with encrypted Device PrivateKeys")
 

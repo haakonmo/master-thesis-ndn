@@ -61,7 +61,6 @@ class Device(object):
 
         interest = Interest(self.name)
         self.ibs_scheme.signInterest(self.signature_master_public_key, self.signature_private_key, self.deviceName, interest)
-        # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
         #interest.setMinSuffixComponents(3)
         # keyLocator = KeyLocator()
         # keyLocator.setType(KeyLocatorType.KEYNAME)
@@ -199,7 +198,7 @@ class Device(object):
         
         content = message.SerializeToString()
         metaInfo = MetaInfo()
-        # metaInfo.setFreshnessPeriod(30000) # 30 seconds
+        metaInfo.setFreshnessPeriod(30000) # 30 seconds
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
 
@@ -261,6 +260,7 @@ class Device(object):
         encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
         name = Name(self.baseName).append("pkg").append("initDevice").append(session).append(encodedTempMasterPublicKey)
         interest = Interest(name)
+        interest.setMinSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
         keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)))
@@ -293,7 +293,6 @@ class Device(object):
 
         if (message.type == messageBuf_pb2.Message.INIT):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
-                logging.info("Received Init message with AES encryption")
                 # Check if IBS algorithm is the same
                 if not (self.ibs_scheme.algorithm == message.ibsAlgorithm):
                     logging.error("IBS algorithm doesnt match! Receiver: "+self.ibs_scheme.algorithm+", Sender: "+message.ibsAlgorithm)
@@ -308,13 +307,13 @@ class Device(object):
                 key = self.ibe_scheme.decryptKey(self.temp_master_public_key, self.temp_private_key, identityBasedEncryptedKey)
                 
                 #Decrypt encryptedMessage
-                keyDict = ast.literal_eval(message.encryptedMessage)
-                a = SymmetricCryptoAbstraction(extractor(key))
                 # PrivateKeys
-                privateKeyEncoded           = a.decrypt(keyDict['pk'])
-                signaturePrivateKeyEncoded  = a.decrypt(keyDict['spk'])
+                a = SymmetricCryptoAbstraction(extractor(key))
+                privateKeyEncoded           = a.decrypt(message.encryptedPK)
+                # a = SymmetricCryptoAbstraction(extractor(key))
+                # signaturePrivateKeyEncoded  = a.decrypt(message.encryptedSPK)
                 self.private_key            = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
-                self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
+                # self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
                 
                 # SignatureMasterPublicKey
                 signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)
