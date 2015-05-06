@@ -10,6 +10,7 @@ from pyndn.util.common import Common
 from pyndn.util.blob import Blob
 from pyndn.encoding import WireFormat
 from pyndn.key_locator import KeyLocator, KeyLocatorType
+from pyndn.security.security_exception import SecurityException
 from pyndn.security.security_types import DigestAlgorithm
 from pyndn.signature import Signature
 
@@ -86,42 +87,185 @@ class IbsWaters09(object):
             wireFormat = WireFormat.getDefaultWireFormat()
 
         digestAlgorithm = [0]
-        signature = Sha256WithIbsWaters09Signature()
-        digestAlgorithm[0] = DigestAlgorithm.SHA256
-        signature.getKeyLocator().setType(KeyLocatorType.KEYNAME)
-        signature.getKeyLocator().setKeyName(ID)
+        signature = makeSignatureByID(ID, digestAlgorithm)
 
         # Append the encoded SignatureInfo.
         interest.getName().append(wireFormat.encodeSignatureInfo(signature))
 
+        # Append an empty signature so that the "signedPortion" is correct.
+        interest.getName().append(Name.Component())
         # Encode once to get the signed portion, and sign.
         encoding = interest.wireEncode(wireFormat)
 
-
-        signature.setSignature(self._privateKeyStorage.sign
-          (encoding.toSignedBuffer(),
-           self.certificateNameToPublicKeyName(certificateName),
-           digestAlgorithm[0]))
+        ibSignature = self.sign(encoding.toSignedBuffer(), secret_key, ID, digestAlgorithm[0])
+        signature.setSignature(ibSignature)
 
         # Remove the empty signature and append the real one.
         interest.setName(interest.getName().getPrefix(-1).append(
           wireFormat.encodeSignatureValue(signature)))
 
-        signature = self.water.sign(master_public_key, secret_key, message)
+    def signData(self, master_public_key, secret_key, ID, target, wireFormat = None):
+        """
+        Sign the target based on the secret_key. If it is a Data object,
+        set its signature. If it is an array, return a signature object.
+
+        :param master_public_key
+        :param secret_key
+        :param ID
+        :param target: If this is a Data object, wire encode for signing,
+          update its signature and key locator field and wireEncoding. If it is
+          an array, sign it and return a Signature object.
+        :param wireFormat: (optional) The WireFormat for calling encodeData, or
+          WireFormat.getDefaultWireFormat() if omitted.
+        :type wireFormat: A subclass of WireFormat
+        :return: The Signature object (only if the target is an array).
+        :rtype: An object of a subclass of Signature
+        """
+        if wireFormat == None:
+            # Don't use a default argument since getDefaultWireFormat can change.
+            wireFormat = WireFormat.getDefaultWireFormat()
+
+        if isinstance(target, Data):
+            data = target
+            digestAlgorithm = [0]
+            signature = makeSignatureByID(ID, digestAlgorithm)
+
+            data.setSignature(signature)
+            # Encode once to get the signed portion.
+            encoding = data.wireEncode(wireFormat)
+
+            ibSignature = self.sign(encoding.toSignedBuffer(), secret_key, ID, digestAlgorithm[0])
+            data.getSignature().setSignature(ibSignature)
+
+            # Encode again to include the signature.
+            data.wireEncode(wireFormat)
+        else:
+            digestAlgorithm = [0]
+            signature = makeSignatureByID(ID, digestAlgorithm)
+
+            ibSignature = self.sign(target, secret_key, ID, digestAlgorithm[0])
+            signature.setSignature(ibSignature)
+
+            return signature
+
+    def makeSignatureByID(self, ID, digestAlgorithm):
+        signature = Sha256WithIbsWaters09Signature()
+        digestAlgorithm[0] = DigestAlgorithm.SHA256
+        signature.getKeyLocator().setType(KeyLocatorType.KEYNAME)
+        signature.getKeyLocator().setKeyName(ID)
         return signature
 
-    def signData(self, master_public_key, secret_key, data, wireFormat = None):
+    def sign(self, data, secret_key, ID, digestAlgorithm = DigestAlgorithm.SHA256):
+        """
+        Use the secret key for ID and sign the data, returning a
+        signature Blob.
 
-        signature = self.water.sign(master_public_key, secret_key, message)
-        return signature
+        :param data: Pointer the input byte buffer to sign.
+        :type data: An array type with int elements
+        :param secret_key: 
+        :param Name ID: The Name of the signing key.
+        :param digestAlgorithm: (optional) the digest algorithm. If omitted,
+          use DigestAlgorithm.SHA256.
+        :type digestAlgorithm: int from DigestAlgorithm
+        :return: The signature, or an isNull() Blob pointer if signing fails.
+        :rtype: Blob
+        """
 
-    def verifyInterest(self, master_public_key, ID, interest, signature):
-        verified = self.water.verify(master_public_key, ID, message, signature)
-        return verified
+        if secret_key == None:
+            raise SecurityException("secret key not found")
 
-    def verifyData(self, master_public_key, ID, data, signature):
-        verified = self.water.verify(master_public_key, ID, message, signature)
-        return verified
+        dataStr = Blob(data, False).toRawStr()
+        # water.sign() will hash with SHA1, hence no need for digestAlgorithm
+        signature = self.water.sign(master_public_key, secret_key, dataStr)
+        #signature = self.water.sign(master_public_key, secret_key, SHA256.new(dataStr))
+        # base64 signature
+        signature = objectToBytes(signature)
+        logger.info("Successfully signed packet: " + signature)
+
+        if signature == None:
+            raise SecurityException("Signature is NULL!")
+        return Blob(bytearray(signature), False)
+
+    def verifyInterest(self, master_public_key, interest, onVerified, onVerifyFailed, stepCount = 0, wireFormat = None):
+        """
+        Check the signature on the signed interest and call either onVerify or
+        onVerifyFailed. We use callback functions because verify may fetch
+        information to check the signature.
+
+        :param Interest interest: The interest with the signature to check.
+        :param onVerified: If the signature is verified, this calls
+          onVerified(interest).
+        :type onVerified: function object
+        :param onVerifyFailed: If the signature check fails or can't find the
+          public key, this calls onVerifyFailed(interest).
+        :type onVerifyFailed: function object
+        :param int stepCount: (optional) The number of verification steps that
+          have been done. If omitted, use 0.
+        """
+        ID = ""
+        if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
+            ID = interest.getKeyLocator().getKeyName().toUri()
+        else:
+            raise SecurityException("Keylocator is not of keyType KEYNAME!")
+
+        keyName = interest.getName()
+        session = keyName.get(keyName.size()-2).toEscapedString()
+        signature = keyName.get(keyName.size()-1).toEscapedString()
+        signature = bytesToObject(signature)
+        logger.info("Signature: " + signature)
+
+        if wireFormat == None:
+            # Don't use a default argument since getDefaultWireFormat can change.
+            wireFormat = WireFormat.getDefaultWireFormat()
+
+        encoding = interest.wireEncode(wireFormat)
+        dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
+        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        if verified:
+            onVerified(interest)
+        else:
+            onVerifyFailed(interest)
+
+    def verifyData(self, master_public_key, data, onVerified, onVerifyFailed, stepCount = 0, wireFormat = None):
+        """
+        Check the signature on the Data object and call either onVerify or
+        onVerifyFailed. We use callback functions because verify may fetch
+        information to check the signature.
+
+        :param Data data: The Data object with the signature to check.
+        :param onVerified: If the signature is verified, this calls
+          onVerified(data).
+        :type onVerified: function object
+        :param onVerifyFailed: If the signature check fails or can't find the
+          public key, this calls onVerifyFailed(data).
+        :type onVerifyFailed: function object
+        :param int stepCount: (optional) The number of verification steps that
+          have been done. If omitted, use 0.
+        """
+        ID = ""
+        if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
+            ID = interest.getKeyLocator().getKeyName().toUri()
+        else:
+            raise SecurityException("Keylocator is not of keyType KEYNAME!")
+
+        keyName = data.getName()
+        session = keyName.get(keyName.size()-1).toEscapedString()
+        signature = signature.getSignature()
+        signature = Blob(signature, False).toRawStr()
+        signature = bytesToObject(signature)
+        logger.info("Signature: " + signature)
+
+        if wireFormat == None:
+            # Don't use a default argument since getDefaultWireFormat can change.
+            wireFormat = WireFormat.getDefaultWireFormat()
+
+        encoding = data.wireEncode(wireFormat)
+        dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
+        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        if verified:
+            onVerified(data)
+        else:
+            onVerifyFailed(data)
 
 class Sha256WithIbsWaters09Signature(signature):
 

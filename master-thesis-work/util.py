@@ -33,6 +33,7 @@ from pyndn.security.identity import MemoryIdentityStorage
 from pyndn.security.identity import MemoryPrivateKeyStorage
 from pyndn.security.policy import SelfVerifyPolicyManager
 from pyndn.util import Blob
+from identityBasedCrypto import Sha256WithIbsWaters09Signature
 
 def dump(*list):
     result = ""
@@ -68,6 +69,10 @@ def dumpData(data):
         keyLocator = signature.getKeyLocator()
     elif type(signature) is DigestSha256Signature:
         dump("DigestSha256 signature.signature:",
+             "<none>" if signature.getSignature().size() == 0
+                      else signature.getSignature().toHex())
+    elif type(signature) is Sha256WithIbsWaters09Signature:
+        dump("Sha256WithIbsWaters09Signature signature.signature:",
              "<none>" if signature.getSignature().size() == 0
                       else signature.getSignature().toHex())
     if keyLocator != None:
