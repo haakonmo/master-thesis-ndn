@@ -79,18 +79,20 @@ class PublicKeyGenerator(object):
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             keyLocator = interest.getKeyLocator().getKeyName()
-            tempIbeAlgorithm = int(keyLocator.get(keyLocator.size()-1).toEscapedString())
-            ID = keyLocator.getPrefix(keyLocator.size()-1).toUri()
+            tempIbeAlgorithm = int(keyLocator.get(keyLocator.size()-2).toEscapedString())
+            tempMasterPublicKeyEncoded = keyLocator.get(keyLocator.size()-1).toEscapedString()
+            logging.info(tempMasterPublicKeyEncoded)
+            ID = keyLocator.getPrefix(keyLocator.size()-2).toUri()
         
         # TODO: check the tempIbeAlgorithm for using right ibe_scheme
         logging.info("Extracting PrivateKeys for ID: " + ID)
         device_private_key = self.ibe_scheme.extract(self.master_public_key, self.master_secret_key, ID)
         device_signature_private_key = self.ibs_scheme.extract(self.signature_master_public_key, self.signature_master_secret_key, ID)
 
-        # Encrypt key with the device_master_public_key and ID
+        # Encrypt key with the device's temp_master_public_key and ID
         keyName = interest.getName()
         session = keyName.get(keyName.size()-2).toEscapedString()
-        tempMasterPublicKeyEncoded = keyName.get(keyName.size()-1).toEscapedString()
+        
         tempMasterPublicKey = bytesToObject(tempMasterPublicKeyEncoded, self.ibe_scheme.group)
         key = self.ibe_scheme.getRandomKey()
         identityBasedEncryptedKey = self.ibe_scheme.encryptKey(tempMasterPublicKey, ID, key)
@@ -108,8 +110,7 @@ class PublicKeyGenerator(object):
         # logging.info(encryptedPK)
         # logging.info(encryptedSPK)
 
-        responseName = Name(interest.getName().getPrefix(interest.getName().size()-1))
-        logging.info("Interest Name: " + interest.getName().toUri())
+        responseName = Name(interest.getName())
         logging.info("Response Name: " + responseName.toUri())
         data = Data(responseName)
         message = messageBuf_pb2.Message()

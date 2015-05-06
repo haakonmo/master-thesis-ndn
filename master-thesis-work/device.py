@@ -180,13 +180,15 @@ class Device(object):
         identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
         # Master Public Key
         identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
-
+        # Signature Master Public Key
+        identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
         # Symmetric AES encryption of contentData
         a = SymmetricCryptoAbstraction(extractor(self.key))
         encryptedMessage = a.encrypt(contentData)
 
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = identityBasedMasterPublicKey
+        message.identityBasedSignatureMasterPublicKey = identityBasedSignatureMasterPublicKey
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encAlgorithm = messageBuf_pb2.Message.AES
@@ -258,12 +260,12 @@ class Device(object):
 
         #TODO append tempMpk to name , as base64 encoded
         encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
-        name = Name(self.baseName).append("pkg").append("initDevice").append(session).append(encodedTempMasterPublicKey)
+        name = Name(self.baseName).append("pkg").append("initDevice").append(session)
         interest = Interest(name)
-        interest.setMinSuffixComponents(6)
+        # interest.setMinSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)))
+        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)).append(encodedTempMasterPublicKey))
         interest.setKeyLocator(keyLocator)
 
         logging.info("Expressing interest name: " + name.toUri())
@@ -310,10 +312,9 @@ class Device(object):
                 # PrivateKeys
                 a = SymmetricCryptoAbstraction(extractor(key))
                 privateKeyEncoded           = a.decrypt(message.encryptedPK)
-                # a = SymmetricCryptoAbstraction(extractor(key))
-                # signaturePrivateKeyEncoded  = a.decrypt(message.encryptedSPK)
+                signaturePrivateKeyEncoded  = a.decrypt(message.encryptedSPK)
                 self.private_key            = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
-                # self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
+                self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
                 
                 # SignatureMasterPublicKey
                 signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)

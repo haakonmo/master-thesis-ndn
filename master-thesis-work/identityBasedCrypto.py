@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import ast
+import util
 import logging
 import messageBuf_pb2
 
@@ -61,7 +62,7 @@ class IbsWaters(object):
 
     def __init__(self):
         self.group = PairingGroup('SS512')
-        self.water = WatersSig(self.group)
+        self.water = WatersSig(self.group, 5)
         self.algorithm = messageBuf_pb2.Message.WATERS
 
     def setup(self):
@@ -106,6 +107,11 @@ class IbsWaters(object):
         # Remove the empty signature and append the real one.
         interest.setName(interest.getName().getPrefix(-1).append(
           wireFormat.encodeSignatureValue(signature)))
+
+        keyLocator = KeyLocator()
+        keyLocator.setType(KeyLocatorType.KEYNAME)
+        keyLocator.setKeyName(ID)
+        interest.setKeyLocator(keyLocator)
 
     def signData(self, master_public_key, secret_key, ID, target, wireFormat = None):
         """
@@ -205,6 +211,10 @@ class IbsWaters(object):
         :param int stepCount: (optional) The number of verification steps that
           have been done. If omitted, use 0.
         """
+        if wireFormat == None:
+            # Don't use a default argument since getDefaultWireFormat can change.
+            wireFormat = WireFormat.getDefaultWireFormat()
+
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
@@ -212,18 +222,16 @@ class IbsWaters(object):
             raise SecurityException("Keylocator is not of keyType KEYNAME!")
 
         keyName = interest.getName()
-        session = keyName.get(keyName.size()-2).toEscapedString()
-        signature = keyName.get(keyName.size()-1).toEscapedString()
-        signature = bytesToObject(signature, self.group)
-        logging.info("Signature: " + signature)
-
-        if wireFormat == None:
-            # Don't use a default argument since getDefaultWireFormat can change.
-            wireFormat = WireFormat.getDefaultWireFormat()
+        session = keyName.get(keyName.size()-3).toEscapedString()
+        signature = wireFormat.decodeSignatureInfoAndValue(
+                    interest.getName().get(-2).getValue().buf(),
+                    interest.getName().get(-1).getValue().buf())
+        # logging.info(signature.getSignature())
+        ib_signature = bytesToObject(str(signature.getSignature()), self.group)
 
         encoding = interest.wireEncode(wireFormat)
         dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
-        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        verified = self.water.verify(master_public_key, ID, dataStr, ib_signature)
         if verified:
             onVerified(interest)
         else:
@@ -245,26 +253,24 @@ class IbsWaters(object):
         :param int stepCount: (optional) The number of verification steps that
           have been done. If omitted, use 0.
         """
+        keyName = data.getName()
+        session = keyName.get(keyName.size()-3).toEscapedString()
+        signature = data.getSignature()
+        keyLocator = signature.getKeyLocator()
         ID = ""
-        if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
-            ID = interest.getKeyLocator().getKeyName().toUri()
+        if keyLocator.getType() == KeyLocatorType.KEYNAME:
+            ID = keyLocator.getKeyName().toUri()
         else:
             raise SecurityException("Keylocator is not of keyType KEYNAME!")
 
-        keyName = data.getName()
-        session = keyName.get(keyName.size()-1).toEscapedString()
-        signature = signature.getSignature()
-        signature = Blob(signature, False).toRawStr()
-        signature = bytesToObject(signature, self.group)
-        loggeing.info("Signature: " + signature)
-
+        ib_signature = bytesToObject(str(signature.getSignature()), self.group)
         if wireFormat == None:
             # Don't use a default argument since getDefaultWireFormat can change.
             wireFormat = WireFormat.getDefaultWireFormat()
 
         encoding = data.wireEncode(wireFormat)
         dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
-        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        verified = self.water.verify(master_public_key, ID, dataStr, ib_signature)
         if verified:
             onVerified(data)
         else:
