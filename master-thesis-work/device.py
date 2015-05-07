@@ -29,12 +29,13 @@ from charm.core.engine.util import serializeObject, deserializeObject
 from charm.core.engine.util import objectToBytes, bytesToObject
 from charm.toolbox.symcrypto import SymmetricCryptoAbstraction
 from charm.core.math.pairing import hashPair as extractor
-from identityBasedCrypto import IbeWaters09
+from identityBasedCrypto import IbeWaters09, IbsWaters
 
 class Device(object):
 
     def __init__(self, face, keyChain, certificateName, baseName, deviceName):
         self.ibe_scheme = IbeWaters09()
+        self.ibs_scheme = IbsWaters()
 
         self.face = face
         self.keyChain = keyChain
@@ -59,14 +60,14 @@ class Device(object):
         self.name = Name(self.baseName).append("device2").append("sensorPull").append(session)
 
         interest = Interest(self.name)
-        # Set the minSuffxComponents to prevent any other application to answer, i.e. /ndn/no/ntnu
+        self.ibs_scheme.signInterest(self.signature_master_public_key, self.signature_private_key, self.deviceName, interest)
         #interest.setMinSuffixComponents(3)
-        keyLocator = KeyLocator()
-        keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(self.deviceName)
-        interest.setKeyLocator(keyLocator)
+        # keyLocator = KeyLocator()
+        # keyLocator.setType(KeyLocatorType.KEYNAME)
+        # keyLocator.setKeyName(self.deviceName)
+        # interest.setKeyLocator(keyLocator)
 
-        self.keyChain.sign(interest, self.certificateName)
+        # self.keyChain.sign(interest, self.certificateName)
         interest.wireEncode()
 
         logging.info("Expressing interest name: " + interest.toUri())
@@ -85,8 +86,9 @@ class Device(object):
 
         Sensor Data reveiced! 
         """
-        self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
-        
+        #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        self.ibs_scheme.verifyData(self.signature_master_public_key, data, self.onVerifiedData, self.onVerifyDataFailed)
+
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
 
@@ -95,15 +97,26 @@ class Device(object):
 
         if (message.type == messageBuf_pb2.Message.SENSOR_DATA):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
+
+                # Check if IBS algorithm is the same
+                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm):
+                    logging.error("IBS algorithm doesnt match! Receiver: "+self.ibs_scheme.algorithm+", Sender: "+message.ibsAlgorithm)
+
+                #Compare signature_master_public_key
+                signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)
+                messageSignatureMPK = deserializeObject(signatureMasterPublicKeyDict, self.ibs_scheme.group)
+                if not (self.signature_master_public_key == messageSignatureMPK):
+                    logging.error("SignatureMasterPulicKey does not match!")
+
                 # Check if IBE algorithm is the same
                 if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
-
+                
                 #Compare master_public_key
                 masterPublicKeyDict = ast.literal_eval(message.identityBasedMasterPublicKey)
                 messageMPK = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
                 if not (self.master_public_key == messageMPK):
-                    logging.error("MasterPulicKey doesnt match!")
+                    logging.error("MasterPulicKey does not match!")
 
                 #Decrypt identityBasedEncrypedKey
                 identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
@@ -147,7 +160,8 @@ class Device(object):
         Sign the Data and send.
         """
         #util.dumpInterest(interest)
-        self.keyChain.verifyInterest(interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
+        #self.keyChain.verifyInterest(interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
+        self.ibs_scheme.verifyInterest(self.signature_master_public_key, interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
 
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
@@ -166,17 +180,20 @@ class Device(object):
         identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
         # Master Public Key
         identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
-
+        # Signature Master Public Key
+        identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
         # Symmetric AES encryption of contentData
         a = SymmetricCryptoAbstraction(extractor(self.key))
         encryptedMessage = a.encrypt(contentData)
 
         message = messageBuf_pb2.Message()
         message.identityBasedMasterPublicKey = identityBasedMasterPublicKey
+        message.identityBasedSignatureMasterPublicKey = identityBasedSignatureMasterPublicKey
         message.identityBasedEncryptedKey = identityBasedEncryptedKey
         message.encryptedMessage = encryptedMessage
         message.encAlgorithm = messageBuf_pb2.Message.AES
         message.ibeAlgorithm = self.ibe_scheme.algorithm
+        message.ibsAlgorithm = self.ibs_scheme.algorithm
         message.nonce = session
         message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
         message.type = messageBuf_pb2.Message.SENSOR_DATA
@@ -186,11 +203,9 @@ class Device(object):
         metaInfo.setFreshnessPeriod(30000) # 30 seconds
         data.setContent(Blob(content))
         data.setMetaInfo(metaInfo)
-        self.keyChain.sign(data, self.certificateName)
-        # signature =  # subclass of signature.py
-        # data.setSignature(signature)
-        #
-        #
+
+        self.ibs_scheme.signData(self.signature_master_public_key, self.signature_private_key, self.deviceName, data)
+        #self.keyChain.sign(data, self.certificateName)
         encodedData = data.wireEncode()
 
         logging.info("Encrypting with ID: " + ID)
@@ -245,11 +260,12 @@ class Device(object):
 
         #TODO append tempMpk to name , as base64 encoded
         encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
-        name = Name(self.baseName).append("pkg").append("initDevice").append(session).append(encodedTempMasterPublicKey)
+        name = Name(self.baseName).append("pkg").append("initDevice").append(session)
         interest = Interest(name)
+        # interest.setMinSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)))
+        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)).append(encodedTempMasterPublicKey))
         interest.setKeyLocator(keyLocator)
 
         logging.info("Expressing interest name: " + name.toUri())
@@ -268,7 +284,8 @@ class Device(object):
 
         Device is now added to the PKG        
         """
-        self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
+        #util.dumpData(data)
         
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
@@ -278,6 +295,9 @@ class Device(object):
 
         if (message.type == messageBuf_pb2.Message.INIT):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
+                # Check if IBS algorithm is the same
+                if not (self.ibs_scheme.algorithm == message.ibsAlgorithm):
+                    logging.error("IBS algorithm doesnt match! Receiver: "+self.ibs_scheme.algorithm+", Sender: "+message.ibsAlgorithm)
 
                 # Check if IBE algorithm is the same
                 if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
@@ -289,9 +309,19 @@ class Device(object):
                 key = self.ibe_scheme.decryptKey(self.temp_master_public_key, self.temp_private_key, identityBasedEncryptedKey)
                 
                 #Decrypt encryptedMessage
+                # PrivateKeys
                 a = SymmetricCryptoAbstraction(extractor(key))
-                privateKeyEncoded = a.decrypt(message.encryptedMessage)
+                privateKeyEncoded           = a.decrypt(message.encryptedPK)
+                signaturePrivateKeyEncoded  = a.decrypt(message.encryptedSPK)
+                self.private_key            = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
+                self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
+                
+                # SignatureMasterPublicKey
+                signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)
+                self.signature_master_public_key = deserializeObject(signatureMasterPublicKeyDict, self.ibs_scheme.group)
+
+                # MasterPublicKey
                 masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
-                self.private_key        = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
                 self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
-                logging.info("Initialization success! PrivateKey and MasterPublicKey received.")
+
+                logging.info("Initialization success! PrivateKeys, MasterPublicKeys received.")

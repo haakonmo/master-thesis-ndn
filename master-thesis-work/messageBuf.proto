@@ -19,13 +19,21 @@ message Message {
     WATERS09 = 1;
   }
 
+  enum MessageIbsAlgorithm {
+    WATERS = 0;
+  }
+
   required MessageType type = 1 [default = SENSOR_DATA];
   required MessageEncAlgorithm encAlgorithm = 2 [default = AES];
   required MessageIbeAlgorithm ibeAlgorithm = 3 [default = WATERS09];
-  optional string identityBasedMasterPublicKey = 4;
-  optional string identityBasedEncryptedKey = 5;
-  optional string encryptedMessage = 6;
-  required string nonce = 7;
-  required int32 timestamp = 8;
+  required MessageIbsAlgorithm ibsAlgorithm = 4 [default = WATERS];
+  required string identityBasedMasterPublicKey = 5;
+  optional string identityBasedSignatureMasterPublicKey = 6;
+  optional string identityBasedEncryptedKey = 7;
+  optional string encryptedMessage = 8;
+  optional string encryptedPK = 9;
+  optional string encryptedSPK = 10;
+  required string nonce = 11;
+  required int32 timestamp = 12;
 }
 

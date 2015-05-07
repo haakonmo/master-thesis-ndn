@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import ast
+import util
+import logging
 import messageBuf_pb2
 
 from Crypto.Hash import SHA256
@@ -12,6 +14,7 @@ from pyndn.encoding import WireFormat
 from pyndn.key_locator import KeyLocator, KeyLocatorType
 from pyndn.security.security_exception import SecurityException
 from pyndn.security.security_types import DigestAlgorithm
+from pyndn.sha256_with_ibswaters_signature import Sha256WithIbsWatersSignature
 from pyndn.signature import Signature
 
 from charm.core.engine.util import serializeObject, deserializeObject, objectToBytes, bytesToObject
@@ -55,11 +58,12 @@ class IbeWaters09(object):
         key = self.ibe.decrypt(cipher, secret_key)
         return key
 
-class IbsWaters09(object):
+class IbsWaters(object):
 
     def __init__(self):
         self.group = PairingGroup('SS512')
-        self.water = WatersSig(group)
+        self.water = WatersSig(self.group, 5)
+        self.algorithm = messageBuf_pb2.Message.WATERS
 
     def setup(self):
         return self.water.setup(5)
@@ -87,7 +91,7 @@ class IbsWaters09(object):
             wireFormat = WireFormat.getDefaultWireFormat()
 
         digestAlgorithm = [0]
-        signature = makeSignatureByID(ID, digestAlgorithm)
+        signature = self.makeSignatureByID(ID, digestAlgorithm)
 
         # Append the encoded SignatureInfo.
         interest.getName().append(wireFormat.encodeSignatureInfo(signature))
@@ -97,12 +101,17 @@ class IbsWaters09(object):
         # Encode once to get the signed portion, and sign.
         encoding = interest.wireEncode(wireFormat)
 
-        ibSignature = self.sign(encoding.toSignedBuffer(), secret_key, ID, digestAlgorithm[0])
+        ibSignature = self.sign(encoding.toSignedBuffer(), master_public_key, secret_key, ID, digestAlgorithm[0])
         signature.setSignature(ibSignature)
 
         # Remove the empty signature and append the real one.
         interest.setName(interest.getName().getPrefix(-1).append(
           wireFormat.encodeSignatureValue(signature)))
+
+        keyLocator = KeyLocator()
+        keyLocator.setType(KeyLocatorType.KEYNAME)
+        keyLocator.setKeyName(ID)
+        interest.setKeyLocator(keyLocator)
 
     def signData(self, master_public_key, secret_key, ID, target, wireFormat = None):
         """
@@ -128,13 +137,13 @@ class IbsWaters09(object):
         if isinstance(target, Data):
             data = target
             digestAlgorithm = [0]
-            signature = makeSignatureByID(ID, digestAlgorithm)
+            signature = self.makeSignatureByID(ID, digestAlgorithm)
 
             data.setSignature(signature)
             # Encode once to get the signed portion.
             encoding = data.wireEncode(wireFormat)
 
-            ibSignature = self.sign(encoding.toSignedBuffer(), secret_key, ID, digestAlgorithm[0])
+            ibSignature = self.sign(encoding.toSignedBuffer(), master_public_key, secret_key, ID, digestAlgorithm[0])
             data.getSignature().setSignature(ibSignature)
 
             # Encode again to include the signature.
@@ -143,19 +152,19 @@ class IbsWaters09(object):
             digestAlgorithm = [0]
             signature = makeSignatureByID(ID, digestAlgorithm)
 
-            ibSignature = self.sign(target, secret_key, ID, digestAlgorithm[0])
+            ibSignature = self.sign(target, master_public_key, secret_key, ID, digestAlgorithm[0])
             signature.setSignature(ibSignature)
 
             return signature
 
     def makeSignatureByID(self, ID, digestAlgorithm):
-        signature = Sha256WithIbsWaters09Signature()
+        signature = Sha256WithIbsWatersSignature()
         digestAlgorithm[0] = DigestAlgorithm.SHA256
         signature.getKeyLocator().setType(KeyLocatorType.KEYNAME)
         signature.getKeyLocator().setKeyName(ID)
         return signature
 
-    def sign(self, data, secret_key, ID, digestAlgorithm = DigestAlgorithm.SHA256):
+    def sign(self, data, master_public_key, secret_key, ID, digestAlgorithm = DigestAlgorithm.SHA256):
         """
         Use the secret key for ID and sign the data, returning a
         signature Blob.
@@ -179,8 +188,8 @@ class IbsWaters09(object):
         signature = self.water.sign(master_public_key, secret_key, dataStr)
         #signature = self.water.sign(master_public_key, secret_key, SHA256.new(dataStr))
         # base64 signature
-        signature = objectToBytes(signature)
-        logger.info("Successfully signed packet: " + signature)
+        signature = objectToBytes(signature, self.group)
+        logging.info("Successfully signed packet: " + signature)
 
         if signature == None:
             raise SecurityException("Signature is NULL!")
@@ -202,6 +211,10 @@ class IbsWaters09(object):
         :param int stepCount: (optional) The number of verification steps that
           have been done. If omitted, use 0.
         """
+        if wireFormat == None:
+            # Don't use a default argument since getDefaultWireFormat can change.
+            wireFormat = WireFormat.getDefaultWireFormat()
+
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             ID = interest.getKeyLocator().getKeyName().toUri()
@@ -209,18 +222,16 @@ class IbsWaters09(object):
             raise SecurityException("Keylocator is not of keyType KEYNAME!")
 
         keyName = interest.getName()
-        session = keyName.get(keyName.size()-2).toEscapedString()
-        signature = keyName.get(keyName.size()-1).toEscapedString()
-        signature = bytesToObject(signature)
-        logger.info("Signature: " + signature)
-
-        if wireFormat == None:
-            # Don't use a default argument since getDefaultWireFormat can change.
-            wireFormat = WireFormat.getDefaultWireFormat()
+        session = keyName.get(keyName.size()-3).toEscapedString()
+        signature = wireFormat.decodeSignatureInfoAndValue(
+                    interest.getName().get(-2).getValue().buf(),
+                    interest.getName().get(-1).getValue().buf())
+        # logging.info(signature.getSignature())
+        ib_signature = bytesToObject(str(signature.getSignature()), self.group)
 
         encoding = interest.wireEncode(wireFormat)
         dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
-        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        verified = self.water.verify(master_public_key, ID, dataStr, ib_signature)
         if verified:
             onVerified(interest)
         else:
@@ -242,129 +253,29 @@ class IbsWaters09(object):
         :param int stepCount: (optional) The number of verification steps that
           have been done. If omitted, use 0.
         """
+        keyName = data.getName()
+        session = keyName.get(keyName.size()-3).toEscapedString()
+        signature = data.getSignature()
+        keyLocator = signature.getKeyLocator()
         ID = ""
-        if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
-            ID = interest.getKeyLocator().getKeyName().toUri()
+        if keyLocator.getType() == KeyLocatorType.KEYNAME:
+            ID = keyLocator.getKeyName().toUri()
         else:
             raise SecurityException("Keylocator is not of keyType KEYNAME!")
 
-        keyName = data.getName()
-        session = keyName.get(keyName.size()-1).toEscapedString()
-        signature = signature.getSignature()
-        signature = Blob(signature, False).toRawStr()
-        signature = bytesToObject(signature)
-        logger.info("Signature: " + signature)
-
+        ib_signature = bytesToObject(str(signature.getSignature()), self.group)
         if wireFormat == None:
             # Don't use a default argument since getDefaultWireFormat can change.
             wireFormat = WireFormat.getDefaultWireFormat()
 
         encoding = data.wireEncode(wireFormat)
         dataStr = Blob(encoding.toSignedBuffer(), False).toRawStr()
-        verified = self.water.verify(master_public_key, ID, dataStr, signature)
+        verified = self.water.verify(master_public_key, ID, dataStr, ib_signature)
         if verified:
             onVerified(data)
         else:
             onVerifyFailed(data)
 
-class Sha256WithIbsWaters09Signature(Signature):
-
-    """
-    Create a new Sha256WithIbsWaters09Signature object, possibly copying values from
-    another object.
-
-    :param value: (optional) If value is a Sha256WithIbsWaters09Signature, copy its
-      values.  If value is omitted, the keyLocator is the default with
-      unspecified values and the signature is unspecified.
-    :param value: Sha256WithIbsWaters09Signature
-    """
-    def __init__(self, value = None):
-
-        if value == None:
-            self._keyLocator = ChangeCounter(KeyLocator())
-            self._signature = Blob()
-        elif type(value) is IbsWaters09Signature:
-            # Copy its values.
-            self._keyLocator = ChangeCounter(KeyLocator(value.getKeyLocator()))
-            self._signature = value._signature
-        else:
-            raise RuntimeError(
-              "Unrecognized type for Sha256WithIbsWaters09Signature constructor: " +
-              str(type(value)))
-
-        self._changeCount = 0
-
-    # signature methods:
-
-    def clone(self):
-        """
-        Create a new Sha256WithIbsWaters09Signature which is a copy of this signature.
-
-        :return: A new object which is a copy of this object.
-        :rtype: Sha256WithIbsWaters09Signature
-        """
-        return Sha256WithIbsWaters09Signature(self)
-
-    def getSignature(self):
-        """
-        Get the data packet's signature bytes.
-
-        :return: The signature bytes as a Blob, which maybe isNull().
-        :rtype: Blob
-        """
-        return self._signature
-
-    def setSignature(self, signature):
-        """
-        Set the signature bytes to the given value.
-
-        :param signature: The array with the signature bytes. If signature is
-          not a Blob, then create a new Blob to copy the bytes (otherwise
-          take another pointer to the same Blob).
-        :type signature: A Blob or an array type with int elements
-        """
-        self._signature = (signature if type(signature) is Blob
-                           else Blob(signature))
-        self._changeCount += 1
-
-    def getKeyLocator(self):
-        """
-        Get the key locator.
-
-        :return: The key locator.
-        :rtype: KeyLocator
-        """
-        return self._keyLocator.get()
-
-    def setKeyLocator(self, keyLocator):
-        """
-        Set the key locator to a copy of the given keyLocator.
-
-        :param KeyLocator keyLocator: The KeyLocator to copy.
-        """
-        self._keyLocator.set(KeyLocator(keyLocator))
-        self._changeCount += 1
-
-    def clear(self):
-        self._keyLocator.get().clear()
-        self._signature = Blob()
-        self._changeCount += 1
-
-    def getChangeCount(self):
-        """
-        Get the change count, which is incremented each time this object
-        (or a child object) is changed.
-
-        :return: The change count.
-        :rtype: int
-        """
-        # Make sure each of the checkChanged is called.
-        changed = self._keyLocator.checkChanged()
-        if changed:
-            # A child object has changed, so update the change count.
-            self._changeCount += 1
-
-        return self._changeCount
 
 """Implementation of David Naccahe Identity Based Encryption"""
 class IbeWaters05(object):
