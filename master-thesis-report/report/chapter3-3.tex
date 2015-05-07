@@ -1,4 +1,19 @@
 \chapter{Implementation and Testing}
+This chapter will explain the implementation choices of the various applications built in this thesis. 
+It will also be presented how these applications will be tested.
+
+\section{Installing NDN}
+
+\gls{ndn-cxx}
+
+\gls{NFD}
+
+\gls{PyNDN2}
+
+\gls{IBC}~\cite{charm13}
+
+\gls{PBC}~\cite{ben2007implementation}
+
 
 \section{FileSync.py application}
 Application goal explained in~\autoref{file-sync}
@@ -15,11 +30,14 @@ Device code~\autoref{apx:device-code}
 Main code~\autoref{apx:main-code}
 
 \subsection{Packet Design}
-Initialization packets are limited to the structure in~\autoref{fig:init_interest-data}.
+Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
+Initially the idea was to have the \textit{\gls{TMPK}} appended to the Content Name. 
+However I experienced a problem where the Init Data never arrived at destination node. 
+After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the Init Data exceeded this limit and reached 8904 bytes.
+Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the Content Name in the Interest, the Data response off course had to have the same Content Name, hence 2\gls{KB} overhead in the Name. 
+The \gls{TMPK} can as easily be appended to the KeyLocator Name, hence the Data response can be 2\gls{KB} less, resulting to a 6866 bytes Init Data packet.
 
-Sensor packets are limited to the structure in~\autoref{fig:sensor_interest-data}.
-
-Data packets have a \textit{MAX_NDN_PACKET_SIZE} of 8800 bytes.
+Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data}.
 \begin{description}
 	\item[Init Interest] - 
   The initialization Interest seen in~\autoref{fig:init_interest-data}
@@ -49,16 +67,22 @@ Data packets have a \textit{MAX_NDN_PACKET_SIZE} of 8800 bytes.
   \label{fig:sensor_interest-data}
 \end{figure}
 
-\section{IdentityBasedCrypto.py}
-\gls{IBE} code~\autoref{apx:ibe-code} implements two \gls{IBE} schemes.
+\section{Identity-Based Cryptography in Python}
+\gls{IBE} code~\autoref{apx:ibe-code} implements two \gls{IBE} schemes and 
 
 \begin{description}
   \item[Waters05]~\cite{DBLP:journals/iacr/Naccache05} that is a variant of Brent Waters \gls{IBE} scheme~\cite{DBLP:journals/iacr/Waters04}, but with smaller key size, hence more practical.
   \item[Waters09]~\cite{DBLP:conf/crypto/Waters09} that is also a fully secure implementation of \gls{IBE} scheme.
 \end{description}
 
+It also implements the \gls{IBS} scheme Waters presented in~\cite{DBLP:journals/iacr/Waters04}. 
 
-Edit in source code:
+\subsection{Charm - A Framework for Rapidly Prototyping Cryptosystems}
+~\cite{charm13}
+\subsubsection{Modifications in Charm Library}
+CHARM: pksigwaters.py
 
-CHARM: pksig_waters.py
+\subsection{Modifications in PyNDN2}
 PyNDN2: added IB signature
+
+
