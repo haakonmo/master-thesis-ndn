@@ -22,8 +22,8 @@ Hence the Name becomes the public key.
 There is a \gls{TTP} in \gls{IBE} that is called \gls{PKG}.
 The \gls{PKG}s task is to produce a private key that corresponds to a given ID and provide 
 
-\begin{enumerate}
-  \item Setup generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used to extracting private keys, encryption and decryption.
+\begin{enumerate}\label{ibc-methods}
+  \item Setup generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used by only the \gls{PKG} to extracting private keys, encryption and decryption.
   \item Extract generates a private key from a given ID. 
   \item Encrypt(\gls{MPK}, ID, message)
   \item Decrypt(\gls{MPK}, private key, cipher)
@@ -55,7 +55,7 @@ Each device can verify the integrity and authenticity of the sync state Data and
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{pkg_sync.png}
-  \caption{IDSync with tree devices and a \gls{PKG}.}
+  \caption{IDSync with tree devices and a PKG.}
   \label{fig:pkg_sync}
 \end{figure}
 

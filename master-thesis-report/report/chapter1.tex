@@ -6,7 +6,7 @@ The translation from name to address and location is a fundamental problem to al
 going on at the \gls{UCLA}, which is part of the inspiration and a contact point for this work.
 
 In general, the name to address resolution can either be maintained by a catalogue lookup service, 
-such as \gls{DNS} (internet) and \gls{HLR} (mobile networks), 
+such as \gls{DNS} (Internet) and \gls{HLR} (mobile networks), 
 or resolved on-the-fly by a protocol on request, such as \gls{ARP} (\gls{LAN}). 
 There has been a tremendous amount of work done on the naming problem in distributed systems, 
 some became big failures (e.g. X.500) others such as the web \gls{URL}s are very successful. 
@@ -18,9 +18,21 @@ and subsequent work, that may be revisited for applicable to named data networki
 
 \section{Problem and Scope}
 
+When designing a new network protocol for the future Internet, one of the most significant changes should be that it is designed for security.
+Trust management plays a big part in security, and thus we cannot design trust management on known \gls{IP} failures such as X.500. 
+\gls{PKI} is a tough challenge to solve and the solution is probably not the one or the other, but rather case specific.
+
+I address the trust management issue in a though sensor device network, e.g. a health sensor network.
+By using the \gls{NFD} I will implement my proposal for such a sensor network.
 
 \section{Methodology}
 
+First I find in what context the Public Key System can be applicable, then I design the application flow in sequence diagrams.
+Based on how \gls{NDN} is designed, I try to implement the proposed design and see where to redesign the application proposal for achieving minimal communication overhead, security (i.e. \gls{CIA}) and usability.
 
 \section{Outline}
 
+This paper will first introduce one of the proposed protocols for the future Internet, \gls{NDN}.
+I will explain the architecture of \gls{NDN} as well as some related work regarding my application proposal. 
+The application modules will be explain in detail and implementation choices will be discussed.
+At last I will present the results of the implementation and my conclusion of the trust model.

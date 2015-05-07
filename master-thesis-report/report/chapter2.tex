@@ -129,16 +129,16 @@ To understand this, the following entities in a \gls{NDN} node should be underst
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{ip_model_node.png}
-  \caption{Model of \gls{IP} node. A packets enters the node through an Face. 
-  The node decides whether the packet is for the node itself, or passes it further to next node, found in the \gls{FIB}.}
+  \caption{Model of IP node. A packets enters the node through an Face. 
+  The node decides whether the packet is for the node itself, or passes it further to next node, found in the FIB.}
   \label{fig:ip-model-node}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{icn_model_node.png}
-  \caption{Model of \gls{NDN} node. A packet enters through an Face. 
-  The node checks whether the Interest is already queried in the \gls{PIT}, or stored in the \gls{CS}, or passes it further to next node, found in the \gls{FIB}.}
+  \caption{Model of NDN node. A packet enters through an Face. 
+  The node checks whether the Interest is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.}
   \label{fig:icn-model-node}
 \end{figure}
 
@@ -171,7 +171,7 @@ I.e. whether, when, and where to forward Interest.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-interest.png}
-  \caption{Decision tree for a \gls{NDN} node when receiving an Interest.}
+  \caption{Decision tree for a NDN node when receiving an Interest.}
   \label{fig:icn-model-node-decision-interest}
 \end{figure}
 
@@ -182,12 +182,12 @@ Check data from local applications first cached in \gls{CS}, if not, store in \g
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-data.png}
-  \caption{Decision tree for a \gls{NDN} node when receiving Data.}
+  \caption{Decision tree for a NDN node when receiving Data.}
   \label{fig:icn-model-node-decision-data}
 \end{figure}
 
 
-\subsection{Security}
+\subsection{Security}\label{ndn-security}
 The security aspects of \gls{NDN} network protocol is one of the most important reasons why 
 Secure data VS secure channel.
 The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.

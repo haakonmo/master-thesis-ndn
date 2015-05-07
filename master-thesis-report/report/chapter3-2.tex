@@ -53,6 +53,12 @@ This results in a physical authentication between the device, and the mobile (i.
 
 \subsection{Identity-Based Cryptography}
 
+\section{Confidentiality}
+
+All data can be, if needed, encrypted.
+The encryption can be achieved by encrypting with the Name of the requester as the public key.
+
+
 \section{Integrity and Authenticity}
 
 Each device will obtain a private key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
@@ -61,16 +67,14 @@ With the concept from~\autoref{physical_connection_initialization} together with
 \subsection{Replay Attack}
 Every Interest has a timestamp attached to the Name (e.g. /ndn/no/ntnu/device/name2/sensor\_pull/\textbf{1429710873778}), i.e. milliseconds from UTC 1970-01-01 00:00:00, that is used for protection against replay attack. 
 
-\section{Confidentiality}
-
-All data can be, if needed, encrypted.
-The encryption can be achieved by encrypting with the Name of the requester as the public key.
-
 
 \section{Availability}
 
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
+
+\section{Trust Model}
+
 
 \subsection{Access Control}
 
