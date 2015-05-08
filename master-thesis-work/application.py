@@ -314,6 +314,8 @@ def main():
                 startSensorPull()
             if input == "pkg":
                 startPKG()
+            if input == "sync":
+                startFileSync()
             if input == "leave" or input == "exit":
                 EXIT = True
                 break

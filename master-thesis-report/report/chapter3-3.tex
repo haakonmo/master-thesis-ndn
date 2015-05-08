@@ -1,33 +1,99 @@
 \chapter{Implementation and Testing}
-This chapter will explain the implementation choices of the various applications built in this thesis. 
+This chapter will first introduce the most significant frameworks that must be installed to be able to run \gls{NDN} applications.
+Then the various application modules design and implementation choices will be explained. 
 It will also be presented how these applications will be tested.
 
-\section{Installing NDN}
+\section{Installing Named Data Networking Protocol}
 
-\gls{ndn-cxx}
+There are several programs that is required to install for experimenting in a \gls{NDN} environment.
+Installation guides can be found at the Github project~\cite{ndn-git}.
 
-\gls{NFD}
+\gls{ndn-cxx} is a implementation of \gls{NDN} primitives. 
+It is a fundamental framework that \gls{NDN} application requires. 
 
-\gls{PyNDN2}
+\gls{NFD}~\cite{nfd} is a network forwarder and also in the core implementation of \gls{NDN}.
+The major modules implemented in \gls{NFD} is:
+\begin{itemize}
+  \item Core - Common services shared between the different \gls{NFD} modules (such as hash, \gls{DNS} resolver, face monitoring etc.).
+  \item Faces - Generalization of different interfaces, explained in~\autoref{ndn-node-modules}.
+  \item Tables - \gls{PIT}, \gls{CS}, \gls{FIB}, explained in~\autoref{ndn-node-modules}.
+  \item Forwarding - Packet processing.
+  \item Management - Enables users/programs to interact with the \gls{NFD} forwarder state.
+  \item\gls{RIB} Management - Managing routing protocols and application prefix registration.
+\end{itemize}
 
-\gls{IBC}~\cite{charm13}
+\subsection{PyNDN2}
+The work done in this thesis is written in Python, hence the \gls{PyNDN2} is used.
+This is an easy to use implementation of \gls{NDN} and comes with example code.
 
-\gls{PBC}~\cite{ben2007implementation}
+Because the \gls{NDN} protocol require signing of Data packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
+
+I added the \path{python/pyndn/sha256_with_ibswaters_signature.py} file that follows the pattern of the existing RSA Signature (\path{python/pyndn/sha256_with_rsa_signature.py}) and is of type \texttt{Signature}.
+Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the signature when the Data packet is encoded and decoded.
+
+\section{Installing Identity-Based Cryptography}
+
+To be able to run \gls{IBC} there is a \gls{PBC}~\cite{ben2007implementation} that needs to be installed.
+Further I use a Python implementation~\cite{charm13} of \gls{IBC}.
+
+The code in~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{IBE} schemes and one \gls{IBS} scheme. 
+
+\begin{description}
+  \item[Waters05]~\cite{DBLP:journals/iacr/Naccache05} that is a variant of Brent Waters \gls{IBE} scheme~\cite{DBLP:journals/iacr/Waters04}, but with smaller key size, hence more practical.
+  \item[Waters09]~\cite{DBLP:conf/crypto/Waters09} that is also a fully secure implementation of \gls{IBE} scheme.
+  \item[Waters]~\cite{DBLP:journals/iacr/Waters04} that is a implementation of \gls{IBS} scheme.
+\end{description}
+
+\subsection{Charm - A Framework for Rapidly Prototyping Cryptosystems}
+The Charm framework~\cite{charm13} implements several \gls{IBE} and \gls{IBS} schemes in Python.
+Some small modifications had to be done in the Waters-\gls{IBS}~\cite{DBLP:journals/iacr/Waters04} implementation in Charm.
+Not really something worth mentioning, yet explained due to the concept of academic reproduction. 
+In \path{charm/schemes/pksig/pksig_waters.py} there is a global variable, i.e. \texttt{waters}, that is used throughout all the methods in \path{pksig_waters.py}.
+The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG} (\autoref{ibc-methods}), and not by another device that do not play the role of a \gls{PKG}. 
+And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}.
 
 
-\section{FileSync.py application}
+\section{File Synchronization Module - Implementation}
 Application goal explained in~\autoref{file-sync}
-Appendix code~\autoref{apx:file-sync-code}
+
+FileSync code~\cite[fileSync.py]{garseg15}
 
 FileSync is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
 
-\section{Application.py}
+\subsection{Packet Design}
+
+\begin{description}
+  \item[Init Interest] - 
+  The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-interest}.
+  \item[Sync Interest] -
+  ~\autoref{fig:sync-interest-data}
+  \item[Sync Data] - 
+  ~\autoref{fig:sync-interest-data}
+\end{description}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{init-sync-interest.png}
+  \caption{Initialization Interest for joining a synchronization folder.}
+  \label{fig:init-sync-interest}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{sync-interest-data.png}
+  \caption{Sync Interest and Data}
+  \label{fig:sync-interest-data}
+\end{figure}
+
+
+\section{Sensor Application - Implementation}
 Application flow explained in~\autoref{sensor-application}
 
-Device code~\autoref{apx:device-code}
-\gls{PKG} code~\autoref{apx:pkg-code}
+Device code~\cite[device.py]{garseg15}
 
-Main code~\autoref{apx:main-code}
+\gls{PKG} code~\cite[publicKeyGenerator.py]{garseg15}
+
+Main code~\cite[application.py]{garseg15}
 
 \subsection{Packet Design}
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
@@ -67,29 +133,6 @@ Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data
   \label{fig:sensor_interest-data}
 \end{figure}
 
-\section{Identity-Based Cryptography in Python}
-\gls{IBE} code~\autoref{apx:ibe-code} implements two \gls{IBE} schemes and 
-
-\begin{description}
-  \item[Waters05]~\cite{DBLP:journals/iacr/Naccache05} that is a variant of Brent Waters \gls{IBE} scheme~\cite{DBLP:journals/iacr/Waters04}, but with smaller key size, hence more practical.
-  \item[Waters09]~\cite{DBLP:conf/crypto/Waters09} that is also a fully secure implementation of \gls{IBE} scheme.
-\end{description}
-
-It also implements the \gls{IBS} scheme Waters presented in~\cite{DBLP:journals/iacr/Waters04}. 
-
-\subsection{Charm - A Framework for Rapidly Prototyping Cryptosystems}
-The Charm framework~\cite{charm13} implements several \gls{IBE} and \gls{IBS} schemes in Python.
-Some small modifications had to be done in the Waters-\gls{IBS}~\cite{DBLP:journals/iacr/Waters04} implementation in Charm.
-Not really something worth mentioning, yet explained due to the concept of academic reproduction. 
-In \path{charm/schemes/pksig/pksig_waters.py} there is a global variable, i.e. \texttt{waters}, that is used throughout all the methods in \path{pksig_waters.py}.
-The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG} (\autoref{ibc-methods}), and not by another device that do not play the role of a \gls{PKG}. 
-And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}.
-
-\subsection{PyNDN2}
-Because the \gls{NDN} protocol require signing of Data packets (\autoref{ndn-security}) some implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
-
-I added the \path{python/pyndn/sha256_with_ibswaters_signature.py} file that follows the pattern of the existing RSA Signature (\path{python/pyndn/sha256_with_rsa_signature.py}) and is of type \texttt{Signature}.
-Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the signature when the Data packet is encoded and decoded.
 
 
 
