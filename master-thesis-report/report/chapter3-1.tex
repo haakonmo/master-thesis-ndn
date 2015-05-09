@@ -48,7 +48,7 @@ Some drawbacks related to \gls{IBE} are listed below:
 \end{enumerate}
 
 \section{Key Distribution}
-Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, we want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.
+Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, I want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.
 This can be done through an IDSync application built upon the application presented in~\autoref{file-sync}.
 In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the domain.
 Each device can verify the integrity and authenticity of the sync state Data and be sure that the \gls{ID} list surely originates from its own \gls{PKG}.
