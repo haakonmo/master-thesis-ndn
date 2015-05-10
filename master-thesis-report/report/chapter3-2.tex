@@ -115,28 +115,21 @@ The File Synchronization Module (\autoref{file-sync}) can be used to distribute 
 This synchronization will be controlled by the \gls{PKG}, hence every device can verify each synchronization message.
 
 \section{Confidentiality, Integrity and Availability}
-\subsection{Confidentiality}
 
-All data can be, if needed, encrypted.
-The encryption can be achieved by encrypting with the Name of the requester as the public key.
-
-
-\subsection{Integrity and Authenticity}
-
-Each device will obtain a private key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
-With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s network. Hence all signed packets can be verified by anyone with the \gls{MPK}.
-
-\subsection{Replay Attack}
-Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \path{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
-
-
-\subsection{Availability}
-
-This is a harder problem to solve.
-The network is purely wireless, hence vulnerable to jamming. 
+\begin{description}
+  \item[Confidentiality] 
+  The encryption can be achieved by encrypting with the Name of the requester.
+  As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
+  \item[Integrity and Authenticity]
+  Each device will obtain a private key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
+  With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
+  Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \path{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
+  \item[Availability]
+  This is a harder problem to solve.
+  The network is purely wireless, hence vulnerable to jamming. 
+\end{description}
 
 \section{Trust Model}
-
 
 \subsection{Access Control}\label{access_control}
 

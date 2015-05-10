@@ -112,7 +112,7 @@ Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data
   However, in our trust model we use this field to publish the requesters Name, i.e. the requesters public key. 
   This is very useful when using \gls{IBE} and \gls{IBS}.
 	\item[Init Data] - 
-  The Data response the the initialization Interest contains data with a structure defined in~\autoref{apx:msgBuf-code} and illustrated in~\autoref{fig:init_interest-data}.
+  The Data response the the initialization Interest contains data with a structure defined in~\cite[messageBuf.proto]{garseg15} and illustrated in~\autoref{fig:init_interest-data}.
 	\item[Sensor Interest] -
 	As in the initialization Interest the KeyLocator field is used to define the requesters Name. ~\autoref{fig:sensor_interest-data}
 	\item[Sensor Data] - 
@@ -133,6 +133,19 @@ Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data
   \label{fig:sensor_interest-data}
 \end{figure}
 
+\section{Testing}
 
+At first I wanted to test the application with several Raspberry Pi's to simulate a sensor network. 
+However this is not possible with the Charm framework as it is not compatible with ARM processors.
 
+The health sensor system is tested over several computers installed in the lab at \gls{ntnu}.
 
+Encryption / decryption time
+
+Signing / verification time
+
+Power consumption
+
+Init Protocol time
+
+Sensor Data Protocol time
