@@ -133,8 +133,21 @@ This synchronization will be controlled by the \gls{PKG}, hence every device can
 
 \subsection{Access Control}\label{access_control}
 
-When a device retrieves an Interest for its sensor data, there should be a authorization mechanism. 
+When a device retrieves an Interest for its sensor data, there should be an authorization mechanism. 
+One solution for this is the Capability Based Approach to \gls{IoT} Access Control~\cite{DBLP:conf/imis/GusmeroliPR12}.
+This design has some additional benefits for the health sensor system, such as
 
-Capability based approach to \gls{IoT} access control~\cite{DBLP:conf/imis/GusmeroliPR12}.
+\begin{itemize}
+  \item delegation support - 
+  A device can grant access rights to other devices, as well as granting the right to further delegate these rights to a third device.
+  \item capability revocation - 
+  If the \gls{PKG} have granted delegation rights to a mobile, and the mobile is not found trustworthy after a while, the capabilities issued by the mobile can easily be revoked.
+  \item information granularity - 
+  Specific resources from a device can be granted access to in different granularity.
+\end{itemize}
 
-Least privilege access
+One can argue that once a device has been authenticated in the \gls{PKG}s trust domain, everyone in the domain can be sure that the device will not abuse the information or functionalities available. 
+However, due to scalability this is not a secure way to handle access control. 
+If a device does not need a privilege, it does not need it.
+Hence it should not have it. 
+That is the least privilege access principle, which is default in~\cite{DBLP:conf/imis/GusmeroliPR12}.
