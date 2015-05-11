@@ -9,7 +9,7 @@ In our case, synchronization of file(s) to a large group of nodes.
 For example we want to be able to distribute a list of public keys to a large set of nodes that wants to have every public key up-to-date.
 Lets say there is a list owner, e.g. a trusted third party. 
 When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with this new list.
-Now since \gls{NDN} is pulled based (~\autoref{chp2:sec:ndn_architecture}), there is no way for the list owner to send the list to everyone.
+Now since \gls{NDN} is pull based (\autoref{chp2:sec:ndn_architecture}), there is no way for the list owner to send the list to everyone.
 To achieve the goal of synchronization, the \gls{NDN}-team has developed an application over \gls{NDN}, ChronoSync.
 
 \section{ChronoSync}\label{chronosync}

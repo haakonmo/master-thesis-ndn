@@ -1,9 +1,6 @@
 \chapter{Key Infrastructure}
-This chapter will present the concept of \gls{PKI} and \gls{IBE}, as well as problems and possible solutions. 
-
-\section{Public Key Infrastructure}
-
-X.509 (i.e. \gls{PKI}). Issues: certificates --> distribution and revocation.
+This chapter will present the concept of \gls{IBE} and \gls{IBS}, and why it is highly applicable to use this type of cryptography in \gls{NDN}. 
+Then the possibilities to use the file synchronization module to do key distribution and revocation will be introduced.
 
 \section{Identity-Based Cryptography}\label{ibc}
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
@@ -31,14 +28,15 @@ The \gls{PKG}s task is to produce a private key that corresponds to a given ID a
   \item \texttt{Verify(MPK, ID, message, signature)} verifies the signature.
 \end{enumerate}
 
-\todo{figure of PKG and nodes}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{pkg_functions.png}
+  \caption{Methods of an IBC systems illustrated in action.}
+  \label{fig:pkg_functions}
+\end{figure}
 
-Thoroughness of the name allocation \gls{NRS} 
-
-Key Revocation in IBE ~\cite{DBLP:journals/iacr/BoldyrevaGK12} 
-
-To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{IBE} public key.
-Then the user encrypts the message with the \gls{CEK}~\cite[section 2.2.2]{rfc5408}
+To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{ID}.
+The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encryted content to the requester. 
 
 Some drawbacks related to \gls{IBE} are listed below:
 \begin{enumerate}
@@ -83,6 +81,7 @@ Each device can verify the integrity and authenticity of the sync state Data and
 
 \section{Key Revocation}
 Few alternatives to revocation scheme in \gls{IBE}.
+Key Revocation in IBE ~\cite{DBLP:journals/iacr/BoldyrevaGK12} 
 One suggestion is to allocate private keys with the public key combined with some sort of date, e.g. month-year or just year. 
 In this alternative a user has to renew its private key each time the date changes, i.e. either the month or the year depending on the date format.
 The problem with the revocation solution is that it is cumbersome for the \gls{PKG}.
