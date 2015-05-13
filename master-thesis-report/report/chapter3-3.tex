@@ -146,10 +146,10 @@ However this is not possible with the Charm framework as it is not compatible wi
 The health sensor system is tested over several computers (see ~\autoref{tbl:target_computers} for specifications) at \gls{ntnu}.
 
 \begin{table}[h]
-  \begin{tabular}{lll}
-  Computer                  & Operating System          & Processor                    \\ \hline
-  Macbook Pro               & 64-bit OS X 10.10         & Intel Core i7 @ 2.0GHz       \\ %\hline
-  Garsbook                  & 64-bit Ubuntu 14.04 LTS   & Intel Core i5 @ 3.0GHz       \\ %\hline
+  \begin{tabular}{llll}
+  ID      & Computer                  & Operating System          & Processor                    \\ \hline
+  C1      & Macbook Pro               & 64-bit OS X 10.10         & Intel Core i7 @ 2.0GHz       \\ %\hline
+  C2      & Garsbook                  & 64-bit Ubuntu 14.04 LTS   & Intel Core i5 @ 3.0GHz       \\ %\hline
   \end{tabular}
   \caption{Computers used during tests.}
   \label{tbl:target_computers}
@@ -177,25 +177,25 @@ The health sensor system is tested over several computers (see ~\autoref{tbl:tar
 
 \subsection{Time}
 \begin{table}[h]
-  \begin{tabular}{lll}
-  Method                                      & Scheme          & Time (seconds)    \\ \hline
-  IBE PKG Keypair generation                  & Waters09        & 0.09965           \\ %\hline
-  IBE Encrypting CEK                          & Waters09        & 0.05265           \\ %\hline
-  IBE Private Key (PK) generation             & Waters09        & 0.05614           \\ %\hline
-  IBE Encrypting PK                           & AES             & 0.00013           \\ %\hline
-  IBS PKG Keypair generation                  & Waters          & 0.09755           \\ %\hline
-  IBS Private Key (SPK) generation            & Waters          & 0.00976           \\ %\hline
-  IBS Sign                                    & Waters          & 0.00990           \\ %\hline
-  IBS Verify                                  & Waters          & 0.00758           \\ %\hline
-  Encrypting SPK                              & AES             & 0.00006           \\ %\hline
-  RSA (1024-bit) keypair generation           & RSA             & 0.25427           \\ %\hline
-  RSA Encryption                              & RSA             & 0.01480           \\ %\hline
-  RSA Decryption                              & RSA             & 0.01472           \\ %\hline
-  RSA Sign                                    & RSA             & 0.01615           \\ %\hline
-  RSA Verify                                  & RSA             & 0.01572           \\ %\hline
-  ECDSA keypair generation                    & ECDSA           & 0.00057           \\ %\hline
-  ECDSA Sign                                  & ECDSA           & 0.00050           \\ %\hline
-  ECDSA Verify                                & ECDSA           & 0.00090           \\ %\hline
+  \begin{tabular}{llll}
+  Method                                      & Scheme          & C1 - Time (seconds)  & C2 - Time (seconds)  \\ \hline
+  IBE PKG Keypair generation                  & Waters09        & 0.09965              & 0.02709              \\ %\hline
+  IBE Encrypting CEK                          & Waters09        & 0.05265              & 0.18915              \\ %\hline
+  IBE Private Key (PK) generation             & Waters09        & 0.05614              & 0.01786              \\ %\hline
+  Encrypting PK                               & AES             & 0.00013              & 0.00010              \\ %\hline
+  IBS PKG Keypair generation                  & Waters          & 0.09755              & 0.02715              \\ %\hline
+  IBS Private Key (SPK) generation            & Waters          & 0.00976              & 0.00287              \\ %\hline
+  IBS Sign                                    & Waters          & 0.00990              & 0.00288              \\ %\hline
+  IBS Verify                                  & Waters          & 0.00758              & 0.00266              \\ %\hline
+  Encrypting SPK                              & AES             & 0.00006              & 0.00002              \\ %\hline
+  RSA (1024-bit) keypair generation           & RSA             & 0.25427              & 0.11934              \\ %\hline
+  RSA Encryption                              & RSA             & 0.01480              & 0.00440              \\ %\hline
+  RSA Decryption                              & RSA             & 0.01472              & 0.00445              \\ %\hline
+  RSA Sign                                    & RSA             & 0.01615              & 0.00459              \\ %\hline
+  RSA Verify                                  & RSA             & 0.01572              & 0.00453              \\ %\hline
+  ECDSA keypair generation                    & ECDSA           & 0.00057              & 0.00020              \\ %\hline
+  ECDSA Sign                                  & ECDSA           & 0.00050              & 0.00021              \\ %\hline
+  ECDSA Verify                                & ECDSA           & 0.00090              & 0.00037              \\ %\hline
   \end{tabular}
   \caption{Time table.}
   \label{tbl:time_chart}
@@ -203,9 +203,9 @@ The health sensor system is tested over several computers (see ~\autoref{tbl:tar
 
 \begin{table}[h]
   \begin{tabular}{lll}
-  Protocol                                & Time (seconds)    \\ \hline
-  Initialization                          & 0.2029            \\ %\hline
-  Data Pull                               & 0.0614            \\ %\hline
+  Protocol                                & C1 - Time (seconds)   & C1 - Time (seconds)     \\ \hline
+  Initialization                          & 0.2029                & 0.0708                  \\ %\hline
+  Data Pull                               & 0.0614                & 0.0310                  \\ %\hline
   \end{tabular}
   \caption{Round Trip Time table.}
   \label{tbl:rtt_chart}
