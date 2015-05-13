@@ -55,6 +55,7 @@ class Device(object):
 
         Sign the Interest and send.
         """
+        self.dataRequestStart = time.clock()
         # Session used in namePrefix
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
         self.name = Name(self.baseName).append("device2").append("sensorPull").append(session)
@@ -129,6 +130,8 @@ class Device(object):
 
                 # Use data from device to something ..
                 logging.info("Data received: " + str(data))
+                self.dataRequestEnd = time.clock()
+                logging.info("Request and receive data time: " + str(self.dataRequestEnd-self.dataRequestStart))
 
     # Methods for a device that offers Data
     def registerPrefix(self):
@@ -249,6 +252,7 @@ class Device(object):
 
         Send the Interest
         """
+        self.initRequestStart = time.clock()
         # Create a keyPair for initialization process
         (master_public_key, master_secret_key) = self.ibe_scheme.setup()
         self.temp_master_public_key = master_public_key
@@ -325,3 +329,5 @@ class Device(object):
                 self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)
 
                 logging.info("Initialization success! PrivateKeys, MasterPublicKeys received.")
+                self.initRequestEnd = time.clock()
+                logging.info("Initialization time: " + str(self.initRequestEnd-self.initRequestStart))

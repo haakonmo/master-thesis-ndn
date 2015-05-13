@@ -4,17 +4,17 @@ Explaining what the file synchronization application is built upon and its purpo
 
 \section{File Synchronization Module}\label{file-sync}
 Since \gls{NDN} provides multicast in network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
-One of the benefits is that we can distribute lots of data, to many people. 
-In our case, synchronization of file(s) to a large group of nodes. 
+One of the benefits is that one can distribute lots of data, to many people. 
+In this case, synchronization of file(s) to a large group of nodes. 
 For example we want to be able to distribute a list of public keys to a large set of nodes that wants to have every public key up-to-date.
-Lets say there is a list owner, e.g. a trusted third party. 
+Lets say there is a list owner, e.g. a \gls{TTP}. 
 When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with this new list.
 Now since \gls{NDN} is pull based (\autoref{chp2:sec:ndn_architecture}), there is no way for the list owner to send the list to everyone.
 To achieve the goal of synchronization, the \gls{NDN}-team has developed an application over \gls{NDN}, ChronoSync.
 
 \section{ChronoSync}\label{chronosync}
 ChronoSync is a distributed (server-less) synchronization application developed by the \gls{NDN}-team. 
-Each node in a ChronoSync application broadcasts its sync state in a Sync Interest (e.g. /ndn/sync/fileSyncFolder/<username>/<state>).
+Each node in a ChronoSync application broadcasts its sync state in a Sync Interest (e.g. \path{/ndn/sync/fileSyncFolder/<username>/<state>}).
 When a node receives a Sync Interest, it will inspect the state of the interest, and compare with its own state.
 Each node holds a state tree that is used to detect new and outdated states.
 If the incoming interests state is equal to the receiving node, the node has no reason to do anything, as the system is in a \textit{stable state}.

@@ -150,7 +150,7 @@ class IbsWaters(object):
             data.wireEncode(wireFormat)
         else:
             digestAlgorithm = [0]
-            signature = makeSignatureByID(ID, digestAlgorithm)
+            signature = self.makeSignatureByID(ID, digestAlgorithm)
 
             ibSignature = self.sign(target, master_public_key, secret_key, ID, digestAlgorithm[0])
             signature.setSignature(ibSignature)
@@ -189,7 +189,7 @@ class IbsWaters(object):
         #signature = self.water.sign(master_public_key, secret_key, SHA256.new(dataStr))
         # base64 signature
         signature = objectToBytes(signature, self.group)
-        logging.info("Successfully signed packet: " + signature)
+        #logging.info("Successfully signed packet: " + signature)
 
         if signature == None:
             raise SecurityException("Signature is NULL!")
@@ -253,6 +253,8 @@ class IbsWaters(object):
         :param int stepCount: (optional) The number of verification steps that
           have been done. If omitted, use 0.
         """
+
+        
         keyName = data.getName()
         session = keyName.get(keyName.size()-3).toEscapedString()
         signature = data.getSignature()

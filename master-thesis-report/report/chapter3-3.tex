@@ -142,14 +142,71 @@ Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data
 At first I wanted to test the application with several Raspberry Pi's to simulate a sensor network. 
 However this is not possible with the Charm framework as it is not compatible with ARM processors.
 
-The health sensor system is tested over several computers installed in the lab at \gls{ntnu}.
+\subsection{Computers}
+The health sensor system is tested over several computers (see ~\autoref{tbl:target_computers} for specifications) at \gls{ntnu}.
 
-Encryption / decryption time
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Computer                  & Operating System          & Processor                    \\ \hline
+  Macbook Pro               & 64-bit OS X 10.10         & Intel Core i7 @ 2.0GHz       \\ %\hline
+  Garsbook                  & 64-bit Ubuntu 14.04 LTS   & Intel Core i5 @ 3.0GHz       \\ %\hline
+  \end{tabular}
+  \caption{Computers used during tests.}
+  \label{tbl:target_computers}
+\end{table}
 
-Signing / verification time
+\subsection{Size}
 
-Power consumption
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Data                            & Scheme          & Size (bytes)      \\ \hline
+  Content Encryption Key (CEK)    & Random          & 244 bytes         \\ %\hline
+  IBE Master Public Key           & Waters09        & 2014 bytes        \\ %\hline
+  IBE Private Key (PK)            & Waters09        & 1164 bytes        \\ %\hline
+  IBE Encrypted CEK               & Waters09        & 1472 bytes        \\ %\hline
+  Encrypted PK                    & AES             & 1633 bytes        \\ %\hline
+  IBS Master Public Key           & Waters          & 2360 bytes        \\ %\hline
+  IBS Private Key (SPK)           & Waters          & 260 bytes         \\ %\hline
+  IBS Signature                   & Waters          & 412 bytes         \\ %\hline
+  Encrypted SPK                   & AES             & 437 bytes         \\ %\hline
+  \end{tabular}
+  \caption{Data sizes.}
+  \label{tbl:size_chart}
+\end{table}
 
-Init Protocol time
 
-Sensor Data Protocol time
+\subsection{Time}
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Method                                      & Scheme          & Time (seconds)    \\ \hline
+  IBE PKG Keypair generation                  & Waters09        & 0.09965           \\ %\hline
+  IBE Encrypting CEK                          & Waters09        & 0.05265           \\ %\hline
+  IBE Private Key (PK) generation             & Waters09        & 0.05614           \\ %\hline
+  IBE Encrypting PK                           & AES             & 0.00013           \\ %\hline
+  IBS PKG Keypair generation                  & Waters          & 0.09755           \\ %\hline
+  IBS Private Key (SPK) generation            & Waters          & 0.00976           \\ %\hline
+  IBS Sign                                    & Waters          & 0.00990           \\ %\hline
+  IBS Verify                                  & Waters          & 0.00758           \\ %\hline
+  Encrypting SPK                              & AES             & 0.00006           \\ %\hline
+  RSA (1024-bit) keypair generation           & RSA             & 0.25427           \\ %\hline
+  RSA Encryption                              & RSA             & 0.01480           \\ %\hline
+  RSA Decryption                              & RSA             & 0.01472           \\ %\hline
+  RSA Sign                                    & RSA             & 0.01615           \\ %\hline
+  RSA Verify                                  & RSA             & 0.01572           \\ %\hline
+  ECDSA keypair generation                    & ECDSA           & 0.00057           \\ %\hline
+  ECDSA Sign                                  & ECDSA           & 0.00050           \\ %\hline
+  ECDSA Verify                                & ECDSA           & 0.00090           \\ %\hline
+  \end{tabular}
+  \caption{Time table.}
+  \label{tbl:time_chart}
+\end{table}
+
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Protocol                                & Time (seconds)    \\ \hline
+  Initialization                          & 0.2029            \\ %\hline
+  Data Pull                               & 0.0614            \\ %\hline
+  \end{tabular}
+  \caption{Round Trip Time table.}
+  \label{tbl:rtt_chart}
+\end{table}
