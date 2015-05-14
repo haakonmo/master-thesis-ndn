@@ -60,6 +60,10 @@ FileSync code~\cite[fileSync.py]{garseg15}
 
 FileSync is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
 
+\subsection{File Watcher}
+The application should trigger synchronization when files that are watched is changed, or when a file is added/removed.
+A library that makes it possible to watch files in an \gls{OS} is Watchdog~\cite{watchdog}. 
+
 \subsection{Packet Design}
 
 \begin{description}
@@ -162,7 +166,7 @@ It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to
 
 \begin{table}[h]
   \begin{tabular}{lll}
-  Data                            & Scheme          & Size (bytes)      \\ \hline
+  Data                            & Scheme          & Size              \\ \hline
   Content Encryption Key (CEK)    & Random          & 244 bytes         \\ %\hline
   IBE Master Public Key           & Waters09        & 2014 bytes        \\ %\hline
   IBE Private Key (PK)            & Waters09        & 1164 bytes        \\ %\hline
@@ -173,7 +177,7 @@ It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to
   IBS Signature                   & Waters          & 412 bytes         \\ %\hline
   Encrypted SPK                   & AES             & 437 bytes         \\ %\hline
   \end{tabular}
-  \caption{Data sizes.}
+  \caption{Sizes of different keys used in the health sensor system implementation.}
   \label{tbl:size_chart}
 \end{table}
 

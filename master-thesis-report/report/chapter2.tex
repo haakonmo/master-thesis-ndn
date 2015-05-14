@@ -197,10 +197,13 @@ Based on the nature of this architecture, \gls{NDN} facilitates the practice of 
 In a Tor network~\cite{DBLP:conf/uss/DingledineMS04}, each node participating in a circuit only knows the two neighboring nodes.
 Only a ``Global passive adversary'' that can monitor the whole network is able to decide the whole packet path, hence know \textit{who} is requesting and \textit{who} is responding.
 Since the packet format (\autoref{packets}) in \gls{NDN} has no source or destination specific field as in a \gls{IP} packet, the privacy of the network is more similar to a Tor network.
-If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. Unless monitoring a complete network, it should be close to impossible to track packets.  
+If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. 
+Unless monitoring a complete network, it should be close to impossible to track packets.  
 However because of the semantic naming there are some issues related to privacy as it easily can be seen in the Name \textit{what} the content contains in many cases.
 Also since signing of each Interest is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
+
+\todo{more in this section}
 
 \section{Attacks}
 

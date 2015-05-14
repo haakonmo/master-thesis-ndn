@@ -36,7 +36,7 @@ The \gls{PKG}s task is to produce a private key that corresponds to a given ID a
 \end{figure}
 
 To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{ID}.
-The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encryted content to the requester. 
+The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encrypted content to the requester. 
 
 Some drawbacks related to \gls{IBE} are listed below:
 \begin{enumerate}
@@ -51,6 +51,8 @@ Boneh and Franklins \gls{IBE} scheme is only secure when using random oracles.
 A random oracle is like a ``black box'' that outputs truly random numbers.
 Typically random oracles are used when a hash function does not fulfill the mathematical requirements of a proof. 
 A system is in the \textit{random oracle model} when the system is fully secure and every hash function is replaced by a random oracle.
+
+\todo{random oracles vs hash should become clearer}
 
 In the \textit{standard model} hash functions are sufficient to achieve a fully secure proof.
 Since true randomness can be hard for every device to create, we tend to wanting to make cryptographic schemes in the standard model.
