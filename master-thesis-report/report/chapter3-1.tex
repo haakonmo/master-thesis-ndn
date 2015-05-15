@@ -17,15 +17,15 @@ Since the \gls{ID} can be practically anything it is highly applicable for \gls{
 Hence the Name becomes the public key. 
 
 There is a \gls{TTP} in \gls{IBE} that is called \gls{PKG}.
-The \gls{PKG}s task is to produce a private key that corresponds to a given ID and provide 
+The \gls{PKG}s task is to produce a secret key that corresponds to a given ID and provide 
 
 \begin{enumerate}\label{ibc-methods}
-  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used by only the \gls{PKG} to extracting private keys, encryption and decryption.
-  \item \texttt{Extract(MPK, MSK, ID)} generates a Private Key from a given ID. 
-  \item \texttt{Encrypt(MPK, ID, message)} encrypts the message.
-  \item \texttt{Decrypt(MPK, private key, cipher)} decrypts the cipher generated from the encryption.
-  \item \texttt{Signing(MPK, private key, message)} signs a hash digest of the message (e.g. \gls{SHA1}).
-  \item \texttt{Verify(MPK, ID, message, signature)} verifies the signature.
+  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
+  \item \texttt{Extract(MPK\textsubscript{PKG}, MSK\textsubscript{PKG}, ID\textsubscript{device})} generates a secret key from a given ID. 
+  \item \texttt{Encrypt(MPK\textsubscript{PKG}, ID\textsubscript{device}, message)} encrypts the message.
+  \item \texttt{Decrypt(MPK\textsubscript{PKG}, SK\textsubscript{device}, cipher)} decrypts the cipher generated from the encryption.
+  \item \texttt{Signing(MPK\textsubscript{PKG}, SK\textsubscript{device}, message)} signs a hash digest of the message (e.g. \gls{SHA1}).
+  \item \texttt{Verify(MPK\textsubscript{PKG}, ID\textsubscript{device}, message, signature)} verifies the signature.
 \end{enumerate}
 
 \begin{figure}[ht]
@@ -40,8 +40,8 @@ The user encrypts the message using the \gls{CEK} together with symmetric encryp
 
 Some drawbacks related to \gls{IBE} are listed below:
 \begin{enumerate}
-	\item If \gls{PKG} is compromised. Adversary has private key to all nodes that used the compromised \gls{PKG}
-	\item \gls{PKG} can read and write messages related to the node, because it has all private keys, i.e. \gls{MITM}.
+	\item If \gls{PKG} is compromised. Adversary has secret key to all nodes that used the compromised \gls{PKG}
+	\item \gls{PKG} can read and write messages related to the node, because it has all secret keys, i.e. \gls{MITM}.
 	\item \gls{PKG} and the requesting node has to establish a secure channel. 
 \end{enumerate}
 
@@ -84,8 +84,8 @@ Each device can verify the integrity and authenticity of the sync state Data and
 \section{Key Revocation}
 Few alternatives to revocation scheme in \gls{IBE}.
 Key Revocation in IBE ~\cite{DBLP:journals/iacr/BoldyrevaGK12} 
-One suggestion is to allocate private keys with the public key combined with some sort of date, e.g. month-year or just year. 
-In this alternative a user has to renew its private key each time the date changes, i.e. either the month or the year depending on the date format.
+One suggestion is to allocate secret keys with the public key combined with some sort of date, e.g. month-year or just year. 
+In this alternative a user has to renew its secret key each time the date changes, i.e. either the month or the year depending on the date format.
 The problem with the revocation solution is that it is cumbersome for the \gls{PKG}.
 
 

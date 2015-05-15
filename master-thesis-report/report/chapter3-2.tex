@@ -34,42 +34,44 @@ The \gls{CGM} reports periodically to the insulin pump, and all sensors reports 
 
 \section{Health Sensor System}\label{hss}
 To have a secure system, it needs to be established trust between the sensors and the devices.
-There needs to be integrity controls, confidentiality protection and access control. 
+There need to be integrity controls, confidentiality protection and access control. 
 In the following sections, I will describe the protocols suggested for achieving the mentioned goals.
 
 \subsection{Rendezvous Authentication}\label{rendezvous_authentication}
 One of the best solutions for authentication of an identity in cryptography is rendezvous authentication, the concept of meeting face-to-face for authenticating who you are talking to. 
-In \gls{IoT}, we have in most cases the advantage of identifying devices in a physical matter. 
+In \gls{IoT}, we have in most cases the advantage of identifying devices in a physical matter.
 This means that it is possible to authenticate devices, such as sensors. 
 Typically, this kind of authentication will rely on 1) manually inspection and 2) digital connection, e.g. through \gls{NFC}.
 In the proposed system, I assume that this type of authentication is achieved in a secure matter and do not discuss whether how this should be done.
+Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
 
 \subsection{Initialization}\label{init}
+The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
+To ensure a secure protocol, the main goal has be divided into several sub goals. 
+The response message containing the secret key has to en 1) encrypted. 
+This can be achieved by using asymmetric encryption on a \gls{CEK} from which is used to do symmetric encryption on the secret key.
+The response message has to be 2) signed by the \gls{PKG} for integrity and authenticity reasons.
+There is an issue related to \textit{whom} can play the role of a device.
+For it to make sense applying 3) a nonce for replay protection, the initialization has to be unique of some kind.
+This implies that the device has to authenticate itself in a way that an adversary cannot do.
+This leads to 4) mutual authentication. 
+
 When The Stig is setting up his \gls{HSS}, first he wants to configure the \gls{PKG}. 
 Any type of computer can play the role of the \gls{PKG} and The Stig has chosen his home server, from now ``the PKG''.
 The \gls{PKG} creates two key pairs that is used to do \gls{IBE} and \gls{IBS}.
 Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
 
-\begin{enumerate}
-  \item First device, e.g. a mobile, connects to the \gls{PKG} through physical connection as showed in~\autoref{fig:init_ibe_1}.
-  \item Additional devices can connect through physical connection via another authorized device, or the \gls{PKG} itself. 
-  \item Data pulling from existing nodes in network~\autoref{fig:data_pull_ibe}
-\end{enumerate}
-
-In~\autoref{fig:init_ibe_1} the device acts as the mobile. 
+In~\autoref{fig:init_ibe_1} the device plays the role as the mobile. 
 The \gls{ID} of every device has been given the term Name, this is due to \gls{NDN}. 
 Hence \gls{ID} and Name is the same.
-To be able to communicate securely under initialization, the device have to create a temporary \gls{MPK} and \gls{MSK} and then extract a temporary Private Key for its Name. 
+To be able to communicate securely under initialization, the device have to create a temporary \gls{MPK} and \gls{MSK} and then extract a temporary secret key for its Name. 
 At first, the device has to act as a \gls{PKG} for itself to ensure confidentiality, and the trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
 The device sends an Interest appending the temporary \gls{MPK} and the Name to the \gls{PKG} asking to join the \gls{PKG}s domain.
 The \gls{PKG} encrypts a \gls{CEK} with the temporary \gls{MPK} and the Name received from the device. 
-Then the \gls{PKG} extracts the Private Key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the Private Key. 
-The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted Private Key and the \gls{PKG}s \gls{MPK}.
-To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the Private Key.
+Then the \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the secret key. 
+The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
+To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
 The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
-
-Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
-This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device has joined the \gls{PKG}s trust domain.
 
 \begin{figure}[ht]
   \centering
@@ -77,6 +79,10 @@ This results in a rendezvous authentication between the device and the mobile, a
   \caption{Initialization IBE}
   \label{fig:init_ibe_1}
 \end{figure}
+
+Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
+This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device has joined the \gls{PKG}s trust domain.
+
 
 
 
@@ -92,7 +98,7 @@ This results in a rendezvous authentication between the device and the mobile, a
 % for device in {devices}
 % do
 % 	device -> connect to pkg;
-% 	pkg -> verify device then issue Private Key;
+% 	pkg -> verify device then issue secret key;
 % 	device -> subscribe Name Sync and Public Key
 % done
 % \end{lstlisting}
@@ -121,7 +127,7 @@ This synchronization will be controlled by the \gls{PKG}, hence every device can
   The encryption can be achieved by encrypting with the Name of the requester.
   As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
   \item[Integrity and Authenticity]
-  Each device will obtain a private key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
+  Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
   With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
   Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \path{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
   \item[Availability]

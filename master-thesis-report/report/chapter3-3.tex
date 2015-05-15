@@ -169,13 +169,13 @@ It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to
   Data                            & Scheme          & Size              \\ \hline
   Content Encryption Key (CEK)    & Random          & 244 bytes         \\ %\hline
   IBE Master Public Key           & Waters09        & 2014 bytes        \\ %\hline
-  IBE Private Key (PK)            & Waters09        & 1164 bytes        \\ %\hline
+  IBE Secret Key (SK)             & Waters09        & 1164 bytes        \\ %\hline
   IBE Encrypted CEK               & Waters09        & 1472 bytes        \\ %\hline
-  Encrypted PK                    & AES             & 1633 bytes        \\ %\hline
+  Encrypted SK                    & AES             & 1633 bytes        \\ %\hline
   IBS Master Public Key           & Waters          & 2360 bytes        \\ %\hline
-  IBS Private Key (SPK)           & Waters          & 260 bytes         \\ %\hline
+  IBS Secret Key (SSK)            & Waters          & 260 bytes         \\ %\hline
   IBS Signature                   & Waters          & 412 bytes         \\ %\hline
-  Encrypted SPK                   & AES             & 437 bytes         \\ %\hline
+  Encrypted SSK                   & AES             & 437 bytes         \\ %\hline
   \end{tabular}
   \caption{Sizes of different keys used in the health sensor system implementation.}
   \label{tbl:size_chart}
@@ -191,13 +191,13 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
   Method                                      & Scheme          & C1                   & C2                   \\ \hline
   IBE PKG Keypair generation                  & Waters09        & 0.09965              & 0.02709              \\ %\hline
   IBE Encrypting CEK                          & Waters09        & 0.05265              & 0.18915              \\ %\hline
-  IBE Private Key (PK) generation             & Waters09        & 0.05614              & 0.01786              \\ %\hline
-  Encrypting PK                               & AES             & 0.00013              & 0.00010              \\ %\hline
+  IBE Secret Key (SK) generation              & Waters09        & 0.05614              & 0.01786              \\ %\hline
+  Encrypting SK                               & AES             & 0.00013              & 0.00010              \\ %\hline
   IBS PKG Keypair generation                  & Waters          & 0.09755              & 0.02715              \\ %\hline
-  IBS Private Key (SPK) generation            & Waters          & 0.00976              & 0.00287              \\ %\hline
+  IBS Secret Key (SSK) generation             & Waters          & 0.00976              & 0.00287              \\ %\hline
   IBS Sign                                    & Waters          & 0.00990              & 0.00288              \\ %\hline
   IBS Verify                                  & Waters          & 0.00758              & 0.00266              \\ %\hline
-  Encrypting SPK                              & AES             & 0.00006              & 0.00002              \\ %\hline
+  Encrypting SSK                              & AES             & 0.00006              & 0.00002              \\ %\hline
   RSA (1024-bit) keypair generation           & RSA             & 0.25427              & 0.11934              \\ %\hline
   RSA Encryption                              & RSA             & 0.01480              & 0.00440              \\ %\hline
   RSA Decryption                              & RSA             & 0.01472              & 0.00445              \\ %\hline
