@@ -43,18 +43,20 @@ In \gls{IoT}, we have in most cases the advantage of identifying devices in a ph
 This means that it is possible to authenticate devices, such as sensors. 
 Typically, this kind of authentication will rely on 1) manually inspection and 2) digital connection, e.g. through \gls{NFC}.
 In the proposed system, I assume that this type of authentication is achieved in a secure matter and do not discuss whether how this should be done.
+
 Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
+This authentication method uses a shared secret before authentication. 
 
 \subsection{Initialization}\label{init}
 The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
-To ensure a secure protocol, the main goal has be divided into several sub goals. 
-The response message containing the secret key has to en 1) encrypted. 
+For the protocol to be secure, there are several issues that need to be addressed. 
+The response message containing the secret key has to be 1) encrypted. 
 This can be achieved by using asymmetric encryption on a \gls{CEK} from which is used to do symmetric encryption on the secret key.
 The response message has to be 2) signed by the \gls{PKG} for integrity and authenticity reasons.
-There is an issue related to \textit{whom} can play the role of a device.
-For it to make sense applying 3) a nonce for replay protection, the initialization has to be unique of some kind.
-This implies that the device has to authenticate itself in a way that an adversary cannot do.
-This leads to 4) mutual authentication. 
+For it to make sense applying 3) a nonce for replay protection, the communication between the device and the \gls{PKG} has to be unique of some kind.
+This implies that the device has to authenticate itself in a way that an adversary cannot do, e.g. a shared secret.
+This secret can for instance be a hardware implemented secret in the device that the user reads (from the package) and authenticates manually at the \gls{PKG} before the initialization.
+% This leads to 4) mutual authentication. 
 
 When The Stig is setting up his \gls{HSS}, first he wants to configure the \gls{PKG}. 
 Any type of computer can play the role of the \gls{PKG} and The Stig has chosen his home server, from now ``the PKG''.
@@ -62,12 +64,12 @@ The \gls{PKG} creates two key pairs that is used to do \gls{IBE} and \gls{IBS}.
 Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
 
 In~\autoref{fig:init_ibe_1} the device plays the role as the mobile. 
-The \gls{ID} of every device has been given the term Name, this is due to \gls{NDN}. 
-Hence \gls{ID} and Name is the same.
-To be able to communicate securely under initialization, the device have to create a temporary \gls{MPK} and \gls{MSK} and then extract a temporary secret key for its Name. 
+The \gls{ID} of every device is a part of the Name under which the device registers a prefix.
+I.e. a device register \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
+To be able to communicate securely under initialization, the device have to create a temporary \gls{MPK} and \gls{MSK} and then extract a temporary secret key for its \gls{ID}. 
 At first, the device has to act as a \gls{PKG} for itself to ensure confidentiality, and the trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
-The device sends an Interest appending the temporary \gls{MPK} and the Name to the \gls{PKG} asking to join the \gls{PKG}s domain.
-The \gls{PKG} encrypts a \gls{CEK} with the temporary \gls{MPK} and the Name received from the device. 
+The device sends an Interest appending the temporary \gls{MPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s domain.
+The \gls{PKG} encrypts a \gls{CEK} with the temporary \gls{MPK} and the \gls{ID} received from the device. 
 Then the \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the secret key. 
 The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
 To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
@@ -83,7 +85,7 @@ The device has established a trust with its \gls{PKG} and can verify other devic
 Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
 This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device has joined the \gls{PKG}s trust domain.
 
-
+\todo{prove secureness of initialization protocol}
 
 
 % \begin{figure}[ht]
@@ -104,10 +106,19 @@ This results in a rendezvous authentication between the device and the mobile, a
 % \end{lstlisting}
 
 \subsection{Data Pull}\label{data_pull}
-As illustrated in~\autoref{fig:health-sensor-system}, the devices has now joined the \gls{PKG}s trust domain and are ready to communicate.
+The goal for this protocol is to achieve a secure one-round data pull with authorization and integrity.
+For the protocol to work and the data pull to be successful, 1) both devices belongs to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
+
+As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and are ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
-By signing the Interest and appending the Name, the receiving device can verify that the requester is a part of the same trust domain, and also be able to encrypt the sensor data (if needed) with the requesters Name.
-The requesting device receives the Data and verifies the signature and decrypts the sensor data.
+First the requester has to express an Interest to the target device asking for a specific resource. 
+The requester signs the Interest and appends it to the Content Name.
+The receiver checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
+If the requester is authorized, the receiver responds with the Data containing the resource. 
+The receiver will also do a symmetric encryption on the sensor data and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
+This step is only performed if the data confidentiality is needed. 
+Then the Data packet is signed and sent.
+Finally the requester receives the Data and verifies the signature and decrypts the sensor data.
 
 \begin{figure}[ht]
   \centering
@@ -115,6 +126,8 @@ The requesting device receives the Data and verifies the signature and decrypts 
   \caption{Mobile performing a data pull from a device in the network.}
   \label{fig:data_pull_ibe}
 \end{figure}
+
+\todo{prove secureness of data pull protocol}
 
 \subsection{IDSync}
 The File Synchronization Module (\autoref{file-sync}) can be used to distribute a fresh list of every device that is a member of the trust domain.
