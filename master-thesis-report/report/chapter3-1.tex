@@ -47,17 +47,17 @@ Some drawbacks related to \gls{IBE} are listed below:
 
 \section{Identity-Based Cryptography - Secureness}
 
-Boneh and Franklins \gls{IBE} scheme is only secure when using random oracles.
 A random oracle is like a ``black box'' that outputs truly random numbers.
-Typically random oracles are used when a hash function does not fulfill the mathematical requirements of a proof. 
-A system is in the \textit{random oracle model} when the system is fully secure and every hash function is replaced by a random oracle.
+When designing protocols in cryptography one first usually designs an ideal system where all parties have random oracle access, then proves the security.
+Second, one replaces the oracle access with a hash function.
+This gives an implementation of an ideal system in the real world, but without random oracles~\cite{DBLP:conf/ccs/BellareR93}. 
+It is just fine to make statements based on the ideal system, but debatable whether the same statements yields for the implementation in the real world.
+Canetti et al. concluded that there exist secure schemes in the \textit{Random Oracle Model}, but for which any implementation of the random oracle results in insecure schemes~\cite{DBLP:journals/jacm/CanettiGH04}.
+Boneh and Franklins \gls{IBE} scheme is only secure when using random oracles.
 
-\todo{random oracles vs hash should become clearer}
-
-In the \textit{standard model} hash functions are sufficient to achieve a fully secure proof.
-Since true randomness can be hard for every device to create, we tend to wanting to make cryptographic schemes in the standard model.
-
-Boneh and Boyen proposed a fully secure scheme in the standard model~\cite{DBLP:conf/crypto/BonehB04}.
+Following the \textit{Standard Model} one does not resort to the random oracle heuristic and does not rely on non-standard complexity assumptions.
+Hence proving security in the standard model is preferably.
+In 2014 Boneh and Boyen proposed a fully secure scheme in the standard model~\cite{DBLP:conf/crypto/BonehB04}.
 However it is not efficient. 
 
 First practical scheme was ~\cite{DBLP:journals/iacr/Waters04}.
