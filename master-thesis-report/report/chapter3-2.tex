@@ -129,26 +129,16 @@ Finally the requester receives the Data and verifies the signature and decrypts 
 
 \todo{prove secureness of data pull protocol}
 
-\subsection{IDSync}
-The File Synchronization Module (\autoref{file-sync}) can be used to distribute a fresh list of every device that is a member of the trust domain.
-This synchronization will be controlled by the \gls{PKG}, hence every device can verify each synchronization message.
+\subsection{Distribution using File Synchronization Module}
 
-\section{Confidentiality, Integrity and Availability}
+The Stig wants to have full control over the devices that are a part of the trust domain, and be able to remove a device if necessary.
+Each device should have an updated list of all public keys, i.e. every devices' \gls{ID}.
+The distribution of this list can easily be achieved by using the \gls{FSM} (\autoref{file-sync}).
+The \gls{PKG} will be the distributor in this synchronization and each device will be a subscriber.
 
-\begin{description}
-  \item[Confidentiality] 
-  The encryption can be achieved by encrypting with the Name of the requester.
-  As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
-  \item[Integrity and Authenticity]
-  Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
-  With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
-  Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \path{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
-  \item[Availability]
-  This is a harder problem to solve.
-  The network is purely wireless, hence vulnerable to jamming. 
-\end{description}
 
 \section{Trust Model}
+In this section the trust model will be explained. 
 
 \subsection{Access Control}\label{access_control}
 
@@ -170,3 +160,18 @@ However, due to scalability this is not a secure way to handle access control.
 If a device does not need a privilege, it does not need it.
 Hence it should not have it. 
 That is the least privilege access principle, which is default in~\cite{DBLP:conf/imis/GusmeroliPR12}.
+
+\section{Confidentiality, Integrity and Availability}
+
+\begin{description}
+  \item[Confidentiality] 
+  The encryption can be achieved by encrypting with the Name of the requester.
+  As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
+  \item[Integrity and Authenticity]
+  Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
+  With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
+  Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
+  \item[Availability]
+  This is a harder problem to solve.
+  The network is purely wireless, hence vulnerable to jamming. 
+\end{description}

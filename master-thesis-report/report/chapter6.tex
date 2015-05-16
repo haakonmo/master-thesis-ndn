@@ -1,5 +1,8 @@
 \chapter{Discussion}
-In this chapter it will be discussed 
+In this chapter the work done in conjunction to this thesis will be discussed. 
+First I will talk about the pros and cons using \gls{IBC} in \gls{NDN}.
+Then I will discuss whether the \gls{HSS} and possible attack related to the system. 
+Scalability issues and other applicable scenarios will be mentioned.
 
 \section{Identity-Based Cryptography]}
 One suggestion has been to add a monthly timestamp~\cite{DBLP:journals/iacr/BoldyrevaGK12} ~\cite{DBLP:conf/ctrsa/LibertV09} \todo{find better cite} to the name, but the the \gls{PKG} has to renew private keys for everybody each month. 
@@ -22,7 +25,7 @@ One drawback with the IDSync solution is that for the sender to be 100\% sure th
 Likewise when a receiver verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
 
 \subsection{Attacks}
-In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, suck as radio jamming and battery exhaustion. 
+In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that are relying on some sort of crucial information derived from a Sync application~\autoref{file-sync} are vulnerable to \gls{DoS}.
 
 \section{Other Use Cases}
