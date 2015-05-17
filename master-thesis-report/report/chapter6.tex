@@ -1,7 +1,7 @@
 \chapter{Discussion}
 In this chapter the work done in conjunction to this thesis will be discussed. 
 First I will talk about the pros and cons using \gls{IBC} in \gls{NDN}.
-Then I will discuss whether the \gls{HSS} and possible attack related to the system. 
+Then I will discuss the \gls{HSS} and possible drawbacks in the system. 
 Scalability issues and other applicable scenarios will be mentioned.
 
 \section{Identity-Based Cryptography]}
@@ -10,7 +10,7 @@ This solution scales very badly.
 With the \gls{PKG}s Name Sync application, every user will be notified when a identity is revoked.
 There is no use for periodically checking names.
 
-\subsection{Trusting Trusted Third Party in Identity-Based Cryptography}
+Trusting Trusted Third Party in Identity-Based Cryptography
 Issues of trusting the \gls{PKG}, i.e. a \gls{TTP}. 
 If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all private keys corresponding to all IDs that used the compromised \gls{PKG}. 
 Do every ID trust the \gls{PKG}? Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, will always be a problem for a user.
@@ -19,9 +19,12 @@ Secure channel for private key exchange.
 \section{Health Sensor System}
 Not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
 
-\subsection{Sync}
+In ~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography. 
+
+
+\section{Sync}
 The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
-One drawback with the IDSync solution is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has reveiced the latest sync state available from the \gls{PKG}.
+One drawback with the IDSync solution is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
 Likewise when a receiver verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
 
 \subsection{Attacks}
@@ -32,7 +35,7 @@ All applications that are relying on some sort of crucial information derived fr
 
 \begin{enumerate}
 	\item Home Automation Systems
-	\item 
+	\item Organization, internal communication
 \end{enumerate}
 
 \section{Scalability}

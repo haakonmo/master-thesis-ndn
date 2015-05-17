@@ -191,7 +191,15 @@ Check data from local applications first cached in \gls{CS}, if not, store in \g
 \subsection{Security}\label{ndn-security}
 The security aspects of \gls{NDN} network protocol is one of the most important reasons why 
 Secure data VS secure channel.
+
+Trust the content.
+The desired content from the intended source and unmodified in transit~\cite{secure-network-content}.
+
+Example from IP
+
+How it is in NDN.
 The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
+Easily encrypt data with \gls{NDN}
 
 Based on the nature of this architecture, \gls{NDN} facilitates the practice of anonymity in the network. 
 In a Tor network~\cite{DBLP:conf/uss/DingledineMS04}, each node participating in a circuit only knows the two neighboring nodes.
@@ -202,6 +210,7 @@ Unless monitoring a complete network, it should be close to impossible to track 
 However because of the semantic naming there are some issues related to privacy as it easily can be seen in the Name \textit{what} the content contains in many cases.
 Also since signing of each Interest is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
+
 
 \todo{more in this section}
 
