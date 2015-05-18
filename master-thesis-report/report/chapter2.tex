@@ -192,15 +192,53 @@ Check data from local applications first cached in \gls{CS}, if not, store in \g
 The security aspects of \gls{NDN} network protocol is one of the most important reasons why 
 Secure data VS secure channel.
 
+Below I will present some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}.
 Trust the content.
-The desired content from the intended source and unmodified in transit~\cite{secure-network-content}.
+The desired content from the intended source and unmodified in transit.
 
 Example from IP
+Trust the host
+All trust comes outside the namespace, due to the global \gls{PKI}.
+Namespace-based trust\gls{SDSI}
+\gls{DNS} - point to a host that speaks for the name you are interested in
+\gls{CDN} often operated by \gls{ASP}
+Conversation with a bank, only over \gls{TLS}, trust is based on certificates
+issues: tampering, eavesdropping
+Not possible over \gls{IP} to retrieve content from other than the trusted host, because of malware.
+Linkage between names and host, a distributed solution.
+% Chances that two distinguished hash computations are equal are negligible, hence its practical to compute this locally, i.e. do not need any distribution.
+
+I requires security to change the network trust. 
+To mathematically prove that the content originates from the believed author, and that its not modified nor been exposed to unauthorized eyes.
+
+Idea: 
+Link name and content so that author can sign this. 
+Anyone can retrieve any piece of data from anyone regardless of secure channel or not.
+To do this we must achieve: validity, provenance and relevance
+How do we achieve this idea? 
+
+Validity:
+One solution is to do this linkage cryptographically.
+Hash verification, e.g. \gls{SHA1}. \todo{link hash paper}
+
+Provenance:
+Sign data with a public key pair.
+Mapping between Name and Content, cryptographically signed~\cite{secure-network-content}.
+This mapping is unique.
+The Name can be of any form.
+Verify the authenticity and correctness
+This approach is good because different rules should apply for different Names and applications. 
+
+
+
+Relevance:
+The network alone does not however provide any relevance of the data.
 
 How it is in NDN.
 The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
 Easily encrypt data with \gls{NDN}
 
+% TOR network
 Based on the nature of this architecture, \gls{NDN} facilitates the practice of anonymity in the network. 
 In a Tor network~\cite{DBLP:conf/uss/DingledineMS04}, each node participating in a circuit only knows the two neighboring nodes.
 Only a ``Global passive adversary'' that can monitor the whole network is able to decide the whole packet path, hence know \textit{who} is requesting and \textit{who} is responding.
@@ -230,3 +268,5 @@ In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate data aggregation in wir
 Burke et al. addresses efficient and secure Sensing over \gls{NDN} in~\cite{DBLP:conf/nca/BurkeGNT14}
 
 There is done some research with \gls{IBC} in \gls{NDN}. In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Zhang et al. proposes a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
+
+Securing Building Management Systems Using Named Data Networking~\cite{DBLP:journals/network/ShangDMBZ14}tor28mai1430

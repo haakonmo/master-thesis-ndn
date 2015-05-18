@@ -16,10 +16,21 @@ If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all
 Do every ID trust the \gls{PKG}? Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, will always be a problem for a user.
 Secure channel for private key exchange. 
 
+Can authenticate Data even using insecure DNS or HTTP. 
+There is only one linkage between the Name and the Content, and if one have the right \gls{MPK}, there is no doubt where the data originates from and that it is not altered.
+In RSA public key cryptography we have to find the key related to the signature. 
+In worst case this will be equivalent of retrieving the \gls{MPK} each time, which is not likely. 
+Or the \gls{MPK} can be appended to the message.
+
 \section{Health Sensor System}
 Not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
 
 In ~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography. 
+
+Encrypting with same symmetric key for each set of data, limits the encryption computation for the device if several devices requests the same data.
+Using a unique key for each time data is requested is more secure and can be used for less confidential content.
+
+Adressing is dealt with one place in the architecture compared to an equivalent system not using \gls{NDN}. 
 
 
 \section{Sync}
@@ -36,6 +47,8 @@ All applications that are relying on some sort of crucial information derived fr
 \begin{enumerate}
 	\item Home Automation Systems
 	\item Organization, internal communication
+	\item \gls{BAS}
+	\item \gls{BMS}
 \end{enumerate}
 
 \section{Scalability}
