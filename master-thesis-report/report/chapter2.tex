@@ -67,6 +67,20 @@ The \gls{NDN} project is also one of few projects selected by \gls{NSF} \gls{FIA
 Since the knowledge of how \gls{NDN} works is not disseminated amongst computer scientists, it is essential for this paper to describe how it works.
 This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} and compare some solutions with the equivalent solutions in \gls{IP}.
 
+\subsection{Based on Existing Solution}
+The goal for the network design is essentially making it more applicable for content without removing the communication service that \gls{IP} was designed for. 
+Designing a new network protocol we have to look at what measurements we have done in the existing \gls{IP} network to tailor it towards content sharing.
+As the reader might notice after reading the background material, \gls{NDN} has a lot of concepts that we can map to well working solutions from the \gls{IP} network.
+Some examples are:
+\begin{itemize}
+  \item BitTorrent - 
+  The concept of sharing bits of files between peers in a network is a well-working distribution method for sharing content.
+  \item \gls{CDN} - 
+  Many \gls{ASP}s, such as Netflix and YouTube, have found out that the \gls{IP} network performs a lot better for their costumers if they cache up their data.
+\end{itemize}
+
+Namespace-based trust introduced in \gls{SDSI}, binding names to public keys.
+
 \subsection{Names}\label{name}
 In the \gls{NDN} network there is no strict rules for a Name.
 This means that a network node only routes an Interest based on longest prefix match.
@@ -189,9 +203,7 @@ Check data from local applications first cached in \gls{CS}, if not, store in \g
 
 
 \subsection{Security}\label{ndn-security}
-The security aspects of \gls{NDN} network protocol is one of the most important reasons why .
-Below I will present some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}.
-Explain the difference in secure data and a secure channel.
+Below I will present why \gls{NDN} facilitates good security properties, explaining some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}, and the difference in secure data and securing channel.
 
 \subsubsection{Trusting Host vs Trusting Content}
 The \gls{IP} network is designed in a way that makes us wanting to trust the host.
@@ -254,15 +266,7 @@ However because of the semantic naming there are some issues related to privacy 
 Also since signing of each Interest is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
 
-\subsubsection{...}
 \todo{more in this section}
-
-Many \gls{ASP}s, such as Netflix and YouTube, have found out that the \gls{IP} network performs a lot better for their costumers if they cache up their data.
-This type of network is called \gls{CDN}.  
-
-Linkage between names and host, a distributed solution.
-
-Namespace-based trust introduced in \gls{SDSI}, binding names to public keys.
 
 \section{Attacks}
 
