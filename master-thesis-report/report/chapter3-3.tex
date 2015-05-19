@@ -54,17 +54,14 @@ And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_in
 
 
 \section{File Synchronization Module - Implementation}
-Application goal explained in~\autoref{file-sync}
-
-FileSync code~\cite[fileSync.py]{garseg15}
-
-FileSync is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
-
-\subsection{File Watcher}
-The application should trigger synchronization when files that are watched is changed, or when a file is added/removed.
-A library that makes it possible to watch files in an \gls{OS} is Watchdog~\cite{watchdog}. 
+\gls{FSM} is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
+Application goals are explained in~\autoref{file-sync}.
+The module is highly based on the Python implementation of ChronoSync (\cite{ndn-git}, \path{PyNDN2/examples/test_chrono_chat.py}).
+The code can be retrieved from the thesis work repository~\cite[fileSync.py]{garseg15}
 
 \subsection{Packet Design}
+The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
+
 
 \begin{description}
   \item[Init Interest] - 
@@ -89,6 +86,9 @@ A library that makes it possible to watch files in an \gls{OS} is Watchdog~\cite
   \label{fig:sync-interest-data}
 \end{figure}
 
+\subsection{File Watcher}
+The module triggers synchronization when files that are watched is changed, or when a file is added or removed.
+A library that makes it possible to watch files in OS X, Linux or Windows, is Watchdog~\cite{watchdog}. 
 
 \section{Health Sensor System - Implementation}
 Application flow explained in~\autoref{sensor-application}
