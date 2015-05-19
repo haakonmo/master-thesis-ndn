@@ -21,9 +21,11 @@ The major modules implemented in \gls{NFD} is:
   \item Management - Enables users/programs to interact with the \gls{NFD} forwarder state.
   \item\gls{RIB} Management - Managing routing protocols and application prefix registration.
 \end{itemize}
+\gls{NFD} is running \gls{NDN} over \gls{IP}.
+\todo{write more on this}
 
 \subsection{PyNDN2}
-The work done in this thesis is written in Python, hence the \gls{PyNDN2} is used.
+The work done in this thesis is written in Python, hence the \gls{PyNDN2}~\cite{pyndn2-git} is used.
 This is an easy to use implementation of \gls{NDN} and comes with example code.
 
 Because the \gls{NDN} protocol require signing of Data packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
@@ -54,14 +56,14 @@ And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_in
 
 
 \section{File Synchronization Module - Implementation}
-\gls{FSM} is a python application that will synchronize all files in a specified path, with all participants within the synchronization room.
+\gls{FSM} is a python application that runs over \gls{NDN} and synchronizes all files in a specified path, with all participants within the synchronization room.
 Application goals are explained in~\autoref{file-sync}.
-The module is highly based on the Python implementation of ChronoSync (\cite{ndn-git}, \path{PyNDN2/examples/test_chrono_chat.py}).
+The module is highly based on the Python implementation of ChronoSync~\cite[test-chrono-chat.py]{pyndn2-git}.
 The code can be retrieved from the thesis work repository~\cite[fileSync.py]{garseg15}
 
 \subsection{Packet Design}
 The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
-
+The code can be reviewed i~\cite[fileSyncBuf.proto]{garseg15}.
 
 \begin{description}
   \item[Init Interest] - 
@@ -91,19 +93,25 @@ The module triggers synchronization when files that are watched is changed, or w
 A library that makes it possible to watch files in OS X, Linux or Windows, is Watchdog~\cite{watchdog}. 
 
 \section{Health Sensor System - Implementation}
-Application flow explained in~\autoref{sensor-application}
+The \gls{HSS} is a python application that runs over \gls{NDN}.
+Application flow explained in~\autoref{sensor-application}.
+The implementation does not deal with sensor data retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
+The code is divided into several pieces.
 
-Device code~\cite[device.py]{garseg15}
-
-\gls{PKG} code~\cite[publicKeyGenerator.py]{garseg15}
-
-Main code~\cite[application.py]{garseg15}
+\begin{itemize}
+  \item Device code~\cite[device.py]{garseg15}
+  \item \gls{PKG} code~\cite[publicKeyGenerator.py]{garseg15}
+  \item IdentityBasedCrypto code~\cite[identityBasedCrypto.py]{garseg15}
+  \item Main code~\cite[application.py]{garseg15}
+\end{itemize}
+\todo{figure of devices and what code/class they run}
 
 \subsection{Access Control}
 In~\autoref{access_control} I present a possible solution for access control.
-This is however not implemented in the application, because there does not exist a Python library and it is considered to be too high workload for this thesis.
+This is however not implemented in the application, because it is considered too high workload for this thesis.
 
 \subsection{Packet Design}
+The packet format is designed with Google Protocol Buffers.
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
 Initially the idea was to have the \textit{\gls{TMPK}} appended to the Content Name. 
 However I experienced a problem where the Init Data never arrived at destination node. 
@@ -112,6 +120,7 @@ Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the Conten
 The \gls{TMPK} can as easily be appended to the KeyLocator Name, hence the Data response can be 2\gls{KB} less, resulting to a 6866 bytes Init Data packet.
 
 Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data}.
+The code can be reviewed i~\cite[messageBuf.proto]{garseg15}.
 \begin{description}
 	\item[Init Interest] - 
   The initialization Interest seen in~\autoref{fig:init_interest-data}
@@ -140,6 +149,44 @@ Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data
   \caption{Sensor Interest and Data}
   \label{fig:sensor_interest-data}
 \end{figure}
+
+\subsection{Running the Code}
+First the \gls{NFD} must be started~\autoref{lst:nfd-start} on each device, if not already running. 
+Then we have to make sure that each device participating in the network know the Name and \gls{IP} address binding, since the testing will run \gls{NDN} over \gls{IP}.
+This is accomplished by registering the mapping in the \gls{FIB} at each device showed in the second line in~\autoref{lst:nfd-start}.
+
+On the device playing the role of the \gls{PKG}, run the code presented in~\autoref{lst:pkg}. 
+This will create the key pair MPK\textsubscript{pkg} and MSK\textsubscript{pkg} and register the prefix where the other nodes can find the \gls{PKG}.
+
+On the device playing the role of e.g. a sensor, run the code presented in~\autoref{lst:data}.
+This will automatically register the prefix of the sensor, and start the initialize protocol with the \gls{PKG}.
+
+On the device playing the role of the user device (e.g. a mobile), run the code presented in~\autoref{lst:pull}.
+This will automatically start the initialize protocol with the \gls{PKG}.
+Running \texttt{r} will make the device expressing an Interest for sensor data from the sensor.
+
+\begin{lstlisting}[language=bash, caption={NFD Start}, label={lst:nfd-start}]
+  $ nfd-start
+  $ nfdc register /ndn/no/ntnu/<data-device> udp://<device-ip-address>
+  $ nfdc register /ndn/no/ntnu/<pull-device> udp://<device-ip-address>
+  $ nfdc register /ndn/no/ntnu/<pkg> udp://<pkg-ip-address>
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption={Start PKG}, label={lst:pkg}]
+  $ python application.py
+  $ pkg
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption={Start a device registering a prefix.}, label={lst:data}]
+  $ python application.py
+  $ data 
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption={Start a device that will express Interest in data.}, label={lst:pull}]
+  $ python application.py
+  $ pull
+  $ r
+\end{lstlisting}
 
 \section{Testing}
 In this section it will be presented which computers that will be used during testing. 
@@ -223,3 +270,4 @@ The results are presented in~\autoref{tbl:rtt_chart}.
   \caption{Round trip time chart. Time is measured in seconds.}
   \label{tbl:rtt_chart}
 \end{table}
+
