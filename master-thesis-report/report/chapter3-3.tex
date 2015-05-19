@@ -203,6 +203,7 @@ Each computer is assigned an ID which will be used for reference in the performa
   ID      & Computer                  & Operating System          & Processor                    \\ \hline
   C1      & Macbook Pro               & 64-bit OS X 10.10         & Intel Core i7 @ 2.0GHz       \\ %\hline
   C2      & Garsbook                  & 64-bit Ubuntu 14.04 LTS   & Intel Core i5 @ 3.0GHz       \\ %\hline
+  C3      & HP                        & 64-bit Ubuntu 14.04 LTS   & Intel Core i7 @ 2.8GHz       \\ %\hline
   \end{tabular}
   \caption{Computers used during tests.}
   \label{tbl:target_computers}
@@ -234,25 +235,25 @@ To be able to evaluate if \gls{IBC} is applicable for devices with small computa
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
 \begin{table}[h]
-  \begin{tabular}{llll}
-  Method                                      & Scheme          & C1                   & C2                   \\ \hline
-  IBE PKG Keypair generation                  & Waters09        & 0.09965              & 0.02709              \\ %\hline
-  IBE Encrypting CEK                          & Waters09        & 0.05265              & 0.18915              \\ %\hline
-  IBE Secret Key (SK) generation              & Waters09        & 0.05614              & 0.01786              \\ %\hline
-  Encrypting SK                               & AES             & 0.00013              & 0.00010              \\ %\hline
-  IBS PKG Keypair generation                  & Waters          & 0.09755              & 0.02715              \\ %\hline
-  IBS Secret Key (SSK) generation             & Waters          & 0.00976              & 0.00287              \\ %\hline
-  IBS Sign                                    & Waters          & 0.00990              & 0.00288              \\ %\hline
-  IBS Verify                                  & Waters          & 0.00758              & 0.00266              \\ %\hline
-  Encrypting SSK                              & AES             & 0.00006              & 0.00002              \\ %\hline
-  RSA (1024-bit) keypair generation           & RSA             & 0.25427              & 0.11934              \\ %\hline
-  RSA Encryption                              & RSA             & 0.01480              & 0.00440              \\ %\hline
-  RSA Decryption                              & RSA             & 0.01472              & 0.00445              \\ %\hline
-  RSA Sign                                    & RSA             & 0.01615              & 0.00459              \\ %\hline
-  RSA Verify                                  & RSA             & 0.01572              & 0.00453              \\ %\hline
-  ECDSA Keypair generation                    & ECDSA           & 0.00057              & 0.00020              \\ %\hline
-  ECDSA Sign                                  & ECDSA           & 0.00050              & 0.00021              \\ %\hline
-  ECDSA Verify                                & ECDSA           & 0.00090              & 0.00037              \\ %\hline
+  \begin{tabular}{lllll}
+  Method                                      & Scheme          & C1          & C2           & C3              \\ \hline
+  IBE PKG Keypair generation                  & Waters09        & 0.09965     & 0.02709      & 0.00010         \\ %\hline
+  IBE Encrypting CEK                          & Waters09        & 0.05265     & 0.18915      & 0.00010         \\ %\hline
+  IBE Secret Key (SK) generation              & Waters09        & 0.05614     & 0.01786      & 0.00010         \\ %\hline
+  Encrypting SK                               & AES             & 0.00013     & 0.00010      & 0.00010         \\ %\hline
+  IBS PKG Keypair generation                  & Waters          & 0.09755     & 0.02715      & 0.00010         \\ %\hline
+  IBS Secret Key (SSK) generation             & Waters          & 0.00976     & 0.00287      & 0.00010         \\ %\hline
+  IBS Sign                                    & Waters          & 0.00990     & 0.00288      & 0.00010         \\ %\hline
+  IBS Verify                                  & Waters          & 0.00758     & 0.00266      & 0.00010         \\ %\hline
+  Encrypting SSK                              & AES             & 0.00006     & 0.00002      & 0.00010         \\ %\hline
+  RSA (1024-bit) keypair generation           & RSA             & 0.25427     & 0.11934      & 0.00010         \\ %\hline
+  RSA Encryption                              & RSA             & 0.01480     & 0.00440      & 0.00010         \\ %\hline
+  RSA Decryption                              & RSA             & 0.01472     & 0.00445      & 0.00010         \\ %\hline
+  RSA Sign                                    & RSA             & 0.01615     & 0.00459      & 0.00010         \\ %\hline
+  RSA Verify                                  & RSA             & 0.01572     & 0.00453      & 0.00010         \\ %\hline
+  ECDSA Keypair generation                    & ECDSA           & 0.00057     & 0.00020      & 0.00010         \\ %\hline
+  ECDSA Sign                                  & ECDSA           & 0.00050     & 0.00021      & 0.00010         \\ %\hline
+  ECDSA Verify                                & ECDSA           & 0.00090     & 0.00037      & 0.00010         \\ %\hline
   \end{tabular}
   \caption{Cryptographic methods time chart. The time is measured in seconds and is the mean time of 100 rounds. }
   \label{tbl:time_chart}
@@ -263,15 +264,22 @@ The initialization protocol described in~\autoref{init} and the data pull protoc
 The results are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
   \begin{tabular}{lll}
-  Protocol                                & C1                    & C1                      \\ \hline
-  Initialization                          & 0.2029                & 0.0708                  \\ %\hline
-  Data Pull                               & 0.0614                & 0.0310                  \\ %\hline
+  Protocol                                & C1            & C1            & C3            \\ \hline
+  Initialization                          & 0.2029        & 0.0708        & 0.0000        \\ %\hline
+  Data Pull                               & 0.0614        & 0.0310        & 0.0000        \\ %\hline
   \end{tabular}
   \caption{Round trip time chart. Time is measured in seconds.}
   \label{tbl:rtt_chart}
 \end{table}
 
-\todo{figure of computers involved in init og data pull}
+The \gls{HSS} is tested on two of the computers in~\autoref{tbl:target_computers}.
+The topology is shown in~\autoref{fig:hss-testbed}.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{hss-testbed.png}
+  \caption{Health Sensor System implementation tested over two computer. C3 runs two nodes, i.e. the PKG and one device. C1 runs a second device.}
+  \label{fig:hss-testbed}
+\end{figure}
 
 \section{NDN node 23 - NTNU}
 Node 24 in NDN testbed
