@@ -193,7 +193,7 @@ The security aspects of \gls{NDN} network protocol is one of the most important 
 Below I will present some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}.
 Explain the difference in secure data and a secure channel.
 
-
+\subsubsection{Trusting Host vs Trusting Content}
 The \gls{IP} network is designed in a way that makes us wanting to trust the host.
 What you actually are trusting is the mapping of the \gls{URL} to the \gls{IP} address.
 It is not a good security model doing a whole lot of mapping at different layers, since each mapping introduces a potentially vulnerable target for forgery.
@@ -207,18 +207,10 @@ This is the concept of securing the channel, and the trust is based on certifica
 Due to the global \gls{PKI} and essentially because the certificate is signed by a \gls{TTP} all trust comes outside the namespace.
 This makes it problematic over \gls{IP} to retrieve content from other than the trusted host because you do not trust any other than the host you are connected to via the secure channel.
 
-
-Many \gls{ASP}s, such as Netflix and YouTube, have found out that the \gls{IP} network performs a lot better for their costumers if they cache up their data.
-This type of network is called \gls{CDN}.  
-
-Linkage between names and host, a distributed solution.
-
-Namespace-based trust introduced in \gls{SDSI}, binding names to public keys.
-
 A goal is to get the desired content from the intended source, unmodified in transit.
 Therefore a better solution would be to trust the content rather than the host.
 This concept requires us to change the network trust.
-Skipping all the trust based in mapping of hosts, where the data comes from, and securing the channel.
+Skipping 1) all the trust based in mapping of hosts, 2) where the data comes from, and 3) securing the channel.
 The content should be linked to the publisher and this linkage should be signed by the publisher. 
 The concept is to mathematically prove that the content originates from the believed publisher, and that its not modified nor been exposed to unauthorized eyes (if necessary).
 This introduces a possibility that anyone can retrieve any piece of data from anyone regardless of secure channel or not.
@@ -235,23 +227,22 @@ One can do hash verification on the content to be sure that the content is unmod
 But there should be a binding between the Name to the content.
 However this does not provide provenance nor relevance.
 For this there should be a linkage between the publisher, the Name and the content.
-Doing a triple mapping the Name (N) and content (C), cryptographically signed by the publisher (P)~\autoref{eq:mapping_name-content}.
-This mapping is unique relying on the hash computation done in the signing, and provide validity, provenance and relevance.
+Doing a triple mapping of the Name (N) and content (C), cryptographically signed by the publisher (P) seen in~\autoref{eq:mapping_name-content}.
+This mapping is unique, relying on the hash computation done in the signing, and it provides validity, provenance and relevance.
 A requester can easily verify the Name and content binding, as well as authenticating that the data originates from the publisher who knows what the content is.
-
+Now anybody can retrieve \texttt{M\textsubscript{(N,P,C)}}, hence an untrusted host and an insecure channel is not so bad anymore.
 
 \begin{equation}\label{eq:mapping_name-content}
 M_{(N, P, C)} = (N,C,Sign_{P}(N,C))
 \end{equation}
 
-A clear benefit is that the Name can be of any form. 
-This approach is good because different rules should apply for different Names and applications. 
+A clear benefit of this approach is that the Name can be of any form. 
+Different naming rules should apply for different applications as there are no global naming rules that are optimal for each application.
 
+This concept is integrated in the \gls{NDN} protocol and it is required that every packet delivered from application layer is signed by the application.
+The protocol also provides an easy way for the application to encrypt data providing confidentiality.
 
-How it is in NDN.
-The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
-Easily encrypt data with \gls{NDN}
-
+\subsubsection{Anonymity}
 % TOR network
 Based on the nature of this architecture, \gls{NDN} facilitates the practice of anonymity in the network. 
 In a Tor network~\cite{DBLP:conf/uss/DingledineMS04}, each node participating in a circuit only knows the two neighboring nodes.
@@ -263,8 +254,15 @@ However because of the semantic naming there are some issues related to privacy 
 Also since signing of each Interest is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
 
-
+\subsubsection{...}
 \todo{more in this section}
+
+Many \gls{ASP}s, such as Netflix and YouTube, have found out that the \gls{IP} network performs a lot better for their costumers if they cache up their data.
+This type of network is called \gls{CDN}.  
+
+Linkage between names and host, a distributed solution.
+
+Namespace-based trust introduced in \gls{SDSI}, binding names to public keys.
 
 \section{Attacks}
 
