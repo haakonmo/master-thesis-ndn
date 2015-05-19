@@ -219,31 +219,34 @@ A goal is to get the desired content from the intended source, unmodified in tra
 Therefore a better solution would be to trust the content rather than the host.
 This concept requires us to change the network trust.
 Skipping all the trust based in mapping of hosts, where the data comes from, and securing the channel.
-The content should be mapped to the authors Name and this mapping should be signed by the author. 
-The concept is to mathematically prove that the content originates from the believed author, and that its not modified nor been exposed to unauthorized eyes.
+The content should be linked to the publisher and this linkage should be signed by the publisher. 
+The concept is to mathematically prove that the content originates from the believed publisher, and that its not modified nor been exposed to unauthorized eyes (if necessary).
+This introduces a possibility that anyone can retrieve any piece of data from anyone regardless of secure channel or not.
+How can this idea be achieved? 
+As Diana Smetters and Van Jacobsen says~\cite{secure-network-content}, we must ensure the content's validity, provenance and relevance.
 
-Idea: 
-Link name and content so that author can sign this. 
-Anyone can retrieve any piece of data from anyone regardless of secure channel or not.
-To do this we must achieve: validity, provenance and relevance
-How do we achieve this idea? 
+\begin{itemize}
+  \item Validity - Complete and unmodified content from the publisher.
+  \item Provenance - Should the publisher be trusted with the content requested?
+  \item Relevance - Is the content what the requester intended?
+\end{itemize}
 
-Validity:
-One solution is to do this linkage cryptographically.
-Hash verification, e.g. \gls{SHA1}. \todo{link hash paper}
+One can do hash verification on the content to be sure that the content is unmodified. 
+But there should be a binding between the Name to the content.
+However this does not provide provenance nor relevance.
+For this there should be a linkage between the publisher, the Name and the content.
+Doing a triple mapping the Name (N) and content (C), cryptographically signed by the publisher (P)~\autoref{eq:mapping_name-content}.
+This mapping is unique relying on the hash computation done in the signing, and provide validity, provenance and relevance.
+A requester can easily verify the Name and content binding, as well as authenticating that the data originates from the publisher who knows what the content is.
 
-Provenance:
-Sign data with a public key pair.
-Mapping between Name and Content, cryptographically signed~\cite{secure-network-content}.
-This mapping is unique.
-The Name can be of any form.
-Verify the authenticity and correctness
+
+\begin{equation}\label{eq:mapping_name-content}
+M_{(N, P, C)} = (N,C,Sign_{P}(N,C))
+\end{equation}
+
+A clear benefit is that the Name can be of any form. 
 This approach is good because different rules should apply for different Names and applications. 
 
-
-
-Relevance:
-The network alone does not however provide any relevance of the data.
 
 How it is in NDN.
 The network demands that every packet delivered from application layer is signed by the application for integrity and authenticity.
