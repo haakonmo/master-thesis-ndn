@@ -1,6 +1,10 @@
 hashfunction Sign;
 usertype ContentEncryptionKey, Content;
 
+const pk: Function;
+secret sk: Function;
+inversekeys (pk,sk);
+
 protocol HSSDataPull (PKG, D1, D2) 
 {
 	
@@ -25,12 +29,16 @@ protocol HSSDataPull (PKG, D1, D2)
 		#send_1(D1, D2,Rb, {D1,msg}pk(D2));
 
 		# reveive Data D2
-		var Key: ContentEncryptionKey;
+		var CEK: ContentEncryptionKey;
 		var Data: Content;
-		recv_1(D2, D1,  Ra, { D2,Key }pk(D1), Sign({ D2,Key }pk(D1), Ra, D2), { D2, Data }k(D2,D1));
+		recv_1(D2, D1,       Ra,     { {CEK}pk(D1) }sk(D2),     { Data }k(D2,D1)  );
 
-		claim_D1(D1, Secret, Key);
+		claim_D1(D1, Alive);
+		claim_D1(D1, Secret, CEK);
 		claim_D1(D1, Secret, Data);
+		claim_D1(D1, Weakagree);
+		claim_D1(D1, Niagree);
+		claim_D1(D1, Nisynch);
 	}
 
 	role D2 
@@ -44,13 +52,16 @@ protocol HSSDataPull (PKG, D1, D2)
 		# receive Interest D1
 		#recv_1(D1, D2, Rb);
 		
-		fresh Key: ContentEncryptionKey;
-		fresh Data: Content;
 		# send Data D1
+		fresh CEK: ContentEncryptionKey;
+		fresh Data: Content;
+		send_1(D2, D1,       Ra,      { {CEK}pk(D1) }sk(D2),     { Data }k(D2,D1)  );
 
-		send_1(D2, D1,  Ra, { D2,Key }pk(D1), Sign({ D2,Key }pk(D1), Ra, D2), { D2, Data }k(D2,D1));
-
-		claim_D2(D2, Secret, Key);
+		claim_D2(D2, Alive);
+		claim_D2(D2, Secret, CEK);
 		claim_D2(D2, Secret, Data);
+		claim_D2(D2, Weakagree);
+		claim_D2(D2, Niagree);
+		claim_D2(D2, Nisynch);
 	}
 }
