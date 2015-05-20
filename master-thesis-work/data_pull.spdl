@@ -1,0 +1,56 @@
+hashfunction Sign;
+usertype ContentEncryptionKey, Content;
+
+protocol HSSDataPull (PKG, D1, D2) 
+{
+	
+	role PKG 
+	{
+		#receive Interest D1
+		#send Data D1
+
+		#receive Interest D2
+		#send Data D2
+	}
+	
+	role D1 
+	{
+		# send Interest PKG
+		# reveive Data PKG
+		
+		var Ra: Nonce;
+		fresh Rb: Nonce;
+		
+		# send Interest D2
+		#send_1(D1, D2,Rb, {D1,msg}pk(D2));
+
+		# reveive Data D2
+		var Key: ContentEncryptionKey;
+		var Data: Content;
+		recv_1(D2, D1,  Ra, { D2,Key }pk(D1), Sign({ D2,Key }pk(D1), Ra, D2), { D2, Data }k(D2,D1));
+
+		claim_D1(D1, Secret, Key);
+		claim_D1(D1, Secret, Data);
+	}
+
+	role D2 
+	{
+		# send Interest PKG
+		# reveive Data PKG
+		
+		fresh Ra: Nonce;
+		var Rb: Nonce;
+
+		# receive Interest D1
+		#recv_1(D1, D2, Rb);
+		
+		fresh Key: ContentEncryptionKey;
+		fresh Data: Content;
+		# send Data D1
+
+		send_1(D2, D1,  Ra, { D2,Key }pk(D1), Sign({ D2,Key }pk(D1), Ra, D2), { D2, Data }k(D2,D1));
+
+		claim_D2(D2, Secret, Key);
+		claim_D2(D2, Secret, Data);
+	}
+}

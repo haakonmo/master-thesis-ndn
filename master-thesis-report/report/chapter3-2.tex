@@ -83,7 +83,7 @@ The device has established a trust with its \gls{PKG} and can verify other devic
 \end{figure}
 
 Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
-This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device has joined the \gls{PKG}s trust domain.
+This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device can join the \gls{PKG}s trust domain.
 
 \todo{prove secureness of initialization protocol}
 
@@ -107,7 +107,7 @@ This results in a rendezvous authentication between the device and the mobile, a
 
 \subsection{Data Pull}\label{data_pull}
 The goal for this protocol is to achieve a secure one-round data pull with authorization and integrity.
-For the protocol to work and the data pull to be successful, 1) both devices belongs to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
+For the protocol to work and the data pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
 
 As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and are ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
@@ -116,7 +116,7 @@ The requester signs the Interest and appends it to the Content Name.
 The receiver checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
 If the requester is authorized, the receiver responds with the Data containing the resource. 
 The receiver will also do a symmetric encryption on the sensor data and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
-This step is only performed if the data confidentiality is needed. 
+This step is only performed if data confidentiality is needed. 
 Then the Data packet is signed and sent.
 Finally the requester receives the Data and verifies the signature and decrypts the sensor data.
 
@@ -133,7 +133,7 @@ Finally the requester receives the Data and verifies the signature and decrypts 
 
 The Stig wants to have full control over the devices that are a part of the trust domain, and be able to remove a device if necessary.
 Each device should have an updated list of all public keys, i.e. every devices' \gls{ID}.
-The distribution of this list can easily be achieved by using the \gls{FSM} (\autoref{file-sync}).
+The distribution of this list can easily be achieved by using the \gls{FSM} (\autoref{file-sync} \& \autoref{key-distribution}).
 The \gls{PKG} will be the distributor in this synchronization and each device will be a subscriber.
 
 
@@ -165,7 +165,7 @@ That is the least privilege access principle, which is default in~\cite{DBLP:con
 Another solution is to go for a \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
 
 \section{Security Analysis}
-
+In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
 \todo{!!}
 
 \subsection{Confidentiality}
@@ -180,3 +180,4 @@ Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/dev
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
+An adversary could try to send infinite Interests to a device with an unvalid signature, hence the device may be overloaded of work and might run out of battery fast.
