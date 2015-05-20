@@ -164,17 +164,19 @@ That is the least privilege access principle, which is default in~\cite{DBLP:con
 
 Another solution is to go for a \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
 
-\section{Confidentiality, Integrity and Availability}
+\section{Security Analysis}
 
-\begin{description}
-  \item[Confidentiality] 
-  The encryption can be achieved by encrypting with the Name of the requester.
-  As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
-  \item[Integrity and Authenticity]
-  Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
-  With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
-  Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
-  \item[Availability]
-  This is a harder problem to solve.
-  The network is purely wireless, hence vulnerable to jamming. 
-\end{description}
+\todo{!!}
+
+\subsection{Confidentiality}
+The encryption can be achieved by encrypting with the Name of the requester.
+As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
+
+\subsection{Integrity and Authenticity}
+Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
+With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
+Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
+
+\subsection{Availability}
+This is a harder problem to solve.
+The network is purely wireless, hence vulnerable to jamming. 
