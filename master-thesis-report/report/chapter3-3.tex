@@ -213,7 +213,7 @@ Each computer is assigned an ID which will be used for reference in the performa
 It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to the \gls{IBE} and \gls{IBS} that is used in the \gls{HSS} implementation.
 
 \begin{table}[h]
-  \begin{tabular}{lll}
+  \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
   Data                            & Scheme          & Size              \\ \hline
   Content Encryption Key (CEK)    & Random          & 244 bytes         \\ %\hline
   IBE Master Public Key           & Waters09        & 2014 bytes        \\ %\hline
@@ -235,7 +235,7 @@ To be able to evaluate if \gls{IBC} is applicable for devices with small computa
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
 \begin{table}[h]
-  \begin{tabular}{lllll}
+  \begin{tabular}[c]{lllll}
   Method                                      & Scheme          & C1          & C2           & C3              \\ \hline
   IBE PKG Keypair generation                  & Waters09        & 0.09965     & 0.02709      & 0.03608         \\ %\hline
   IBE Encrypting CEK                          & Waters09        & 0.05265     & 0.18915      & 0.02486         \\ %\hline
@@ -263,7 +263,7 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
 The results are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
-  \begin{tabular}{lll}
+  \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
   Initialization                          & 0.2029        & 0.0708        & 0.1163        \\ %\hline
   Data Pull                               & 0.0614        & 0.0310        & 0.0462        \\ %\hline
