@@ -1,8 +1,8 @@
-\chapter{Key Infrastructure}
+\chapter{Identity-Based Cryptography}
 This chapter will present the concept of \gls{IBE} and \gls{IBS}, and why it is highly applicable to use this type of cryptography in \gls{NDN}. 
 Then the possibilities to use the file synchronization module to do key distribution and revocation will be introduced.
 
-\section{Identity-Based Cryptography}\label{ibc}
+\section{Concept}\label{ibc}
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
 The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the public key. 
 This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a Name (~\autoref{name}).
@@ -45,7 +45,7 @@ Some drawbacks related to \gls{IBE} are listed below:
 	\item \gls{PKG} and the requesting node has to establish a secure channel. 
 \end{enumerate}
 
-\section{Identity-Based Cryptography - Secureness}
+\section{Secureness}
 
 A random oracle is like a ``black box'' that outputs truly random numbers.
 When designing protocols in cryptography one first usually designs an ideal system where all parties have random oracle access, then proves the security.
