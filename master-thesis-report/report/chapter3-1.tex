@@ -71,7 +71,7 @@ To understand the mathematical assumptions for \gls{IBE}, the reader should take
 
 \section{Key Distribution}\label{key-distribution}
 Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, I want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.
-This can be done through an IDSync application built upon the \gls{FSM} presented in~\autoref{file-sync}.
+This can be done through the \gls{FSM} presented in~\autoref{file-sync}.
 In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the trust domain.
 Each device can verify the integrity and authenticity of the sync state Data and validate that the \gls{ID} list surely originates from its own \gls{PKG}.
 \begin{figure}[ht]
@@ -89,9 +89,15 @@ However, few alternatives to revocation schemes in \gls{IBE} \gls{PKI} have been
 One suggestion is to allocate secret keys with the \gls{ID} combined with some sort of date, e.g. month-year or just year~\cite[section 1.1.1]{DBLP:conf/crypto/BonehF01}. 
 In this alternative a user has to renew its secret key each time the date changes, i.e. either the month or the year depending on the date format.
 The problem with the revocation solution is that it is cumbersome for the \gls{PKG}.
-Boldyreva et al. proposes an revocation scheme~\cite{DBLP:journals/iacr/BoldyrevaGK12} based on efficient key-update, which makes the workload for the \gls{PKG} a lot easier.
+Boldyreva et al. proposes an revocation scheme~\cite{DBLP:journals/iacr/BoldyrevaGK12} based on efficient key-update, which makes the workload for the \gls{PKG} a lot easier. 
+This scheme was only proven secure in the selective-ID setting where adversaries can attack an \gls{ID} given they choose which one at the beginning of the game.
+The work done by Beno\^{i}t Libert and Damien Vergnaud in~\cite{DBLP:conf/ctrsa/LibertV09} solves this problem. 
+However, efficiently delegating both the key generation and revocation functionalities was a problem left open.
+Jae Hong Seo and Keita Emura solves this in~\cite{DBLP:journals/iacr/SeoE13a}.
 
-~\cite{DBLP:journals/iacr/SeoE13a}
-
-With the IDSync distribution 
-\todo{..something more}
+If a key is compromised, we want to revoke the key immediately letting everybody know that this specific \gls{ID} has been revoked. 
+One problem with key revocation is that there is no way of revoking this key, and thus the \gls{ID} has to be changed and distributed. 
+However, a partially revocation can be sufficient in some networks. 
+By partially, I do not mean revoking the private key, but rather only distributing the new public key (i.e. \gls{ID}) to every node in the trust domain.
+In short, the compromised key should be removed from a distributed ID-list and the list containing only valid \gls{ID}s should be disseminated.
+With the \gls{FSM}, the list is distributed automatically when updated, and only a \gls{DoS} attack together with a compromised key would make the system vulnerable. 
