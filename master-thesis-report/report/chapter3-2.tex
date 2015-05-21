@@ -167,6 +167,7 @@ Another solution is to go for a \gls{ACL} based approach equivalent to what they
 \section{Security Analysis}
 In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
 \todo{!!}
+Security analysis code in~\autoref{apx:scyther-analysis}
 
 \subsection{Confidentiality}
 The encryption can be achieved by encrypting with the Name of the requester.
@@ -180,4 +181,4 @@ Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/dev
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
-An adversary could try to send infinite Interests to a device with an unvalid signature, hence the device may be overloaded of work and might run out of battery fast.
+An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded of work and might run out of battery fast.

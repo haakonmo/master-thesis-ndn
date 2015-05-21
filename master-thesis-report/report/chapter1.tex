@@ -14,11 +14,12 @@ Bringing things even further, the \gls{DOI} system is a \gls{URI} directed at th
 Very much related to the name/address problem is the information security problem of efficient and practical public key distribution, 
 which remain unsolved in practice, even though a significant number of digital certificate and verification protocols and schemes have been proposed, and systems tested over the last two decades. 
 One notable and early theoretical proposal is Rivest and Lampson \gls{SDSI} proposal~\cite{rivest1996sdsi},
-and subsequent work, that may be revisited for applicable to named data networking.
+and subsequent work, that may be revisited for applicable to \gls{NDN}.
 
 \section{Problem and Scope}
 
-When designing a new network protocol for the future Internet, one of the most significant changes should be that it is designed for security.
+When designing a new network protocol for the future Internet, one of the most significant changes should be security.
+\gls{NDN} is being designed with security in mind. 
 Trust management plays a big part in security, and thus we cannot design trust management on known \gls{IP} failures such as X.500. 
 \gls{PKI} is a tough challenge to solve and the solution is probably not the one or the other, but rather case specific.
 
@@ -27,8 +28,8 @@ By using the \gls{NFD} I will implement my proposal for such a sensor network ov
 
 \section{Methodology}
 
-First I find in what context the Public Key System can be applicable, then I design the application flow in sequence diagrams.
-Based on how \gls{NDN} is designed, I try to implement the proposed design and see where to redesign the application proposal for achieving minimal communication overhead, security (i.e. \gls{CIA}) and usability.
+First I design the application flow in sequence diagrams.
+Based on how \gls{NDN} is designed, I try to implement the proposed design and see where to redesign the application proposal for achieving minimal communication overhead, maximum security (i.e. \gls{CIA}) and usability.
 
 \section{Outline}
 
@@ -38,7 +39,7 @@ The application modules will be explain in detail and implementation choices wil
 At last I will present the results of the implementation and my conclusion of the trust model the application uses.
 
 \section{Notations}
-Notations used throughout the thesis listed in~\autoref{tbl:notations}
+Notations used throughout in this thesis is listed in~\autoref{tbl:notations}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.5\textwidth}p{0.5\textwidth}}
   \hline

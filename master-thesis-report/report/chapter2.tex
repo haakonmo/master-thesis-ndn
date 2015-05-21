@@ -2,15 +2,16 @@
 \chapterprecishere{"We model the future on the past. Sometimes that’s a mistake."\par\raggedleft--- \textup{Van Jacobsen}, SIGCOMM 2001}
 
 This chapter will give a brief overlook of the motivation for \gls{ICN},
-as well as explaining more details of how \gls{ICN} protocols, such as \gls{CCN} and \gls{NDN}, works. 
-It will also contain a quick summary of related works.
+as well as explaining more details of \gls{ICN} protocols such as \gls{CCN} and \gls{NDN}.
+The \gls{NDN} architecture will be reviewed.
+Finally a quick summary of related works.
 
 \section{Motivation for Information-Centric Networking}
-When Internet was created in the 1960's, the researchers where inspired by the existing communication network, the telecommunication network.
-Because it was not natural and logical to think that people would download content, but rather send and receive short messages and instructions, the point-to-point communication model was a logical architecture. 
+When Internet was created in the 1960's, the researchers where inspired by the existing communication network; the telecommunication network.
+Because it was natural and logical to think that people would send and receive short messages and instructions, the point-to-point communication model was a logical architecture. 
 As Internet have developed, the traffic has increased enormously over the past few years. 
-In the Global Internet Phenomena Report 1H2014 done by Sandvine~\cite{gipr2014}, close to 64\% of all \gls{IP} traffic in North America was Real-Time Entertainment streaming. 
-In~\autoref{fig:ip-traffic} it can easily be seen that most of the traffic is content, and not communication.
+In the Global Internet Phenomena Report 1H2014 done by Sandvine~\cite{gipr2014}, close to 64\% of all \gls{IP} traffic in North America was Real-Time Entertainment streaming.
+In~\autoref{fig:ip-traffic} it can easily be seen that most of the traffic is content download, and not communication.
 With this in mind, the \gls{IP} architecture does not provide an efficient transport model for what we are actually using the network for.
 
 \begin{figure}[ht]
@@ -35,14 +36,21 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
   \label{fig:ip-traffic}
 \end{figure}
 
-Also, the \gls{IP} network was not designed with security in mind. 
+Designing the \gls{IP} network, the security was not the first priority.
+A logical though considering that they did not know what the Internet was going to be used for and how big it has become.
 Most of the protocols related to Internet have been designed and deployed mainly with the goal of functionality to work.
+In the years after the birth of Internet, they soon found out that they needed security at several layers, due to that the application requirements and the transmission importance increased.
 \gls{IPsec} is a very good example of work trying to patch up security flaws in Internet.
 
-A node in a \gls{IP} network does not know \textit{what} goes through, but rather the packet's endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
-This makes every node dumb, hence the network is designed for redundancy when it comes to content download.
+Today, WiFi is disseminated across homes and buildings in many countries. 
+Wireless technology has grown rapidly and it is predicted continuous growth in the years to come.\todo{find a cite} 
+The \gls{IoT} trend is coming, and the \gls{IP} network is not designed for broadcast and therefore wireless connection is not as easy as it should be.
+Devices should easily be able to communicate directly with each other without having to interconnect through a router.
 
-\gls{TCP}/\gls{IP} not designed for broadcast and therefore wireless connection is not as easy as it can be.
+Another problem is the network redundancy. 
+Looking at~\autoref{fig:ip-traffic} one can conclude that there are a lot of movies downloaded from \textit{x} users geographically located close, and thus the network path from the source (e.g. Netflix) to this geographical place is allocated \textit{x} too many times. 
+This is due to that a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packet's endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
+This makes every node dumb, hence the network is designed for redundancy when it comes to content download.
 
 These design failures are some the reasons why the research for Future Internet began.  
 \gls{ICN}~\cite{DBLP:journals/cm/AhlgrenDIKO12} is a concept developed under this research.
