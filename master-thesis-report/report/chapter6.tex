@@ -2,45 +2,45 @@
 In this chapter the work done in conjunction to this thesis will be discussed. 
 First I will talk about the pros and cons using \gls{IBC} in \gls{NDN}.
 Then I will discuss the \gls{HSS} and possible drawbacks in the system. 
-Scalability issues and other applicable scenarios will be mentioned.
+Scalability issues and other applicable networks for the application will be mentioned.
 
-\section{Identity-Based Cryptography]}
+\section{Identity-Based Cryptography}
 One suggestion has been to add a monthly timestamp to the name, but the the \gls{PKG} has to renew private keys for everybody each month. 
-This solution scales very badly.
-With the \gls{PKG}s \gls{FSM}, every user will be notified when a identity is revoked.
+This solution do not scale very well due to a lot of computation at the \gks{PKG}.
+With the \gls{FSM}, every user will be notified when a identity is revoked.
 There is no use for periodically checking names.
 
-Trusting Trusted Third Party in Identity-Based Cryptography
-Issues of trusting the \gls{PKG}, i.e. a \gls{TTP}. 
+There are some issues of trusting the \gls{PKG}. 
 If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all private keys corresponding to all IDs that used the compromised \gls{PKG}. 
 Do every ID trust the \gls{PKG}? Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, will always be a problem for a user.
 Secure channel for private key exchange. 
+The same issue does however occur in Kerberos, which is a well recognized security system. 
 
 Can authenticate Data even using insecure DNS or HTTP. 
-There is only one linkage between the Name and the Content, and if one have the right \gls{MPK}, there is no doubt where the data originates from and that it is not altered.
+There is only one linkage between the Name and the Content, and if the user obtains the right \gls{MPK}, there is no doubt where the data originates from and that it is not altered.
 In RSA public key cryptography we have to find the key related to the signature. 
 In worst case this will be equivalent of retrieving the \gls{MPK} each time, which is not likely. 
 Or the \gls{MPK} can be appended to the message.
 
 \section{Health Sensor System}
-Not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
+The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
 
-In ~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography. 
+In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography. 
 
 Encrypting with same symmetric key for each set of data, limits the encryption computation for the device if several devices requests the same data.
 Using a unique key for each time data is requested is more secure and can be used for less confidential content.
 
-Adressing is dealt with one place in the architecture compared to an equivalent system not using \gls{NDN}. 
+\gls{NDN} features: Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
 
 
 \section{Sync}
 The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
-One drawback with the IDSync solution is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
+One drawback with the key distribution using \gls{FSM} is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
 Likewise when a receiver verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
 
 \subsection{Attacks}
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
-All applications that are relying on some sort of crucial information derived from a Sync application~\autoref{file-sync} are vulnerable to \gls{DoS}.
+All applications that are relying on some sort of crucial information derived using \gs{FSM}~\autoref{file-sync} are vulnerable to \gls{DoS}.
 
 \section{Other Use Cases}
 
@@ -52,4 +52,4 @@ All applications that are relying on some sort of crucial information derived fr
 \end{enumerate}
 
 \section{Scalability}
-IDSync can be an issue, as the list that is being distributed is growing linearly with the number of participants in the trust domain.
+Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
