@@ -4,10 +4,11 @@ Then the possibilities to use the file synchronization module to do key distribu
 
 \section{Concept}\label{ibc}
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
-The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the public key. 
-This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a Name (~\autoref{name}).
-This eliminates the need of certificates.
 Shamir did propose a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
+The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the public key. 
+This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a Name (~\autoref{name}), and is issued by a \gls{TTP}.
+Notice that if every user could have created their own private key, then so could anybody else with the same computational power, since the user does not obtain any ``privileged'' information about its \gls{ID}~\cite{Bidgoli06}.
+This eliminates the need of certificates.
 The \gls{IBE} implementation remained unsolved until 2001, when Dan Boneh and Matthew K. Franklin proposed~\cite{DBLP:conf/crypto/BonehF01}.
 However the scheme has only been shown to be secure with a random oracles model~\cite{DBLP:journals/iacr/Waters04}, hence less practical.
 
@@ -41,7 +42,8 @@ The user encrypts the message using the \gls{CEK} together with symmetric encryp
 Some drawbacks related to \gls{IBE} are listed below:
 \begin{enumerate}
 	\item If \gls{PKG} is compromised. Adversary has secret key to all nodes that used the compromised \gls{PKG}
-	\item \gls{PKG} can read and write messages related to the node, because it has all secret keys, i.e. \gls{MITM}.
+	\item \gls{PKG} can perform \gls{MITM}, i.e. read and write messages related to the node, because it has all secret keys (not unlike Kerberos).
+  In many systems, this is completely undesirable.
 	\item \gls{PKG} and the requesting node has to establish a secure channel. 
 \end{enumerate}
 
