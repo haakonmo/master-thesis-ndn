@@ -137,8 +137,10 @@ The distribution of this list can easily be achieved by using the \gls{FSM} (\au
 The \gls{PKG} will be the distributor in this synchronization and each device will be a subscriber.
 
 
-\section{Trust Model}
-In this section the trust model will be explained. 
+\section{Security Analysis}
+In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
+\todo{!!}
+Security analysis code in~\autoref{apx:scyther-analysis}
 
 \subsection{Access Control}\label{access_control}
 Since the ID\textsubscript{device} is appended to the Interest and the Interest is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
@@ -164,11 +166,6 @@ That is the least privilege access principle, which is default in~\cite{DBLP:con
 
 Another solution is to go for a \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
 
-\section{Security Analysis}
-In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
-\todo{!!}
-Security analysis code in~\autoref{apx:scyther-analysis}
-
 \subsection{Confidentiality}
 The encryption can be achieved by encrypting with the Name of the requester.
 As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
@@ -182,3 +179,14 @@ Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/dev
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
 An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded of work and might run out of battery fast.
+
+\subsection{Trust Model}
+For a system to be secure, cryptography together with trust is essential. 
+The \gls{HSS} trust model is built upon trusting a centralized authority, typically the user's home server, rendezvous authentication and \gls{IBC}.
+The fact that it runs over \gls{NDN} makes it easier to achieve security goals and usability for third party developers.
+
+The public key is the name of the device, and all content published by the device will begin with this name, hence it is easy to verify that the publisher is the owner of the content.
+To be able to verify and encrypt messages, the device need the MPK\textsubscript{PKG} and the ID of the user it wants to communicate with. 
+If allowed by the PKG, the public parameters MPK\textsubscript{PKG} is public for everybody that is not a part of the trust domain. 
+To be able to sign and decrypt messages the device have to be a member of the trust domain and be issued a private key mapping to the device's \gls{ID}.
+Each device builds its trust on other devices based on that it has been verified by an administrator that controls the \gls{PKG}.
