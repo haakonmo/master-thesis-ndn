@@ -16,16 +16,15 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
 
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{north-america-ip-traffic.png}
+    \includegraphics[width=0.9\linewidth]{north-america-ip-traffic.png}
     \caption{North America}
     \label{fig:north-america-ip-traffic}
-  \end{subfigure}
-
-  \begin{subfigure}{0.48\textwidth}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{europe-ip-traffic.png}
+    \includegraphics[width=0.9\linewidth]{europe-ip-traffic.png}
     \caption{Europe}
     \label{fig:europe-ip-traffic}
   \end{subfigure}
@@ -62,7 +61,7 @@ In 2012 \gls{IRTF} established \gls{ICN} working group.
 \section{Content Centric Network \& Named Data Network}\label{chp2:sec:icn}
 The first network protocol purposed for \gls{ICN}, \gls{CCN}, was presented by Van Jacobsen at a Google Talk in 2006. 
 He, amongst other contributors of \gls{CCN}, has been working on developing the Internet as we know it since the early start.
-Jacobsen has contributed to \gls{TCP}/\gls{IP} with his flow control algorithms and \gls{TCP} header compression. \todo{cite}
+Jacobsen has contributed to \gls{TCP}/\gls{IP} with his flow control algorithms~\cite{DBLP:conf/sigcomm/Jacobson88} and \gls{TCP} header compression~\cite{rfc1144}.
 
 \gls{CCN} focuses on naming content, instead of naming \gls{IP}-addresses. 
 The research project is lead by \gls{PARC}.
@@ -73,8 +72,16 @@ The \gls{NDN} project is also one of few projects selected by \gls{NSF} \gls{FIA
 \section{NDN Architecture}\label{chp2:sec:ndn_architecture}
 Since the knowledge of how \gls{NDN} works is not disseminated amongst computer scientists, it is essential for this paper to describe how it works.
 This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} and compare some solutions with the equivalent solutions in \gls{IP}.
+
 \subsection{Brief Introduction}
-\todo{a section explaining NDN briefly so the reader has something to relate to reading the following sections}
+In \gls{NDN} there is two types of packets, Interest and Data packet.
+All data has be given a content Name by its publisher. 
+To publish some content to the network, a user have to register the prefix, i.e. announcing the contents Name, which tells the network that the content can be retrieved on the announced Name. 
+The retrieval can only be achieved if someone expresses an Interest to the content Name.
+If a user expresses Interest in the Name, the network will route the Interest to the closest node that holds the Data. 
+This Data packet can be retrieved from anybody, over any type of communication channel. 
+Finally the requester will receive the Data packet containing the content.
+The Data can be verified that the publisher who ``owns'' the content actually is the owner, because its cryptographically signed.
 
 \subsection{Based on Existing Solution}
 The goal for the network design is essentially making it more applicable for content without removing the communication service that \gls{IP} was designed for. 
