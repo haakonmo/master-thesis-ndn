@@ -12,13 +12,23 @@ This eliminates the need of certificates.
 The \gls{IBE} implementation remained unsolved until 2001, when Dan Boneh and Matthew K. Franklin proposed~\cite{DBLP:conf/crypto/BonehF01}.
 However the scheme has only been shown to be secure with a random oracles model~\cite{DBLP:journals/iacr/Waters04}, hence less practical.
 
+\gls{IBE} is based on performing asymmetric encryption with a publicly know \gls{ID} working as the \gls{PK}.
+As seen in~\autoref{eq:mapping-id-name-pk}, the \gls{ID} can be a Name (e.g. ``/ndn/no/ntnu/haakon'').
+Hence the Name becomes the \gls{PK} (from now referred to as \gls{ID}).
+Therefore \gls{IBE} is highly applicable for \gls{NDN}.
 
-\gls{IBE} is based upon performing cryptography with a publicly know \gls{ID}.
-Since the \gls{ID} can be practically anything it is highly applicable for \gls{NDN} where the \gls{ID} can be a Name (``/ndn/no/ntnu/haakon'').
-Hence the Name becomes the public key. 
+\begin{equation}\label{eq:mapping-id-name-pk}
+ID_{device} = PK_{device} = Name_{device}
+\end{equation}
 
 There is a \gls{TTP} in \gls{IBE} that is called \gls{PKG}.
-The \gls{PKG}s task is to produce a secret key that corresponds to a given ID and provide 
+The \gls{PKG}s task is to extract a secret key given an \gls{ID} and provide public parameters (\gls{MPK}) needed for performing encryption, decryption, signing and verifying. In~\autoref{fig:pkg_functions} the \gls{IBC} methods explained in~\autoref{ibc-methods} is illustrated in practice. 
+First the \texttt{PKG} runs \texttt{Setup()}. 
+\texttt{device1} can then request a \texttt{SK} by sending \texttt{ID\textsubscript{d1}} to the \texttt{PKG}. 
+In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as well as the \texttt{MPK\textsubscript{PKG}}.
+\texttt{device2}, which is already a part of the trust domain, sends a signed request for data to \texttt{device1}. 
+\texttt{device1} verifies the signature and responds to the request with a signed, encrypted content.
+\texttt{device0}, which do not have a \gls{SK} generated from the \texttt{PKG} and thus is not a part of the trust domain, sends a request to \texttt{device1} that is declined.
 
 \begin{enumerate}\label{ibc-methods}
   \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
@@ -32,12 +42,13 @@ The \gls{PKG}s task is to produce a secret key that corresponds to a given ID an
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{pkg_functions.png}
-  \caption{Methods of an IBC systems illustrated in action.}
+  \caption{Methods of an IBC systems illustrated in practice.}
   \label{fig:pkg_functions}
 \end{figure}
 
 To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{ID}.
 The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encrypted content to the requester. 
+
 
 Some drawbacks related to \gls{IBE} are listed below:
 \begin{enumerate}

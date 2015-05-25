@@ -144,10 +144,13 @@ Security analysis code in~\autoref{apx:scyther-analysis}
 
 \subsection{Access Control}\label{access_control}
 Since the ID\textsubscript{device} is appended to the Interest and the Interest is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
-since 
 When a device retrieves an Interest for its sensor data, there should be an authorization mechanism. 
-One solution for this is the Capability Based Approach to \gls{IoT} Access Control~\cite{DBLP:conf/imis/GusmeroliPR12}.
-This design has some additional benefits for the \gls{HSS}, such as
+One can argue that once a device has been authenticated in the \gls{PKG}s trust domain, everyone in the domain can be sure that the device will not abuse the information or functionalities available. 
+However, due to scalability this is not a secure way to handle access control. 
+If a device does not need a privilege, it does not need it.
+Hence it should not have it. 
+That is the least privilege access principle, which is default in Capability Based Approach to \gls{IoT} Access Control~\cite{DBLP:conf/imis/GusmeroliPR12}.
+This approach has some additional benefits for the \gls{HSS}, such as
 
 \begin{itemize}
   \item delegation support - 
@@ -158,17 +161,13 @@ This design has some additional benefits for the \gls{HSS}, such as
   Specific resources from a device can be granted access to in different granularity.
 \end{itemize}
 
-One can argue that once a device has been authenticated in the \gls{PKG}s trust domain, everyone in the domain can be sure that the device will not abuse the information or functionalities available. 
-However, due to scalability this is not a secure way to handle access control. 
-If a device does not need a privilege, it does not need it.
-Hence it should not have it. 
-That is the least privilege access principle, which is default in~\cite{DBLP:conf/imis/GusmeroliPR12}.
-
-Another solution is to go for a \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
+Another solution can be an \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
 
 \subsection{Confidentiality}
-The encryption can be achieved by encrypting with the Name of the requester.
-As explained in the sequence diagrams presented in the above sections, each Interest appends the requesters Name, hence all packets can be encrypted, and thus the confidentiality in the system is achieved.
+The confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
+As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each Interest appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
+
+Since the ID\textsubscript{device} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
 
 \subsection{Integrity and Authenticity}
 Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
