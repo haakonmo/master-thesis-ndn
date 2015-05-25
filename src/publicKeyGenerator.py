@@ -27,6 +27,9 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 class PublicKeyGenerator(object):
 
     def __init__(self, face, keyChain, certificateName, baseName):
+        """
+
+        """
         self.deviceName = Name(baseName).append("pkg")
 
         self.ibe_scheme = IbeWaters09()
@@ -141,13 +144,25 @@ class PublicKeyGenerator(object):
         logging.info("Sent Init Data with encrypted Device PrivateKeys")
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
+        """
+
+        """
         util.dumpInterest(interest)
 
     def onData(self, interest, data):
+        """
+
+        """
         util.dumpData(data)
 
     def onTimeout(self, interest):
+        """
+
+        """
         logging.info("Time out for interest", interest.getName().toUri())
 
     def onRegisterFailed(self, prefix):
+        """
+
+        """
         logging.info("Register failed for prefix", prefix.toUri())

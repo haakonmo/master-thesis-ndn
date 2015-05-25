@@ -34,6 +34,17 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 class Device(object):
 
     def __init__(self, face, keyChain, certificateName, baseName, deviceName):
+        """
+        Initialize:
+            Identity-Based Encryption scheme
+            Identity-Based Signature scheme 
+
+        :param Face face:
+        :param KeyChain keyChain:
+        :param Name certificateName:
+        :param Name baseName:
+        :param Name deviceName:
+        """
         self.ibe_scheme = IbeWaters09()
         self.ibs_scheme = IbsWaters()
 
@@ -86,6 +97,9 @@ class Device(object):
         Decrypt the symmetric key, and decrypt the cipher
 
         Sensor Data reveiced! 
+
+        :param Interest interest:
+        :param Data data:
         """
         #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
         self.ibs_scheme.verifyData(self.signature_master_public_key, data, self.onVerifiedData, self.onVerifyDataFailed)
@@ -161,6 +175,11 @@ class Device(object):
                 cipher = encrypt(sensorData, randomKey)
 
         Sign the Data and send.
+
+        :param Name prefix:
+        :param Interest interest:
+        :param Transport transport: An object of a subclass of Transport to use for communication.
+        :param Name registeredPrefixId:
         """
         #util.dumpInterest(interest)
         #self.keyChain.verifyInterest(interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
@@ -216,28 +235,46 @@ class Device(object):
         logging.info("Sent encrypted Data")
 
     def onRegisterFailed(self, prefix):
+        """
+        :param Name prefix:
+        """
         logging.info("Register failed for prefix" + prefix.toUri())
 
 
     # General methods for all devices
     def onTimeout(self, interest):
+        """
+        :param Interest interest:
+        """
         logging.info("Time out for interest" + interest.getName().toUri())
 
     def onVerifiedData(self, data):
+        """
+        :param Data data:
+        """
         #TODO
         logging.info("Data packet verified")
 
     def onVerifyDataFailed(self, data):
+        """
+        :param Data data:
+        """
         #TODO
         logging.info("Data packet failed verification")
 
-    def onVerifiedInterest(self, data):
+    def onVerifiedInterest(self, interest):
+        """
+        :param Interest interest:
+        """
         #TODO
-        logging.info("Data packet verified")
+        logging.info("Interest packet verified")
 
-    def onVerifyInterestFailed(self, data):
+    def onVerifyInterestFailed(self, interest):
+        """
+        :param Interest interest:
+        """
         #TODO
-        logging.info("Data packet failed verification")
+        logging.info("Interest packet failed verification")
 
     def requestIdentityBasedPrivateKey(self):
         """
@@ -287,6 +324,9 @@ class Device(object):
         Use the symmetric key to decrypt the PrivateKey.
 
         Device is now added to the PKG        
+        
+        :param Interest interest:
+        :param Data data:
         """
         #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
         #util.dumpData(data)

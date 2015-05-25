@@ -34,26 +34,50 @@ from charm.schemes.pksig.pksig_waters import WatersSig
 class IbeWaters09(object):
 
     def __init__(self):
+        """
+        Initialize Group and Idetity-Based Encryption scheme
+        """
         self.group = PairingGroup('SS512')
         self.ibe = DSE09(self.group)
         self.algorithm = messageBuf_pb2.Message.WATERS09
 
     def setup(self):
+        """
+        Generates a key pair (master_public_key, master_secret_key)
+        """
         return self.ibe.setup()
 
     def extract(self, master_public_key, master_secret_key, ID):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Dict master_secret_key: Secret parameters for the PKG.
+        :param Object ID: The ID that will be used for extracting the Secret Key (SK).
+        """
         secret_key = self.ibe.keygen(master_public_key, master_secret_key, ID)
         return secret_key
 
     def getRandomKey(self):
+        """
+        Generates a random Content Encryption Key (CEK).
+        """
         key = self.group.random(GT)
         return key
 
     def encryptKey(self, master_public_key, ID, key):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Object ID: The ID to the receiver of the CEK that will be encrypted.
+        :param Dict key: The CEK that will be encrypted.
+        """
         cipher_key = self.ibe.encrypt(master_public_key, key, ID)
         return cipher_key
 
     def decryptKey(self, master_public_key, secret_key, cipher):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Dict secret_key: The Secret Key (SK) corresponding to the ID used to encrypt with.
+        :param String cipher: The encrypted CEK. 
+        """
         # master_public_key not used
         key = self.ibe.decrypt(cipher, secret_key)
         return key
@@ -61,14 +85,25 @@ class IbeWaters09(object):
 class IbsWaters(object):
 
     def __init__(self):
+        """
+
+        """
         self.group = PairingGroup('SS512')
         self.water = WatersSig(self.group, 5)
         self.algorithm = messageBuf_pb2.Message.WATERS
 
     def setup(self):
+        """
+        Generates a key pair (master_public_key, master_secret_key)
+        """
         return self.water.setup(5)
 
     def extract(self, master_public_key, master_secret_key, ID):
+        """
+        :param Dict master_public_key:
+        :param Dict master_secret_key:
+        :param Object ID:
+        """
         secret_key = self.water.keygen(master_public_key, master_secret_key, ID)
         return secret_key
 
@@ -77,9 +112,9 @@ class IbsWaters(object):
         Append a SignatureInfo to the Interest name, sign the name components
         and append a final name component with the signature bits.
 
-        :param master_public_key
-        :param secret_key
-        :param ID
+        :param Dict master_public_key:
+        :param Dict secret_key:
+        :param Object ID:
         :param Interest interest: The Interest object to be signed. This appends
           name components of SignatureInfo and the signature bits.
         :param wireFormat: (optional) A WireFormat object used to encode the
@@ -158,6 +193,9 @@ class IbsWaters(object):
             return signature
 
     def makeSignatureByID(self, ID, digestAlgorithm):
+        """
+
+        """
         signature = Sha256WithIbsWatersSignature()
         digestAlgorithm[0] = DigestAlgorithm.SHA256
         signature.getKeyLocator().setType(KeyLocatorType.KEYNAME)
@@ -283,30 +321,54 @@ class IbsWaters(object):
 class IbeWaters05(object):
 
     def __init__(self):
+        """
+        Initialize Group, Hash, Idetity-Based Encryption scheme
+        """
         self.group = PairingGroup('SS512')
         self.waters_hash = Waters(group)
         self.ibe = IBE_N04(self.group)
         self.algorithm = messageBuf_pb2.Message.WATERS05
 
     def setup(self):
+        """
+        Generates a key pair (master_public_key, master_secret_key)
+        """
         return self.ibe.setup()
 
     def extract(self, master_public_key, master_secret_key, ID):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Dict master_secret_key: Secret parameters for the PKG.
+        :param Object ID: The ID that will be used for extracting the Secret Key (SK).
+        """
         # master_public_key not used
         kID = waters_hash.hash(ID)
         secret_key = self.ibe.extract(master_secret_key, kID)
         return secret_key
 
     def getRandomKey(self):
+        """
+        Generates a random Content Encryption Key (CEK).
+        """
         key = self.group.random(GT)
         return key
 
     def encryptKey(self, master_public_key, ID, key):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Object ID: The ID to the receiver of the CEK that will be encrypted.
+        :param Dict key: The CEK that will be encrypted.
+        """
         kID = waters_hash.hash(ID)
         cipher_key = self.ibe.encrypt(master_public_key, kID, key)
         return cipher_key
 
     def decryptKey(self, master_public_key, secret_key, cipher):
+        """
+        :param Dict master_public_key: Public parameters for the PKG.
+        :param Dict secret_key: The Secret Key (SK) corresponding to the ID used to encrypt with.
+        :param String cipher: The encrypted CEK. 
+        """
         key = self.ibe.decrypt(master_public_key, secret_key, cipher)
         return key
 
