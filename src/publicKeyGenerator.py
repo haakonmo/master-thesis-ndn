@@ -78,6 +78,11 @@ class PublicKeyGenerator(object):
                 cipher = encrypt(PrivateKey, randomKey)
 
         Sign the Data and send.
+
+        :param Name prefix:
+        :param Interest interest:
+        :param Transport transport: An object of a subclass of Transport to use for communication.
+        :param Name registeredPrefixId:
         """
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
@@ -145,24 +150,28 @@ class PublicKeyGenerator(object):
 
     def onInterest(self, prefix, interest, transport, registeredPrefixId):
         """
-
+        :param Name prefix:
+        :param Interest interest:
+        :param Transport transport: An object of a subclass of Transport to use for communication.
+        :param Name registeredPrefixId:
         """
         util.dumpInterest(interest)
 
     def onData(self, interest, data):
         """
-
+        :param Interest interest:
+        :param Data data:
         """
         util.dumpData(data)
 
     def onTimeout(self, interest):
         """
-
+        :param Interest interest:
         """
         logging.info("Time out for interest", interest.getName().toUri())
 
     def onRegisterFailed(self, prefix):
         """
-
+        :param Name prefix:
         """
         logging.info("Register failed for prefix", prefix.toUri())
