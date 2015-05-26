@@ -142,6 +142,19 @@ In this section the security of the protocols presented in~\autoref{init} and ~\
 \todo{!!}
 Security analysis code in~\autoref{apx:scyther-analysis}
 
+\subsection{Threat Model}
+I assume the following threat model:
+\begin{enumerate}
+  \item An adversary might try to eavesdrop information.
+  \item An adversary might try to send bogus commands.
+  \item Devices might be physically hijacked, e.g. theft of mobile.
+\end{enumerate}
+\todo{write more..}
+I assume that the \gls{PKG} cannot be compromised by any adversary, and thus the \gls{MSK} will always be hidden from any adversaries. 
+An idea introduced by Aaditeshwar Seth and Srinivasan Keshav in~\cite[Section 5.4]{Seth:2005:PSD:1897159.1897165} is to avoid storing the \gls{SK}s in devices that is more likely to be lost or stolen, e.g. a mobile.
+Using \gls{HIBC}, one can extend the key hierarchy by another level that is time-based.
+These time-based keys can then be downloaded to the mobile on a daily basis.
+
 \subsection{Access Control}\label{access_control}
 Since the ID\textsubscript{device} is appended to the Interest and the Interest is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
 When a device retrieves an Interest for its sensor data, there should be an authorization mechanism. 
@@ -166,17 +179,19 @@ Another solution can be an \gls{ACL} based approach equivalent to what they did 
 \subsection{Confidentiality}
 The confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
 As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each Interest appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
-
-Since the ID\textsubscript{device} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
+Since the ID\textsubscript{requester} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
 
 \subsection{Integrity and Authenticity}
 Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
 With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
+In this setting, a verified signature acts as an assurance of authentication and integrity. 
+
 Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
 
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
+
 An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded of work and might run out of battery fast.
 
 \subsection{Trust Model}

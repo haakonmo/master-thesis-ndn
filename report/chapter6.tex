@@ -10,12 +10,6 @@ This solution do not scale very well due to a lot of computation at the \gls{PKG
 With the \gls{FSM}, every user will be notified when a identity is revoked.
 There is no use for periodically checking names.
 
-There are some issues of trusting the \gls{PKG}. 
-If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all private keys corresponding to all IDs that used the compromised \gls{PKG}. 
-Do every ID trust the \gls{PKG}? Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, will always be a problem for a user.
-Secure channel for private key exchange. 
-The same issue does however occur in Kerberos, which is a well recognized security system. 
-
 Can authenticate Data even using insecure DNS or HTTP. 
 There is only one linkage between the Name and the Content, and if the user obtains the right \gls{MPK}, there is no doubt where the data originates from and that it is not altered.
 In RSA public key cryptography we have to find the key related to the signature. 
@@ -25,32 +19,40 @@ Or the \gls{MPK} can be appended to the message.
 \section{Health Sensor System}
 The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
 
-In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography. 
+In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography, RSA. 
 
 Encrypting with same symmetric key for each set of data, limits the encryption computation for the device if several devices requests the same data.
-Using a unique key for each time data is requested is more secure and can be used for less confidential content.
+Using a unique key for each time data is requested is more secure and can be used for more sensitive confidential content.
 
 \gls{NDN} features: Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
 
+Who can play the role of a device?
+As mentioned in~\autoref{rendezvous_authentication} and~\autoref{init} there should be a limitation of which devices that can be initialized to the trust domain.
+\todo{hm... something here?}
+
+Storing the \gls{SK} in a secure fashion.
+
+\section{Scalability}
+Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
+However, this might not be a huge problem in the use cases that is addressed in this paper, considerering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
 
 \section{Sync}
 The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
 One drawback with the key distribution using \gls{FSM} is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
 Likewise when a receiver verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
+Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution.
 
-\subsection{Attacks}
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that are relying on some sort of crucial information derived using \gls{FSM}~\autoref{file-sync} are vulnerable to \gls{DoS}.
 
 \section{Other Use Cases}
-
+The trust model used in the \gls{HSS} can be used in any network where the use of a \gls{TTP} is accepted. 
+Such a system can for instance be:
 \begin{enumerate}
 	\item Home Automation Systems
-	\item Organization, internal communication
 	\item \gls{BAS}
 	\item \gls{BMS}
 	\item Open mHealth
 \end{enumerate}
 
-\section{Scalability}
-Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
+

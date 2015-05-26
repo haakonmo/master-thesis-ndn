@@ -30,6 +30,7 @@ class FileSync(object):
             To be written (TBW)
 
         """
+
         self.screenName = screenName
         self.fileFolderName = fileFolderName
         self.path = path

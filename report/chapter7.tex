@@ -1,20 +1,21 @@
 \chapter{Conclusion and Future Work}\label{chp7:conclusion}
-In this chapter the conclusion of thesis will be presented and the dangling future work will be listed.
+In this chapter the conclusion of thesis will be presented and the future work will be listed.
 
-\section{Conslusion}
+\section{Conclusion}
 In this thesis I have developed a Health Sensor System in Python with Identity-Based Cryptography used for signing and verification, encryption and decryption.
-The system is build over the new network protocol Named Data Networking.
+The system is build over the new network protocol called Named Data Networking.
 
-I have suggested how a secure system can be implemented.
+I have suggested how a secure system easily can be implemented, achieving confidentiality, integrity and authenticity.
 
 The system is tested to see how the suggested protocols for initialization and data pull performs with \gls{IBC}. 
-This work is a attempt to show how applicable \gls{NDN} is for \gls{IoT} and to design secure protocols for local device networks.
+This work is an attempt to show how applicable \gls{NDN} together with \gls{IBC} are for \gls{IoT}, and to design secure protocols for local device networks.
 
 \section{Future Work}
-Integrate the \gls{FSM} in to the \gls{HSS}.
+The implementation of the \gls{HSS} does not include integration of the \gls{FSM}, which is a part of the future work.
+Test system is not tested on relevant sensors and devices.
 
-Test solution on relevant sensors and devices.
+An implementation of a full worthy \gls{IBC} solution in \gls{PyNDN2}.
+This include making \gls{IBC} as a part of the PyNDN2 framework, so that developers easily can make use of \gls{IBE} and \gls{IBS}.
 
-Implement a full worthy \gls{IBC} solution in \gls{PyNDN2}.
-
-Make a scheme that uses the same \gls{MPK} and \gls{MSK} to do encryption/decryption and signing/verification. 
+The \gls{IBC} schemes used in the Charm framework does not provide a scheme that implements \gls{IBE} and \gls{IBS} together.
+This should not be a huge task to implement, but it will decrease the initialization round-trip time as well as minimizing the use of several keys, i.e. easier key management. 

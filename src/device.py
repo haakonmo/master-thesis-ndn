@@ -33,24 +33,21 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 
 class Device(object):
 
-    def __init__(self, face, keyChain, certificateName, baseName, deviceName):
+    def __init__(self, face, baseName, deviceName):
         """
         Initialize:
             Identity-Based Encryption scheme
             Identity-Based Signature scheme 
 
         :param Face face:
-        :param KeyChain keyChain:
-        :param Name certificateName:
         :param Name baseName:
         :param Name deviceName:
         """
+        #Initialize IBC schemes
         self.ibe_scheme = IbeWaters09()
         self.ibs_scheme = IbsWaters()
 
         self.face = face
-        self.keyChain = keyChain
-        self.certificateName = certificateName
 
         self.baseName = Name(baseName)
         self.deviceName = Name(self.baseName).append(deviceName)
@@ -70,18 +67,10 @@ class Device(object):
         # Session used in namePrefix
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
         self.name = Name(self.baseName).append("device2").append("sensorPull").append(session)
-
         interest = Interest(self.name)
         self.ibs_scheme.signInterest(self.signature_master_public_key, self.signature_private_key, self.deviceName, interest)
-        #interest.setMinSuffixComponents(3)
-        # keyLocator = KeyLocator()
-        # keyLocator.setType(KeyLocatorType.KEYNAME)
-        # keyLocator.setKeyName(self.deviceName)
-        # interest.setKeyLocator(keyLocator)
 
-        # self.keyChain.sign(interest, self.certificateName)
         interest.wireEncode()
-
         logging.info("Expressing interest name: " + interest.toUri())
         self.face.expressInterest(interest, self.onData, self.onTimeout)
 
@@ -101,7 +90,6 @@ class Device(object):
         :param Interest interest:
         :param Data data:
         """
-        #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
         self.ibs_scheme.verifyData(self.signature_master_public_key, data, self.onVerifiedData, self.onVerifyDataFailed)
 
         message = messageBuf_pb2.Message()
@@ -181,8 +169,6 @@ class Device(object):
         :param Transport transport: An object of a subclass of Transport to use for communication.
         :param Name registeredPrefixId:
         """
-        #util.dumpInterest(interest)
-        #self.keyChain.verifyInterest(interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
         self.ibs_scheme.verifyInterest(self.signature_master_public_key, interest, self.onVerifiedInterest, self.onVerifyInterestFailed)
 
         ID = ""
@@ -327,10 +313,7 @@ class Device(object):
         
         :param Interest interest:
         :param Data data:
-        """
-        #self.keyChain.verifyData(data, self.onVerifiedData, self.onVerifyDataFailed)
-        #util.dumpData(data)
-        
+        """     
         message = messageBuf_pb2.Message()
         message.ParseFromString(data.getContent().toRawStr())
 

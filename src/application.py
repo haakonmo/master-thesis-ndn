@@ -219,14 +219,8 @@ def startSensorPull():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
-
-    # Use the system default key chain and certificate name to sign commands.
-    keyChain = KeyChain()
-    keyChain.setFace(face)
-    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
-    # util.dump(keyChain.getDefaultCertificateName())
-    # Also use the default certificate name to sign data packets.    
-    sensorPull = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device1")
+  
+    sensorPull = Device(face, "/ndn/no/ntnu", "device1")
     sensorPull.requestIdentityBasedPrivateKey()
     while not EXIT:
         face.processEvents()
@@ -247,14 +241,8 @@ def startSensorData():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
-
-    # Use the system default key chain and certificate name to sign commands.
-    keyChain = KeyChain()
-    keyChain.setFace(face)
-    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
-    # util.dump(keyChain.getDefaultCertificateName())
-    # Also use the default certificate name to sign data packets.    
-    sensorData = Device(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu", "device2")
+ 
+    sensorData = Device(face, "/ndn/no/ntnu", "device2")
     sensorData.requestIdentityBasedPrivateKey()
     sensorData.registerPrefix()
     while not EXIT:
@@ -275,14 +263,7 @@ def startPKG():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
-
-    # Use the system default key chain and certificate name to sign commands.
-    keyChain = KeyChain()
-    keyChain.setFace(face)
-    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
-    # util.dump(keyChain.getDefaultCertificateName())
-    # Also use the default certificate name to sign data packets.    
-    pkg = PublicKeyGenerator(face, keyChain, keyChain.getDefaultCertificateName(), "/ndn/no/ntnu")
+    pkg = PublicKeyGenerator(face, "/ndn/no/ntnu")
 
     while not EXIT:
         face.processEvents()

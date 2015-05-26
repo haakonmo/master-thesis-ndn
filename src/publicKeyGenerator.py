@@ -26,12 +26,14 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 
 class PublicKeyGenerator(object):
 
-    def __init__(self, face, keyChain, certificateName, baseName):
+    def __init__(self, face, baseName):
         """
 
         """
+    
         self.deviceName = Name(baseName).append("pkg")
 
+        #Initialize IBC schemes
         self.ibe_scheme = IbeWaters09()
         self.ibs_scheme = IbsWaters()
         (master_public_key, master_secret_key) = self.ibe_scheme.setup()
@@ -47,8 +49,6 @@ class PublicKeyGenerator(object):
         self.signature_private_key = self.ibs_scheme.extract(self.signature_master_public_key, self.signature_master_secret_key, self.deviceName.toUri())
 
         self.face = face
-        self.keyChain = keyChain
-        self.certificateName = certificateName
 
         self.baseName = Name(baseName)
         self.prefix = Name(baseName).append("pkg").append("initDevice")
