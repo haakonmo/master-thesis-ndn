@@ -4,7 +4,7 @@ First I will talk about the pros and cons using \gls{IBC} in \gls{NDN}.
 Then I will discuss the \gls{HSS} and possible drawbacks in the system. 
 Scalability issues and other applicable networks for the application will be mentioned.
 
-\section{Identity-Based Cryptography}
+\section{Identity-Based Cryptography in Named Data Networking}
 One suggestion has been to add a monthly timestamp to the name, but the the \gls{PKG} has to renew private keys for everybody each month. 
 This solution do not scale very well due to a lot of computation at the \gls{PKG}.
 With the \gls{FSM}, every user will be notified when a identity is revoked.
@@ -16,6 +16,15 @@ In RSA public key cryptography we have to find the key related to the signature.
 In worst case this will be equivalent of retrieving the \gls{MPK} each time, which is not likely. 
 Or the \gls{MPK} can be appended to the message.
 
+\section{Development Usability in Named Data Networking}
+Once architecture is understood, 
+
+Easy to begin. 
+
+Good examples.
+
+\gls{NDN} features: Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
+
 \section{Health Sensor System}
 The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
 
@@ -23,8 +32,6 @@ In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than
 
 Encrypting with same symmetric key for each set of data, limits the encryption computation for the device if several devices requests the same data.
 Using a unique key for each time data is requested is more secure and can be used for more sensitive confidential content.
-
-\gls{NDN} features: Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
 
 Who can play the role of a device?
 As mentioned in~\autoref{rendezvous_authentication} and~\autoref{init} there should be a limitation of which devices that can be initialized to the trust domain.

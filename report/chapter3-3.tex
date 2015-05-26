@@ -50,32 +50,32 @@ Application goals are explained in~\autoref{file-sync}.
 The module is highly based on the Python implementation of ChronoSync~\cite[test-chrono-chat.py]{pyndn2-git}.
 The code can be retrieved from the thesis work repository~\cite[fileSync.py]{garseg15}
 
-\subsection{Packet Design}
-The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
-The code can be reviewed in~\cite[fileSyncBuf.proto]{garseg15}.
+% \subsection{Packet Design}
+% The packet format is designed with Google Protocol Buffers.
+% The code can be reviewed in~\cite[fileSyncBuf.proto]{garseg15}.
 
-\begin{description}
-  \item[Init Interest] - 
-  The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-interest}.
-  \item[Sync Interest] -
-  ~\autoref{fig:sync-interest-data}
-  \item[Sync Data] - 
-  ~\autoref{fig:sync-interest-data}
-\end{description}
+% \begin{description}
+%   \item[Init Interest] - 
+%   The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-interest}.
+%   \item[Sync Interest] -
+%   ~\autoref{fig:sync-interest-data}
+%   \item[Sync Data] - 
+%   ~\autoref{fig:sync-interest-data}
+% \end{description}
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1\textwidth]{init-sync-interest.png}
-  \caption{Initialization Interest for joining a synchronization folder.}
-  \label{fig:init-sync-interest}
-\end{figure}
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=1\textwidth]{init-sync-interest.png}
+%   \caption{Initialization Interest for joining a synchronization folder.}
+%   \label{fig:init-sync-interest}
+% \end{figure}
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1\textwidth]{sync-interest-data.png}
-  \caption{Sync Interest and Data}
-  \label{fig:sync-interest-data}
-\end{figure}
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=1\textwidth]{sync-interest-data.png}
+%   \caption{Sync Interest and Data}
+%   \label{fig:sync-interest-data}
+% \end{figure}
 
 \subsection{File Watcher}
 The module triggers synchronization when files that are watched is changed, or when a file is added or removed.
@@ -113,7 +113,7 @@ In~\autoref{access_control} I present a possible solution for access control.
 This is however not implemented in the application, because it is considered too high workload for this thesis.
 
 \subsection{Packet Design}
-The packet format is designed with Google Protocol Buffers.
+The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
 Initially the idea was to have the \textit{\gls{TMPK}} appended to the Content Name. 
 However I experienced a problem where the Init Data never arrived at destination node. 
