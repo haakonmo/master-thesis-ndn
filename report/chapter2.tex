@@ -143,9 +143,8 @@ E.g. when a user want to download the newest version of some content, lets say `
 When designing applications for the \gls{NDN} network, one might learn from \gls{DNS} and \gls{OS} naming.
 \todo{write more}
 
-The fact that Data has a Name, makes \gls{SDSI} and \gls{IBC} highly applicable.
+The fact that Data has a Name, makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
 Namespace-based trust was introduced in \gls{SDSI}~\cite{rivest1996sdsi}, binding names to public keys.
-But it is the latter I will use in this work.
 
 \subsection{Network Node}
 If we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and compare it to a \gls{NDN} node~\autoref{fig:icn-model-node}, we see that they look much the same.
@@ -309,12 +308,9 @@ A synchronization application build by the \gls{NDN} team is ChronoSync~\cite{DB
 \subsection{Secure Data Retrieval from Sensors}
 Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} proposes a solution for reliable retrieval of data from different wireless producers which can answer to the same Interest packet. This is highly applicable to a sensor network where you want to communicate with closest sensor, e.g. the light in \textit{this} room.
 In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate data aggregation in wireless sensor networks.
-Burke et al. addresses efficient and secure Sensing over \gls{NDN} in~\cite{DBLP:conf/nca/BurkeGNT14}
-
-Securing Building Management Systems Using Named Data Networking~\cite{DBLP:journals/network/ShangDMBZ14}
+Burke et al. addresses efficient and secure sensing over \gls{NDN}~\cite{DBLP:conf/nca/BurkeGNT14}.
+Burke has also contributed in developing and installing a system that secures building management systems at \gls{UCLA} using \gls{NDN}~\cite{DBLP:journals/network/ShangDMBZ14}.
 
 \subsection{Identity-Based Cryptography in Named Data Networking}
-There is done some research with \gls{IBC} in \gls{NDN}. In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Zhang et al. proposes a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
-
-
-\todo{write more, mer utfyllende}
+There is done little research on \gls{IBC} in \gls{NDN}. 
+In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Xinwen Zhang et al. proposes a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.

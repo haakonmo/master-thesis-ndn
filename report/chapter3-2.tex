@@ -64,13 +64,14 @@ The \gls{PKG} creates two key pairs that is used to do \gls{IBE} and \gls{IBS}.
 Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
 
 In~\autoref{fig:init_ibe_1} the device plays the role as the mobile. 
-The \gls{ID} of every device is a part of the Name under which the device registers a prefix.
-I.e. a device register \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
-To be able to communicate securely under initialization, the device have to create a temporary \gls{MPK} and \gls{MSK} and then extract a temporary secret key for its \gls{ID}. 
-At first, the device has to act as a \gls{PKG} for itself to ensure confidentiality, and the trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
-The device sends an Interest appending the temporary \gls{MPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s domain.
-The \gls{PKG} encrypts a \gls{CEK} with the temporary \gls{MPK} and the \gls{ID} received from the device. 
-Then the \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the secret key. 
+The \gls{ID} of every device is a part of the Name.
+A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
+To be able to communicate securely under initialization, the device have to create a key pair, \gls{TMPK} and \gls{TMSK}, and then extract a temporary secret key for its \gls{ID}. 
+At first, the device has to act as a \gls{PKG} for itself to ensure confidentiality.
+The trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
+The device sends an Interest appending the \gls{TMPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s trust domain.
+The \gls{PKG} encrypts a \gls{CEK} with the \gls{TMPK} and the \gls{ID} received from the device. 
+The \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the secret key. 
 The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
 To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
 The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
