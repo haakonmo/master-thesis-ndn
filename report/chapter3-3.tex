@@ -241,7 +241,7 @@ The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and
 \subsection{Performance}\label{ibc-performance}
 To be able to evaluate if \gls{IBC} is applicable for devices with small computation power and limited battery, it has to perform somewhat in the range of regular asymmetric encryption (read RSA), and signing. 
 Naccache suggested that if the prime $p$ is 1024-bit, the scheme would provide equivalent security as a RSA 1024-bit key.
-Therefore the RSA key pair is generated with the size of 1024-bit.
+For comparison reasons, the RSA key pair is therefore generated with the size of 1024-bit.
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
 \begin{table}[h]
@@ -291,12 +291,13 @@ The topology is shown in~\autoref{fig:hss-testbed}.
   \label{fig:hss-testbed}
 \end{figure}
 
-\section{NDN node 24 - NTNU}
-Node 24 in NDN testbed~\autoref{fig:ndn-map}.
+\section{NDN Testbed}
+The \gls{NDN} testbed is a network if \gls{NDN} nodes created for research purpose. 
+\gls{ntnu} joined the testbed contributing with the 24\textsuperscript{th} node in the NDN testbed~\autoref{fig:ndn-map}.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{ndn-map.png}
-  \caption{NDN Map}
+  \caption{NDN Testbed Map}
   \label{fig:ndn-map}
 \end{figure}
