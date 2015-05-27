@@ -82,7 +82,7 @@ Brent Waters created a fully secure \gls{IBE} system with short parameters under
 The complexity assumptions is based on bilinear maps.
 Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order $p$, and $g$ be a generator of $\mathbb{G}$. 
 We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ if $e$ is efficiently computable, $e$ is bilinear, i.e. $e(g^a, g^b) = e(g, g)^{ab}$ (for all $a$ and $b$), and $e$ is non-degenerate, i.e. $e(g,g)\neq 1$.
-For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader should take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
+For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader is encouraged to take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
 
 \section{Key Distribution}\label{key-distribution}
 Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, I want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.

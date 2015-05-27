@@ -96,8 +96,6 @@ Some examples are:
   Many \gls{ASP}s, such as Netflix and YouTube, have found out that the \gls{IP} network performs a lot better for their costumers if they cache up their data.
 \end{itemize}
 
-Namespace-based trust introduced in \gls{SDSI}, binding names to public keys. \todo{write something about this}
-
 \subsection{Packets}\label{packets}
 There is two types of packets in \gls{NDN};
 \textit{Interest packet} and the corresponding answer, i.e. the \textit{Data packet}, illustrated in~\autoref{fig:packets}.
@@ -144,6 +142,10 @@ E.g. when a user want to download the newest version of some content, lets say `
 
 When designing applications for the \gls{NDN} network, one might learn from \gls{DNS} and \gls{OS} naming.
 \todo{write more}
+
+The fact that Data has a Name, makes \gls{SDSI} and \gls{IBC} highly applicable.
+Namespace-based trust was introduced in \gls{SDSI}~\cite{rivest1996sdsi}, binding names to public keys.
+But it is the latter I will use in this work.
 
 \subsection{Network Node}
 If we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and compare it to a \gls{NDN} node~\autoref{fig:icn-model-node}, we see that they look much the same.
