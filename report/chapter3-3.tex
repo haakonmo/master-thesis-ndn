@@ -246,26 +246,26 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 
 \begin{table}[h]
   \begin{tabular}[c]{lllll}
-  Method                                      & Scheme          & C1          & C2           & C3              \\ \hline
-  IBE PKG key pair generation                 & Waters09        & 0.09965     & 0.02709      & 0.03608         \\ %\hline
-  IBE Encrypting CEK                          & Waters09        & 0.05265     & 0.18915      & 0.02486         \\ %\hline
-  IBE Secret Key (SK) generation              & Waters09        & 0.05614     & 0.01786      & 0.02327         \\ %\hline
-  Encrypting SK                               & AES             & 0.00013     & 0.00010      & 0.00015         \\ %\hline
-  IBS PKG key pair generation                 & Waters          & 0.09755     & 0.02715      & 0.03502         \\ %\hline
-  IBS Secret Key (SSK) generation             & Waters          & 0.00976     & 0.00287      & 0.00372         \\ %\hline
-  IBS Sign                                    & Waters          & 0.00990     & 0.00288      & 0.00369         \\ %\hline
-  IBS Verify                                  & Waters          & 0.00758     & 0.00266      & 0.00432         \\ %\hline
-  Encrypting SSK                              & AES             & 0.00006     & 0.00002      & 0.00004         \\ %\hline
-  RSA (1024-bit) key pair generation          & RSA             & 0.25427     & 0.11934      & 0.16599         \\ %\hline
-  RSA Encryption                              & RSA             & 0.01480     & 0.00440      & 0.00652         \\ %\hline
-  RSA Decryption                              & RSA             & 0.01472     & 0.00445      & 0.00649         \\ %\hline
-  RSA Sign                                    & RSA             & 0.01615     & 0.00459      & 0.00669         \\ %\hline
-  RSA Verify                                  & RSA             & 0.01572     & 0.00453      & 0.00674         \\ %\hline
-  ECDSA key pair generation                   & ECDSA           & 0.00057     & 0.00020      & 0.00032         \\ %\hline
-  ECDSA Sign                                  & ECDSA           & 0.00050     & 0.00021      & 0.00033         \\ %\hline
-  ECDSA Verify                                & ECDSA           & 0.00090     & 0.00037      & 0.00058         \\ %\hline
+  Method                                      & Scheme          & C1              & C2          & C3              \\ \hline
+  IBE PKG key pair generation                 & Waters09        & 99.65 ms        & 27.09 ms    & 36.08 ms     \\ %\hline
+  IBE Encrypting CEK                          & Waters09        & 52.65 ms        & 189.15 ms   & 24.86 ms     \\ %\hline
+  IBE Secret Key (SK) generation              & Waters09        & 56.14 ms        & 17.86 ms    & 23.27 ms     \\ %\hline
+  Encrypting SK                               & AES             & 0.13 ms         & 0.10 ms     & 0.15 ms     \\ %\hline
+  IBS PKG key pair generation                 & Waters          & 97.55 ms        & 27.15 ms    & 35.02 ms     \\ %\hline
+  IBS Secret Key (SSK) generation             & Waters          & 9.76 ms         & 2.87 ms     & 3.72 ms     \\ %\hline
+  IBS Sign                                    & Waters          & 9.90 ms         & 2.88 ms     & 3.69 ms     \\ %\hline
+  IBS Verify                                  & Waters          & 7.58 ms         & 2.66 ms     & 4.32 ms     \\ %\hline
+  Encrypting SSK                              & AES             & 0.06 ms         & 0.02 ms     & 0.04 ms     \\ %\hline
+  RSA (1024-bit) key pair generation          & RSA             & 254.27 ms       & 119.34 ms   & 165.99 ms     \\ %\hline
+  RSA Encryption                              & RSA             & 14.80 ms        & 4.40 ms     & 6.52 ms     \\ %\hline
+  RSA Decryption                              & RSA             & 14.72 ms        & 4.45 ms     & 6.49 ms     \\ %\hline
+  RSA Sign                                    & RSA             & 16.15 ms        & 4.59 ms     & 6.69 ms     \\ %\hline
+  RSA Verify                                  & RSA             & 15.72 ms        & 4.53 ms     & 6.74 ms     \\ %\hline
+  ECDSA key pair generation                   & ECDSA           & 0.57 ms         & 0.20 ms     & 0.32 ms     \\ %\hline
+  ECDSA Sign                                  & ECDSA           & 0.50 ms         & 0.21 ms     & 0.33 ms     \\ %\hline
+  ECDSA Verify                                & ECDSA           & 0.90 ms         & 0.37 ms     & 0.58 ms     \\ %\hline
   \end{tabular}
-  \caption{Cryptographic methods time chart. The time is measured in seconds and is the mean time of 100 rounds. }
+  \caption{Cryptographic methods time chart. Each measurement is the mean time of 100 rounds and measured in milliseconds. }
   \label{tbl:time_chart}
 \end{table}
 
@@ -275,10 +275,10 @@ The results are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
-  Initialization                          & 0.2029        & 0.0708        & 0.1163        \\ %\hline
-  Data Pull                               & 0.0614        & 0.0310        & 0.0462        \\ %\hline
+  Initialization                          & 202.9 ms      & 70.8 ms       & 116.3 ms     \\ %\hline
+  Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
   \end{tabular}
-  \caption{Round trip time chart. Time is measured in seconds.}
+  \caption{Round trip time chart. Time is measured in milliseconds.}
   \label{tbl:rtt_chart}
 \end{table}
 
