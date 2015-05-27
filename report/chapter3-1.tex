@@ -57,7 +57,7 @@ Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, can be a problem 
 The same issue does however occur in Kerberos, which is a well recognized security system. 
 To allocate \gls{SK}s, a secure channel has to be established. 
 
-\section{Secureness}
+\section{Secureness}\label{ibe-secureness}
 
 A random oracle is like a ``black box'' that outputs truly random numbers.
 When designing protocols in cryptography one first usually designs an ideal system where all parties have random oracle access, then proves the security.
@@ -79,7 +79,10 @@ The scheme is a modification of Waters' scheme, but with public parameters of ju
 
 Brent Waters created a fully secure \gls{IBE} system with short parameters under simple assumption in 2009~\cite{DBLP:conf/crypto/Waters09}.
 
-To understand the mathematical assumptions for \gls{IBE}, the reader should take a look at~\cite[section 3]{DBLP:conf/crypto/BonehF01} for details about bilinear maps and~\gls{BDH}.
+The complexity assumptions is based on bilinear maps.
+Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order $p$, and $g$ be a generator of $\mathbb{G}$. 
+We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ if $e$ is efficiently computable, $e$ is bilinear, i.e. $e(g^a, g^b) = e(g, g)^{ab}$ (for all $a$ and $b$), and $e$ is non-degenerate, i.e. $e(g,g)\neq 1$.
+For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader should take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
 
 \section{Key Distribution}\label{key-distribution}
 Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, I want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.

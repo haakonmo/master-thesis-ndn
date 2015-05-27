@@ -29,6 +29,8 @@ from charm.schemes.pksig.pksig_ecdsa import ECDSA
 from charm.toolbox.ecgroup import ECGroup,ZR,G
 from charm.toolbox.PKSig import PKSig
 from charm.toolbox.eccurve import prime192v2
+from charm.toolbox.IBEnc import *
+from charm.toolbox.pairinggroup import PairingGroup,GT, ZR,G1,pair, G2, GT
 
 def getKey():
     face = Face("129.241.208.115", 6363)
@@ -118,7 +120,7 @@ def test():
     ID = "/ndn/no/ntnu/haakon"
     data = "this is a short message that should be signed and encrypted."
     cek = ibe.ibe_scheme.getRandomKey()
-    cekSize = len(Blob(objectToBytes(cek, ibe.ibe_scheme.group)))
+    cekSize = len(Blob(extractor(cek)))
 
     results = 0.0
     for i in range (0, number):
@@ -334,6 +336,15 @@ def ecdsa():
     logging.info("ECDSA verify time: " + str(mean))    
     ecdsa.verify(public_key, signature, msg)
 
+def ibcKeySize():
+    group = PairingGroup('SS512')
+    g1 = group.random(G1)
+    g2 = group.random(G2)
+    gt = group.random(GT)
+    logging.info("G1:" + str(g1) + ", length: " + str(len(Blob(objectToBytes(g1, group)))) + " bytes.")
+    logging.info("G2:" + str(g2) + ", length: " + str(len(Blob(objectToBytes(g2, group)))) + " bytes.")
+    logging.info("GT:" + str(gt) + ", length: " + str(len(Blob(objectToBytes(gt, group)))) + " bytes.")
+
 def main():
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(message)s',
@@ -344,5 +355,6 @@ def main():
     test()
     rsa()
     ecdsa()
-    
+    ibcKeySize()
+
 main()

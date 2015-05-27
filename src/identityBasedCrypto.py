@@ -18,7 +18,7 @@ from pyndn.sha256_with_ibswaters_signature import Sha256WithIbsWatersSignature
 from pyndn.signature import Signature
 
 from charm.core.engine.util import serializeObject, deserializeObject, objectToBytes, bytesToObject
-
+from charm.core.math.pairing import hashPair as extractor
 # all ID-based encryption schemes implemented in Charm
 #from charm.schemes.ibenc.ibenc_bb03 import IBE_BB04
 #from charm.schemes.ibenc.ibenc_ckrs09 import IBE_CKRS
