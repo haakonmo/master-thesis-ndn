@@ -1,4 +1,4 @@
-\chapter{Application}\label{sensor-application}
+\chapter{Security in Sensor Network}\label{sensor-application}
 In this chapter the sensor application will be presented. 
 Several sequence diagrams will be explained, as well as concepts needed to understand the flow of the application. 
 
@@ -6,12 +6,12 @@ Several sequence diagrams will be explained, as well as concepts needed to under
 There is an ongoing discussion of when the health technology revolution will come to human bodies now that \gls{IoT} have become so popular.
 By revolution, I mean sensors placed in the human body. 
 Sensors that can read your blood pressure, heart rate and measure insulin levels.
-Sensors that can detect whether your body is missing out of a substance, or if its poisoned. 
+Sensors that can detect whether your body is missing out of a substance, or if it is poisoned. 
 There is no limit for what can be done.
 Everything that should be measured, will be measured by sensors integrated in the human body.
 But who will be able to read the data?
 Or perform instructions to the sensors/devices?
-There is some major privacy issues related to this discussion, and there problems that needs to be solved.
+There is some major privacy issues related to this discussion, and problems that needs to be solved.
 
 In 2011, Jerome Radcliffe discovered that his insulin pump easily could be hacked~\cite{radcliffe2011hacking}.
 Basically the pump would take instructions from anyone and do anything, with no questions asked. 
@@ -67,11 +67,11 @@ In~\autoref{fig:init_ibe_1} the device plays the role as the mobile.
 The \gls{ID} of every device is a part of the Name.
 A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
 To be able to communicate securely under initialization, the device have to create a key pair, \gls{TMPK} and \gls{TMSK}, and then extract a temporary secret key for its \gls{ID}. 
-At first, the device has to act as a \gls{PKG} for itself to ensure confidentiality.
+At first, the device has to act as a key generator for itself to ensure that the receiver (i.e. the \gls{PKG}) can encrypt the extracted \gls{SK}.
 The trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
 The device sends an Interest appending the \gls{TMPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s trust domain.
 The \gls{PKG} encrypts a \gls{CEK} with the \gls{TMPK} and the \gls{ID} received from the device. 
-The \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do a symmetric \gls{AES} encryption on the secret key. 
+The \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do symmetric \gls{AES} encryption on the secret key. 
 The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
 To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
 The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
@@ -154,7 +154,7 @@ I assume the following threat model:
 I assume that the \gls{PKG} cannot be compromised by any adversary, and thus the \gls{MSK} will always be hidden from any adversaries. 
 An idea introduced by Aaditeshwar Seth and Srinivasan Keshav in~\cite[Section 5.4]{Seth:2005:PSD:1897159.1897165} is to avoid storing the \gls{SK}s in devices that is more likely to be lost or stolen, e.g. a mobile.
 Using \gls{HIBC}, one can extend the key hierarchy by another level that is time-based.
-These time-based keys can then be downloaded to the mobile on a daily basis.
+These time-based keys can then be downloaded to the mobile on a daily basis, hence the time the mobile will be compromised is reduced.
 
 \subsection{Access Control}\label{access_control}
 Since the ID\textsubscript{device} is appended to the Interest and the Interest is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
@@ -175,7 +175,7 @@ This approach has some additional benefits for the \gls{HSS}, such as
   Specific resources from a device can be granted access to in different granularity.
 \end{itemize}
 
-Another solution can be an \gls{ACL} based approach equivalent to what they did in~\cite{DBLP:journals/network/ShangDMBZ14}.
+Another solution can be an \gls{ACL} based approach equivalent to what Wentao Shang et al. did in~\cite{DBLP:journals/network/ShangDMBZ14}.
 
 \subsection{Confidentiality}
 The confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
@@ -187,21 +187,22 @@ Each device will obtain a secret key allocated by its superior \gls{PKG}, as exp
 With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
 In this setting, a verified signature acts as an assurance of authentication and integrity. 
 
-Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that is used for protection against replay attack. 
+Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that can be used for protection against replay attack. 
 
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
-
 An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded of work and might run out of battery fast.
+Therefore one should check the \gls{MPK} before doing any crypto.
+This is also why I have chosen to append the MPK in the packet~\autoref{fig:sensor_interest-data}. 
 
 \subsection{Trust Model}
 For a system to be secure, cryptography together with trust is essential. 
 The \gls{HSS} trust model is built upon trusting a centralized authority, typically the user's home server, rendezvous authentication and \gls{IBC}.
 The fact that it runs over \gls{NDN} makes it easier to achieve security goals and usability for third party developers.
 
-The public key is the name of the device, and all content published by the device will begin with this name, hence it is easy to verify that the publisher is the owner of the content.
+The \gls{PK} is the Name of the device, and all content published by the device will begin with this Name, hence it is easy to verify that the publisher is the owner of the content.
 To be able to verify and encrypt messages, the device need the MPK\textsubscript{PKG} and the ID of the user it wants to communicate with. 
 If allowed by the PKG, the public parameters MPK\textsubscript{PKG} is public for everybody that is not a part of the trust domain. 
-To be able to sign and decrypt messages the device have to be a member of the trust domain and be issued a private key mapping to the device's \gls{ID}.
+To be able to sign and decrypt messages the device have to be a member of the trust domain and be issued a secret key mapping to the ID\textsubscript{device}.
 Each device builds its trust on other devices based on that it has been verified by an administrator that controls the \gls{PKG}.

@@ -21,8 +21,8 @@ The major modules implemented in \gls{NFD} is:
   \item\gls{RIB} Management - Managing routing protocols and application prefix registration.
 \end{itemize}
 The \gls{NDN} project is under development, and thus the implementation of \gls{NFD} has its deficiencies.
-Ideally we want the devices to communicate directly with each other with WiFi, without running over \gls{IP}. 
-This face functionality is not yet implemented, and thus \gls{NDN} is running over \gls{IP}.
+Ideally we want the devices to communicate directly with each other using WiFi, without running over \gls{IP}. 
+This face functionality is not yet implemented, and thus \gls{NDN} is running over \gls{IP} in my experiments.
 
 \subsection{Installing PyNDN2}
 The work done in this thesis is written in Python, hence the \gls{PyNDN2}~\cite{pyndn2-git} is used.
@@ -30,17 +30,18 @@ This is an easy to use implementation of \gls{NDN} and comes with great code exa
 
 Because the \gls{NDN} protocol require signing of Data packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
 I added the \path{python/pyndn/sha256_with_ibswaters_signature.py} file that follows the pattern of the existing RSA Signature (\path{python/pyndn/sha256_with_rsa_signature.py}) and is of type \texttt{Signature}.
-Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the signature when the Data packet is encoded and decoded.
+Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the \gls{IBS} when the Data packet is encoded and decoded.
 
 \section{Installing Identity-Based Cryptography}
 To be able to run \gls{IBC} the \gls{PBC}~\cite{ben2007implementation} needs to be installed.
-I use a Python implementation of \gls{IBC} which is a framework for rapidly prototyping cryptosystems.
-The Charm framework~\cite{charm13} implements several \gls{IBE} and \gls{IBS} schemes in Python.
+I use the Charm framework~\cite{charm13} implements several \gls{IBE} and \gls{IBS} schemes in Python.
+Charm is a framework for rapidly prototyping cryptosystems.
+
 
 Some small modifications had to be done in the Waters-\gls{IBS}~\cite{DBLP:journals/iacr/Waters04} implementation in Charm.
 Not really something worth mentioning, yet explained due to the concept of academic reproduction. 
 In \path{charm/schemes/pksig/pksig_waters.py} there is a global variable, i.e. \texttt{waters}, that is used throughout all the methods in \path{pksig_waters.py}.
-The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG} (\autoref{ibc-methods}), and not by another device that do not play the role of a \gls{PKG}. 
+The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG}, and not by another devices that do not play the role of a \gls{PKG}. 
 And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}.
 
 
@@ -91,6 +92,7 @@ Application flow explained in~\autoref{sensor-application}.
 The implementation does not deal with sensor data retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
 The code is divided into several pieces shown in~\autoref{fig:code-topology}.
 
+\todo{explain better}
 \begin{itemize}
   \item Device code~\cite[device.py]{garseg15}
   \item \gls{PKG} code~\cite[publicKeyGenerator.py]{garseg15}
@@ -120,7 +122,7 @@ This is however not implemented in the application, because it is considered too
 The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
 Initially the idea was to have the \textit{\gls{TMPK}} appended to the Content Name. 
-However I experienced a problem where the Init Data never arrived at destination node. 
+However, I experienced a problem where the Init Data never arrived at destination node. 
 After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the Init Data exceeded this limit and reached 8904 bytes.
 Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the Content Name in the Interest, the Data response off course had to have the same Content Name, hence 2\gls{KB} overhead in the Name. 
 The \gls{TMPK} can as easily be appended to the KeyLocator Name, hence the Data response can be 2\gls{KB} less, resulting to a 6866 bytes Init Data packet.
@@ -132,14 +134,17 @@ The code can be reviewed i~\cite[messageBuf.proto]{garseg15}.
   The initialization Interest seen in~\autoref{fig:init_interest-data}
   KeyLocator can be of type Name. 
   As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the Interest.
-  However, in our trust model we use this field to publish the requesters Name, i.e. the requesters public key. 
+  However, in the trust model I use this field to publish the requesters Name, i.e. the requesters public key. 
   This is very useful when using \gls{IBE} and \gls{IBS}.
 	\item[Init Data] - 
   The Data response the the initialization Interest contains data with a structure defined in~\cite[messageBuf.proto]{garseg15} and illustrated in~\autoref{fig:init_interest-data}.
+  \todo{explain}
 	\item[Sensor Interest] -
-	As in the initialization Interest the KeyLocator field is used to define the requesters Name. ~\autoref{fig:sensor_interest-data}
+	As in the initialization Interest the KeyLocator field is used to define the ID\textsubscript{requester}. 
+  The packet is illustrated in~\autoref{fig:sensor_interest-data}.
 	\item[Sensor Data] - 
-  The Data response to the Sensor Interest uses the same structure as the initialization Data. It is illustrated in~\autoref{fig:sensor_interest-data}
+  The Data response to the Sensor Interest uses the same structure as the initialization Data. 
+  It is illustrated in~\autoref{fig:sensor_interest-data}
 \end{description}
 
 \begin{figure}[ht]
@@ -223,7 +228,7 @@ The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and
 \begin{table}[h]
   \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
   Data                            & Scheme          & Size              \\ \hline
-  Content Encryption Key (CEK)    & Random          & 244 bytes         \\ %\hline
+  Content Encryption Key (CEK)    & Hash($\mathbb{G}_T$) & 244 bytes         \\ %\hline
   IBE Master Public Key           & Waters09        & 2014 bytes        \\ %\hline
   IBE Secret Key (SK)             & Waters09        & 1164 bytes        \\ %\hline
   IBE Encrypted CEK               & Waters09        & 1472 bytes        \\ %\hline
@@ -239,7 +244,7 @@ The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and
 
 
 \subsection{Performance}\label{ibc-performance}
-To be able to evaluate if \gls{IBC} is applicable for devices with small computation power and limited battery, it has to perform somewhat in the range of regular asymmetric encryption (read RSA), and signing. 
+To be able to evaluate if \gls{IBC} is applicable to devices with small computation power and limited battery, it has to at least perform somewhat in the range of regular asymmetric encryption (read RSA), and signing. 
 Naccache suggested that if the prime $p$ is 1024-bit, the scheme would provide equivalent security as a RSA 1024-bit key.
 For comparison reasons, the RSA key pair is therefore generated with the size of 1024-bit.
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
@@ -271,7 +276,7 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 
 
 The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
-The results are presented in~\autoref{tbl:rtt_chart}.
+The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
@@ -292,8 +297,9 @@ The topology is shown in~\autoref{fig:hss-testbed}.
 \end{figure}
 
 \section{NDN Testbed}
-The \gls{NDN} testbed is a network if \gls{NDN} nodes created for research purpose. 
-\gls{ntnu} joined the testbed contributing with the 24\textsuperscript{th} node in the NDN testbed~\autoref{fig:ndn-map}.
+The \gls{NDN} testbed is a network of \gls{NDN} nodes created for research purpose. 
+\gls{ntnu} joined the testbed contributing with the 24\textsuperscript{th} node in the NDN testbed.
+The map of the NDN testbed is shown in~\autoref{fig:ndn-map}.
 
 \begin{figure}[ht]
   \centering

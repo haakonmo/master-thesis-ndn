@@ -7,17 +7,17 @@ In this chapter the conclusion of thesis will be presented and the future work w
 In this thesis I have developed a Health Sensor System in Python with Identity-Based Cryptography used for signing and verification, encryption and decryption.
 The system is build over the new network protocol called Named Data Networking.
 
-I have suggested how a secure system easily can be implemented, achieving confidentiality, integrity and authenticity.
+I have suggested how a secure system easily can be implemented, achieving confidentiality, integrity and authenticity, as well as trust.
 
 The system is tested to see how the suggested protocols for initialization and data pull performs with \gls{IBC}. 
 This work is an attempt to show how applicable \gls{NDN} together with \gls{IBC} are for \gls{IoT}, and to design secure protocols for local device networks.
 
 \section{Future Work}
 The implementation of the \gls{HSS} does not include integration of the \gls{FSM}, which is a part of the future work.
-Test system is not tested on relevant sensors and devices.
+The system is not tested on relevant sensors and devices.
 
 An implementation of a full worthy \gls{IBC} solution in \gls{PyNDN2}.
 This include making \gls{IBC} as a part of the PyNDN2 framework, so that developers easily can make use of \gls{IBE} and \gls{IBS}.
 
 The \gls{IBC} schemes used in the Charm framework does not provide a scheme that implements \gls{IBE} and \gls{IBS} together.
-This should not be a huge task to implement, but it will decrease the initialization round-trip time as well as minimizing the use of several keys, i.e. easier key management. 
+This should not be a huge task to implement, but it will decrease the initialization round-trip time as well as minimizing the use of several keys, i.e. easier key management, as it is explained how to derive a signature scheme from any \gls{IBE} scheme~\cite[Section 4]{DBLP:conf/crypto/Waters09}.

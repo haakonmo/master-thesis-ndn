@@ -1,11 +1,11 @@
 \chapter{File Synchronization over Named Data Network}\label{chp3:application}
-This chapter will present ChronoSync, and explaining what the \gls{FSM} is built upon and its purpose over the \gls{NDN} network. 
-
+This chapter will present ChronoSync, and explaining what the \gls{FSM} is built upon and its purpose over the \gls{NDN} network and in this thesis. 
 
 \section{ChronoSync}\label{chronosync}
 Since \gls{NDN} provides multicast in network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
 To achieve distributed synchronization of a dataset, the \gls{NDN}-team has developed ChronoSync, a decentralized synchronization framework over \gls{NDN}. 
 ChronoSync assumes that a group of nodes knows the Name of a ``synchronization group'', e.g \path{/ndn/broadcast/FileSync-0.1/<group_room>/}.
+The synchronication application is built upon state digests, which is that each participating node stores a hash of its current dataset. 
 Each node in a ChronoSync application broadcasts its sync state in a Sync Interest (e.g. \path{/ndn/broadcast/FileSync-0.1/<group_room>/<state>}).
 When a node receives a Sync Interest, it will inspect the state of the Interest, and compare with its own state.
 Each node holds a state tree that is used to detect new and outdated states.
@@ -26,7 +26,8 @@ This Interest is periodically sent out from each subscriber maintaining the mult
 
 ChronoSync is only taking care of data discovery, and leaves other logic to the application that is using ChronoSync. 
 Such logic can be for instance; what should happen when a new participant enters the room.
-Should all history be download?
+Should all history be download? 
+Or who is allowed to publish content in each ``synchronization group''?
 
 % As mentioned in~\autoref{name}, the \gls{NDN} protocol leaves the naming rules up to each application to decide.
 % ChronoSync have to forms of rules in this matter. 
@@ -35,13 +36,13 @@ ChronoSync is explained in detail here~\cite{DBLP:conf/icnp/ZhuA13}.
 
 \section{File Synchronization Module}\label{file-sync}
 The goal for the \gls{FSM} is to distribute data to a large group of nodes.
-Each node wants to verify that the distributed data originate from the owner.
+Each node wants to verify that the distributed data originate from the publisher.
 Each node always wants to have the newest version of the data. 
-One example where \gls{FSM} is applicable, is when we want to distribute a list of public keys within a domain.
+One example where \gls{FSM} is applicable to, is when we want to distribute a list of public keys within a domain.
 Lets say there is a list owner, e.g. a \gls{TTP} that could be a university like the \gls{ntnu}.
 \gls{ntnu} wants to distribute to a large set of nodes, i.e. each student and employee at \gls{ntnu}.
 Every node wants to have every public key in \gls{ntnu}s domain up-to-date.
-When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with the new list.
+When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with the updated list.
 
 There can be two types of roles in the \gls{FSM}. 
 \begin{enumerate}
@@ -61,10 +62,10 @@ In the case of public keys list, the data would not have to be confidential, but
 In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributor's (\texttt{d}) list of public keys.
 In order to achieve this goal, the following actions should occur.
 \begin{enumerate}
-	\item \texttt{d} announces that it wants to distribute a list to the network. 
+	\item \texttt{d} announces that it wants to distribute a list to the network, by registering the synchronization group prefix. 
 	\item \texttt{a}, \texttt{b} and \texttt{c} ask for subscription to this list, and somehow authenticates them selves to \texttt{d} if confidentiality is required.
 	\item \texttt{d} approves those who should be approved, and returns a symmetric synchronization key. 
-	Again only if confidentiality is required.
+	This step is only done if confidentiality is required.
 	\item \texttt{a}, \texttt{b} and \texttt{c} now knows that they are a part of the synchronization and have read access. They expresses a Sync Interest with their state, receiving Sync Data whenever \texttt{d} has announced a newer state.
 \end{enumerate}
 
@@ -75,7 +76,8 @@ In order to achieve this goal, the following actions should occur.
   \label{fig:ndn-sync}
 \end{figure}
 
-There are some issues that could occur. 
+There are some issues that could occur in such a system. 
 \gls{DoS} on Sync Interest and Sync Data. 
-If the \gls{FSM} is used to revoke public keys as suggested, an attacker who has found the compromised private key, can try to deny the distribution of the new list, i.e. the Sync Data, from the distributor. 
-\todo{write more}
+If the \gls{FSM} is used to revoke public keys as suggested, an attacker who has found the compromised \gls{SK}, can try to deny the distribution of the new list, i.e. the Sync Data, from the distributor. 
+This is however a complicated attack and an updated list would spread fast.
+Performing \gls{DoS} on every node is not easy, and would block the network access for the adversary anyway.
