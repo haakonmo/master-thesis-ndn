@@ -20,7 +20,7 @@ Or the \gls{MPK} can be appended to the message.
 
 \section{Development Usability in Named Data Networking}
 Once a basic perception of the \gls{NDN} architecture is understood, it is easy to begin developing.
-The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with pacekts that are signed and encrypted.
+The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
 
 The concept of naming data introduces more simplicity, but also a new way of application design thinking.
 Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
@@ -42,7 +42,7 @@ Storing the \gls{SK} in a secure fashion.
 
 \section{Scalability}
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
-However, this might not be a huge problem in the use cases that is addressed in this paper, considerering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
+However, this might not be a huge problem in the use cases that is addressed in this thesis, considering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
 
 \section{Sync}
 The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
@@ -51,7 +51,7 @@ Likewise when a receiver verifies a signature, it has to rely on the same princi
 Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution to reduce the time of exposure when compromised.
 
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
-All applications that are relying on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
+All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
 
 \section{Other Use Cases}
 The trust model used in the \gls{HSS} can be used in any network where the use of a \gls{TTP} is accepted. 

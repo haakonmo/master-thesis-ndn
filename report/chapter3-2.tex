@@ -6,7 +6,7 @@ Several sequence diagrams will be explained, as well as concepts needed to under
 There is an ongoing discussion of when the health technology revolution will come to human bodies now that \gls{IoT} have become so popular.
 By revolution, I mean sensors placed in the human body. 
 Sensors that can read your blood pressure, heart rate and measure insulin levels.
-Sensors that can detect whether your body is missing out of a substance, or if it is poisoned. 
+Sensors that can detect whether your body is missing a substance, or if it is poisoned. 
 There is no limit for what can be done.
 Everything that should be measured, will be measured by sensors integrated in the human body.
 But who will be able to read the data?
@@ -19,7 +19,7 @@ This is a worst case scenario when it comes to hacking medical devices attached 
 
 For this matter I propose a \gls{HSS} that is built upon \gls{NDN} with \gls{IBC} ensuring a secure and locked environment.
 First, let me introduce you to The Stig. 
-He has developed diabetes and as everybody else that do not have diabetes, he does not want to manually monitor his glucose levels and adjust the insulin pump at every meal. 
+He has developed diabetes and he does not want to manually monitor his glucose levels and adjust the insulin pump every meal. 
 He has injected a \gls{CGM} to monitor his glucose levels and report to the insulin pump, automatically.
 In addition to his diabetes, he has a heart disease which forces him to monitor his heart rate at any given time. 
 In~\autoref{fig:health-sensor-system} we can see The Stig with all his sensors and devices. 
@@ -39,10 +39,10 @@ In the following sections, I will describe the protocols suggested for achieving
 
 \subsection{Rendezvous Authentication}\label{rendezvous_authentication}
 One of the best solutions for authentication of an identity in cryptography is rendezvous authentication, the concept of meeting face-to-face for authenticating who you are talking to. 
-In \gls{IoT}, we have in most cases the advantage of identifying devices in a physical matter.
+Most cases in \gls{IoT} we have the advantage of identifying devices in a physical manner.
 This means that it is possible to authenticate devices, such as sensors. 
 Typically, this kind of authentication will rely on 1) manually inspection and 2) digital connection, e.g. through \gls{NFC}.
-In the proposed system, I assume that this type of authentication is achieved in a secure matter and do not discuss whether how this should be done.
+In the proposed system, I assume that this type of authentication is achieved in a secure manner and do not discuss how this should be done.
 
 Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
 This authentication method uses a shared secret before authentication. 
@@ -51,7 +51,7 @@ This authentication method uses a shared secret before authentication.
 The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
 For the protocol to be secure, there are several issues that need to be addressed. 
 The response message containing the secret key has to be 1) encrypted. 
-This can be achieved by using asymmetric encryption on a \gls{CEK} from which is used to do symmetric encryption on the secret key.
+This can be achieved by using asymmetric encryption on a \gls{CEK} which is used to do symmetric encryption on the secret key.
 The response message has to be 2) signed by the \gls{PKG} for integrity and authenticity reasons.
 For it to make sense applying 3) a nonce for replay protection, the communication between the device and the \gls{PKG} has to be unique of some kind.
 This implies that the device has to authenticate itself in a way that an adversary cannot do, e.g. a shared secret.
@@ -110,7 +110,7 @@ This results in a rendezvous authentication between the device and the mobile, a
 The goal for this protocol is to achieve a secure one-round data pull with authorization and integrity.
 For the protocol to work and the data pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
 
-As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and are ready to communicate with other devices.
+As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and is ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
 First the requester has to express an Interest to the target device asking for a specific resource. 
 The requester signs the Interest and appends it to the Content Name.
@@ -119,7 +119,7 @@ If the requester is authorized, the receiver responds with the Data containing t
 The receiver will also do a symmetric encryption on the sensor data and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
 This step is only performed if data confidentiality is needed. 
 Then the Data packet is signed and sent.
-Finally the requester receives the Data and verifies the signature and decrypts the sensor data.
+Finally the requester receives the Data, verifies the signature and decrypts the sensor data.
 
 \begin{figure}[ht]
   \centering
@@ -192,7 +192,7 @@ Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/dev
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
-An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded of work and might run out of battery fast.
+An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded with work and might run out of battery fast.
 Therefore one should check the \gls{MPK} before doing any crypto.
 This is also why I have chosen to append the MPK in the packet~\autoref{fig:sensor_interest-data}. 
 

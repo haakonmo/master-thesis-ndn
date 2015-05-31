@@ -8,28 +8,28 @@ going on at the \gls{UCLA}, which is part of the inspiration and a contact point
 In general, the name to address resolution can either be maintained by a catalogue lookup service, 
 such as \gls{DNS} (Internet) and \gls{HLR} (mobile networks), 
 or resolved on-the-fly by a protocol on request, such as \gls{ARP} (\gls{LAN}). 
-There has been a tremendous amount of work done on the naming problem in distributed systems, 
+There has been done a tremendous amount of work on the naming problem in distributed systems, 
 some became big failures (e.g. X.500) others such as the web \gls{URL}s are very successful. 
 Bringing things even further, the \gls{DOI} system is a \gls{URI} directed at the content/object itself rather than a location. 
 Very much related to the name/address problem is the information security problem of efficient and practical public key distribution, 
 which remain unsolved in practice, even though a significant number of digital certificate and verification protocols and schemes have been proposed, and systems tested over the last two decades. 
 One notable and early theoretical proposal is Adi Shamir's \gls{IBC} proposal~\cite{DBLP:conf/crypto/Shamir84},
-and subsequent work, that may be revisited for applicable to \gls{NDN}.
+and subsequent work, that may be revisited and applicable to \gls{NDN}.
 
 \section{Problem and Scope}
 
 When designing a new network protocol for the future Internet, one of the most significant changes should be security.
 Trust management plays a big part in security, and thus we cannot design trust management on known \gls{IP} failures such as X.500. 
-\gls{PKI} is a tough challenge to solve and the solution is probably not the one or the other, but rather case specific.
+\gls{PKI} is a tough challenge to solve and it is probably not rigid solution, but rather case specific.
 \gls{NDN} is being designed with security in mind, but the issue of trust management is yet to be solved.
 
-I address the trust management issue in a though sensor device network, i.e. a health sensor network.
+I address the trust management issue in a thought sensor device network, i.e. a health sensor network.
 By using the \gls{NFD} I will implement my proposal for such a sensor network over \gls{NDN}, and contribute with ideas and concepts around such a network.
 
 \section{Methodology}
 
 First I design the application flow in sequence diagrams.
-Based on how \gls{NDN} is designed, I try to implement the proposed design and see where to redesign the application proposal for achieving minimal communication overhead, maximum security (i.e. \gls{CIA}) and usability.
+Based on how \gls{NDN} is designed, I try to implement the proposed design and see where changes can be made to minimize communication overhead, maximize security (i.e. \gls{CIA}) and usability.
 The implementation will be tested and discussed.
 
 \section{Outline}

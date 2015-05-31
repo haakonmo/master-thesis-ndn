@@ -1,8 +1,8 @@
 \chapter{File Synchronization over Named Data Network}\label{chp3:application}
-This chapter will present ChronoSync, and explaining what the \gls{FSM} is built upon and its purpose over the \gls{NDN} network and in this thesis. 
+This chapter will present ChronoSync, and explaining what the \gls{FSM} is built upon, its purpose over the \gls{NDN} network and its purpose in this thesis. 
 
 \section{ChronoSync}\label{chronosync}
-Since \gls{NDN} provides multicast in network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
+Since \gls{NDN} provides multicast in the network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
 To achieve distributed synchronization of a dataset, the \gls{NDN}-team has developed ChronoSync, a decentralized synchronization framework over \gls{NDN}. 
 ChronoSync assumes that a group of nodes knows the Name of a ``synchronization group'', e.g \path{/ndn/broadcast/FileSync-0.1/<group_room>/}.
 The synchronication application is built upon state digests, which is that each participating node stores a hash of its current dataset. 
@@ -20,13 +20,12 @@ In case of 1), the receiving node has new data and should provide the new conten
   \item \textit{Recovery Data} is a response to 3).
 \end{enumerate}
 
-All traffic in \gls{NDN} is pull based, meaning that a user has to request the data for it to be sent. 
 When the group is in a stable state, each Sync Interest is equivalent, hence only one entry at each router's \gls{PIT} is created, forming a temporary multicast three.
-This Interest is periodically sent out from each subscriber maintaining the multicast three, resulting that the producer has the possibility to answer the Sync Interest with Sync Data whenever the producer has a new dataset.
+This Interest is periodically sent out from each subscriber maintaining the multicast three, resulting in that the producer has the possibility to answer the Sync Interest with Sync Data whenever the producer has a new dataset.
 
 ChronoSync is only taking care of data discovery, and leaves other logic to the application that is using ChronoSync. 
-Such logic can be for instance; what should happen when a new participant enters the room.
-Should all history be download? 
+Such logic can be e.g. what should happen when a new participant enters the room.
+Should all history be downloaded? 
 Or who is allowed to publish content in each ``synchronization group''?
 
 % As mentioned in~\autoref{name}, the \gls{NDN} protocol leaves the naming rules up to each application to decide.
@@ -38,8 +37,8 @@ ChronoSync is explained in detail here~\cite{DBLP:conf/icnp/ZhuA13}.
 The goal for the \gls{FSM} is to distribute data to a large group of nodes.
 Each node wants to verify that the distributed data originate from the publisher.
 Each node always wants to have the newest version of the data. 
-One example where \gls{FSM} is applicable to, is when we want to distribute a list of public keys within a domain.
-Lets say there is a list owner, e.g. a \gls{TTP} that could be a university like the \gls{ntnu}.
+One example where \gls{FSM} is applicable is when we want to distribute a list of public keys within a domain.
+Let us say there is a list owner, e.g. a \gls{TTP} that could be a university like the \gls{ntnu}.
 \gls{ntnu} wants to distribute to a large set of nodes, i.e. each student and employee at \gls{ntnu}.
 Every node wants to have every public key in \gls{ntnu}s domain up-to-date.
 When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with the updated list.
@@ -52,7 +51,7 @@ There can be two types of roles in the \gls{FSM}.
 Distributors are list-owners and have read-write access.
 Subscribers only have read access.
 A node can be both a distributor and a subscriber, and there can be several distributors that are equal, i.e. several owners of the list.
-However there is one root distributor (i.e. the true owner) that should be able to delegate write access to other nodes that should act as a distributor. 
+However, there is one root distributor (i.e. the true owner) that should be able to delegate write access to other nodes that should act as a distributor. 
 The capabilities is distributed to all nodes and signed by the root distributor.
 These capabilities is needed so that every node can verify the integrity and authenticity of the distributed list.
 If confidentiality is required, it can be achieved by symmetric encryption, and key exchange in the subscription protocol, i.e. using asymmetric encryption.
@@ -62,7 +61,7 @@ In the case of public keys list, the data would not have to be confidential, but
 In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributor's (\texttt{d}) list of public keys.
 In order to achieve this goal, the following actions should occur.
 \begin{enumerate}
-	\item \texttt{d} announces that it wants to distribute a list to the network, by registering the synchronization group prefix. 
+	\item \texttt{d} announces that it wants to distribute a list to the network by registering the synchronization group prefix. 
 	\item \texttt{a}, \texttt{b} and \texttt{c} ask for subscription to this list, and somehow authenticates them selves to \texttt{d} if confidentiality is required.
 	\item \texttt{d} approves those who should be approved, and returns a symmetric synchronization key. 
 	This step is only done if confidentiality is required.

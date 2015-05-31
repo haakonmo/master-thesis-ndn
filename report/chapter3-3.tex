@@ -39,7 +39,6 @@ Charm is a framework for rapidly prototyping cryptosystems.
 
 
 Some small modifications had to be done in the Waters-\gls{IBS}~\cite{DBLP:journals/iacr/Waters04} implementation in Charm.
-Not really something worth mentioning, yet explained due to the concept of academic reproduction. 
 In \path{charm/schemes/pksig/pksig_waters.py} there is a global variable, i.e. \texttt{waters}, that is used throughout all the methods in \path{pksig_waters.py}.
 The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG}, and not by another devices that do not play the role of a \gls{PKG}. 
 And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}.
@@ -200,7 +199,7 @@ Running \texttt{r} will make the device expressing an Interest for sensor data f
 \end{lstlisting}
 
 \section{Testing}
-In this section it will be presented which computers that will be used during testing. 
+In this section it will be presented which computers will be used during testing. 
 The measurement results will be presented together with the key/content sizes related to the \gls{HSS}.
 
 \subsection{Computers}
@@ -223,7 +222,7 @@ Each computer is assigned an ID which will be used for reference in the performa
 \subsection{Key Sizes}
 It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to the \gls{IBE} and \gls{IBS} that is used in the \gls{HSS} implementation.
 The \gls{CEK} is generated as a group element and is extracted to 40 bytes when performing encryption and decryption with \gls{AES}.
-I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme Charm provides does demand a certain type of format on the data, and thus the whole \gls{CEK} is sent.
+I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format on the data, and thus the whole \gls{CEK} must be sent.
 The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and is generated with \texttt{group.random(GT)}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}

@@ -35,23 +35,24 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
 \end{figure}
 
 Designing the \gls{IP} network, security was not the first priority.
-A logical though considering that they did not know what the Internet is being used for and how big it has become.
-Many protocols related to Internet have been designed and deployed mainly with the goal of functionality, not thinking of security.
-In the years after the birth of Internet, they soon found out that Internet needed security at several layers, due to that the application requirements and transmission importance increased.
+A logical thought considering that they did not know what the Internet is being used for and how big it has become.
+Many protocols related to Internet have been designed and deployed mainly with the goal of functionality, not thinking about security.
+In the years after the birth of Internet, it was discovered that Internet needed security at several layers, due to that the application requirements and transmission importance increased.
 \gls{IPsec} is a very good example of work trying to patch up security flaws in the design of Internet.
 
 Today, WiFi is disseminated across homes and buildings in many countries. 
 Wireless technology has grown rapidly and it is predicted continuous growth in the years to come.\todo{find a cite} 
-The \gls{IoT} trend is coming, and the \gls{IP} network is not designed for broadcast and therefore wireless connection is not as easy as it should and could be.
+The \gls{IoT} trend is coming and the \gls{IP} network is not designed for broadcast.
+Therefore wireless connection is not as easy as it should and could be.
 Devices should easily be able to communicate directly with each other without having to interconnect through a router.
 
 Another problem is the network redundancy. 
 Looking at~\autoref{fig:ip-traffic} and reading~\cite{gipr2014} where it comes to light that Netflix stands for 34.21\% of all content download in America, one can conclude that there are a lot of movies downloaded from \textit{x} users geographically located close.
 And thus the network path from the source (e.g. Netflix) to this geographical place is allocated \textit{x} too many times. 
-This is due to that a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packet's endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
+This is because a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packet's endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
 This makes every node dumb, hence the network is designed for redundancy when it comes to content download.
 
-These design failures are some the reasons why the research for future Internet began.  
+These design failures are some the reasons why the research for the future Internet began.  
 \gls{ICN}~\cite{DBLP:journals/cm/AhlgrenDIKO12} is a concept developed under this research.
 It is built upon delivery of content, rather than the point-to-point model we previously have seen in \gls{IP}.
 \gls{ICN}s goal is to build an infrastructure of a new Internet that can achieve efficient, secure and reliable distribution of content.
@@ -70,18 +71,18 @@ Zhang is known for her contribution to, amongst many other, \gls{RSVP}~\cite{rfc
 The \gls{NDN} project is also one of few projects funded by \gls{NSF} in their \gls{FIA} program~\cite{nsf-fia}.
 
 \section{NDN Architecture}\label{chp2:sec:ndn_architecture}
-Since the knowledge of how \gls{NDN} works is not disseminated amongst computer scientists, it is essential for this paper to describe how it works.
+Since the knowledge of how \gls{NDN} works is not disseminated amongst computer scientists, it is essential for this thesis to describe how it works.
 This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} and compare some solutions with the equivalent solutions in \gls{IP}.
 
 \subsection{Brief Introduction}
-In \gls{NDN} there is two types of packets, Interest and Data packet.
+In \gls{NDN} there are two types of packets, Interest and Data packet.
 All data has be given a content Name by its publisher. 
 To publish some content to the network, a user have to register the prefix, i.e. announcing the contents Name, which tells the network that the content can be retrieved on the announced Name. 
 The retrieval can only be achieved if someone expresses an Interest to the content Name.
 If a user expresses Interest in the Name, the network will route the Interest to the closest node that holds the Data. 
 The Data packet can be retrieved from any node, trusted or not, over any type of communication channel, secure or not. 
 Finally the requester will receive the Data packet containing the content.
-The Data can be verified by the requester that the publisher who ``owns'' the content actually is the owner, because its cryptographically signed.
+The Data can be verified by the requester ensuring that the publisher who ``owns'' the content actually is the owner, because its cryptographically signed.
 It is because of the signature we can retrieve the Data from any node.
 If confidentiality is needed, the Data can be encrypted itself. 
 
@@ -90,9 +91,9 @@ A ``host'' is a node that holds the relevant Data.
 A ``publisher'' is the owner of the Data, and is required to signed its Data.
 A ``receiver'' is a node that has expressed an Interest to some Data.
 
-\subsection{Based on Existing Solution}
+\subsection{NDN - Based on Existing Concepts}
 The goal for the network design is essentially making it more secure and applicable for content without removing the communication service that \gls{IP} was designed for. 
-Designing a new network protocol we have to look at what measurements we have done in the existing \gls{IP} network to tailor it towards content sharing.
+Designing a new network protocol we have to look at what measurements have been done in the existing \gls{IP} network to tailor it towards content sharing.
 As the reader might notice after reading the background material, \gls{NDN} is built upon concepts that we can map to well working solutions deployed over \gls{TCP}/\gls{IP}.
 Some examples are:
 \begin{itemize}
@@ -104,7 +105,7 @@ Some examples are:
 \end{itemize}
 
 \subsection{Packets}\label{packets}
-There is two types of packets in \gls{NDN};
+There are two types of packets in \gls{NDN};
 \textit{Interest packet} and the corresponding answer, i.e. the \textit{Data packet}, illustrated in~\autoref{fig:packets}.
 
 \begin{figure}[H]
@@ -130,9 +131,9 @@ Some of the Selector fields are:
 The Nonce field sets automatically. 
 This is used to uniquely identify an Interest and prevent looping in the network.
 
-The Data packet it a response to the Interest packet, and contains the Content Name and the Content itself.
+The Data packet is a response to the Interest packet, and contains the Content Name and the Content itself.
 It also has a MetaInfo field that is used to specify the FreshnessPeriod (milliseconds), ContentType and FinalBlockId. 
-Now when somebody requests a file ``/ndn/no/ntnu/haakon/file/1'' with an Interest, the response will have the same name, but also containing the file.
+When somebody requests a file ``/ndn/no/ntnu/haakon/file/1'' with an Interest, the response will have the same name, but also containing the file.
 
 Because a Data packet can only exists if there is a corresponding Interest, \gls{NDN} is pull-based.
 Hence unsolicited Data packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.
@@ -151,7 +152,7 @@ E.g. when a user want to download the newest version of some content, lets say `
 When designing applications for the \gls{NDN} network, one might learn from \gls{DNS} and \gls{OS} naming.
 \todo{write more}
 
-The fact that Data has a Name, makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
+The fact that Data has a Name makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
 Namespace-based trust was introduced in \gls{SDSI}~\cite{rivest1996sdsi}, binding names to public keys.
 \gls{IBC} will be explained in detail in~\autoref{chp:ibc}.
 
@@ -212,7 +213,7 @@ The node checks the \gls{PIT} for pending or recently satisfied Interests.
 If there is no match, the node will do a lookup in \gls{CS} to see if a corresponding Data packet is cached. 
 If there is a match in the \gls{PIT} it will only add the Face to the \gls{PIT} entry. If there is a match in the \gls{CS} the node will return the Data. 
 If there is no match in either the \gls{PIT} or the \gls{CS} the node will make a new \gls{PIT} entry and do a longest prefix match lookup in the \gls{FIB} to decide which Face(s) to forward the Interest.
-Now the node waits and satisfies the \gls{PIT} entry when the Data arrives, explained in~\autoref{incoming-data}. 
+The node waits for incoming Data and satisfies the \gls{PIT} entry when the Data arrives, explained in~\autoref{incoming-data}. 
 Each \gls{PIT} entry has its own routing strategy. 
 I.e. whether, when, and where to forward the Interest.
 \begin{figure}[H]
@@ -241,8 +242,8 @@ Below I will present why \gls{NDN} facilitates good security properties, explain
 \todo{this section needs to be refactored}
 
 \subsubsection{Trusting Host versus Trusting Content}
-It is not a good security model doing a whole lot of mapping at different layers, since each mapping introduces a potentially vulnerable target for forgery.
-The \gls{IP} network is designed in a way that makes us wanting to trust the host.
+Doing a whole lot of mapping at different layers is not a good security model since each mapping introduces a potentially vulnerable target for forgery.
+The \gls{IP} network is designed in a way that makes us want to trust the host.
 What we are actually trusting is the mapping of the \gls{URL} to the \gls{IP} address.
 \gls{DNS} points to a host address that speaks for the \gls{URL} you are interested in, and thus if someone manages to forge this address, you cannot tell if you talk to the right host.
 
@@ -250,17 +251,17 @@ The content is rarely encrypted and the confidentiality is not preserved, unless
 This is a problem due to the issues concerning tampering and eavesdropping.
 The content the host we trust provides can contain malicious software and important information can be swapped even though the channel is secured.
 This is the concept of securing the channel, and the trust is based on certificates.
-Now this trust is an issue itself. 
+This trust is an issue itself. 
 Due to the global \gls{PKI} and essentially because the certificate is signed by a \gls{TTP} all trust comes outside the namespace.
-This makes it problematic over \gls{IP} to retrieve content from other than the trusted host because you do not trust any other than the host you are connected to via the secure channel.
-The host does not provide any assurance that the content is verified by the host itself, it only assures secure channel.
+This makes it problematic to retrieve content over \gls{IP} from other sources than the trusted host because you do not trust any other than the host you are connected to via the secure channel.
+The host does not provide any assurance that the content is verified by the host itself, it only assures a secure channel.
 
 A goal is to get the desired content from the intended source, unmodified in transit.
 Therefore a better solution would be to trust the content rather than the host of the content.
 This concept requires us to change the network trust.
 Skipping 1) all the trust based in mapping of hosts, 2) where the data comes from, and 3) securing the channel.
 The content should be linked to the publisher and this linkage should be signed by the publisher. 
-The concept is to mathematically prove that the content originates from the believed publisher, and that its not modified nor been exposed to unauthorized eyes (if necessary).
+The concept is to mathematically prove that the content originates from the believed publisher, and that its not modified nor been exposed to unauthorized parties (if necessary).
 This introduces a possibility that anyone can retrieve any piece of data from anyone, trusted or not, regardless of secure channel or not.
 The question is how can this idea be achieved? 
 As Diana Smetters and Van Jacobsen says~\cite{secure-network-content}, we must ensure the content's validity, provenance and relevance.
@@ -301,34 +302,38 @@ Only a ``global passive adversary'' that can monitor the entire network is able 
 Since the packet format (\autoref{packets}) in \gls{NDN} has no source or destination specific field as in a \gls{IP} packet, the privacy of the network is more similar to a Tor network.
 If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. 
 Unless monitoring a complete network, it should be close to impossible to track packets.  
-However because of the semantic naming there are some issues related to privacy as it easily can be seen in the Name \textit{what} the content contains in many cases.
+However, because of the semantic naming there are some issues related to privacy as it easily can be seen in the Name \textit{what} the content contains in many cases.
 Also since signing of each Interest is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
-In 2010 the \gls{NDN}-team planned to implement TORNADO~\cite[Section 3.7]{NDN-0001}, the \gls{NDN} version of Tor, to demonstrate the privacy preservation capability of the network.
+In 2010 the \gls{NDN}-team planned to implement TORNADO~\cite[Section 3.7]{NDN-0001}, the \gls{NDN} version of Tor, to demonstrate the privacy preservation capabilities of the network.
 
 \todo{more in this section}
 
 \section{Attacks}
 
-Paolo Gasti et al. identifies several \gls{DoS} attacks on \gls{NDN} in their paper about \gls{DoS} \& \gls{DDoS} in \gls{NDN} ~\cite{DBLP:conf/icccn/GastiTU013}. Other works have been done related to \gls{DoS} in \gls{NDN}~\cite{DBLP:journals/ijcomsys/WangCZQZ14, DBLP:conf/ancs/SoNO13, DBLP:journals/corr/abs-1303-4823}
+Paolo Gasti et al. identifies several \gls{DoS} attacks on \gls{NDN} in their paper about \gls{DoS} and \gls{DDoS} in \gls{NDN} ~\cite{DBLP:conf/icccn/GastiTU013}. 
+Other works have been done related to \gls{DoS} in \gls{NDN}~\cite{DBLP:journals/ijcomsys/WangCZQZ14, DBLP:conf/ancs/SoNO13, DBLP:journals/corr/abs-1303-4823}
 
-In~\cite{DBLP:journals/tifs/LiZZSF15} Zhang et al. proposes an extension of the \gls{NDN} protocol for addressing the access problem of cached data in nodes.  
+In~\cite{DBLP:journals/tifs/LiZZSF15} Zhang et al. propose an extension of the \gls{NDN} protocol for addressing the access problem of cached data in nodes.  
 The \gls{NDN} network is also potentially susceptible to content poisoning attacks which Ghali et al. addresses in~\cite{DBLP:journals/ccr/GhaliTU14}.
 
 \section{Related work}
-The work in this thesis builds upon three main concepts; synchronization, sensor networking and \gls{IBC}. 
+The work in this thesis builds upon three main concepts: synchronization, sensor networking and \gls{IBC}. 
 Some related work done will shortly be presented in this section.
 
 \subsection{Synchronization}
-Synchronization application over \gls{NDN} called iSync~\cite{DBLP:conf/acmicn/FuAC14}.
-A synchronization application build by the \gls{NDN} team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
+\todo{write more..}
+A synchronization application over \gls{NDN} is called iSync~\cite{DBLP:conf/acmicn/FuAC14}.
+A synchronization application built by the \gls{NDN} team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
 
 \subsection{Secure Data Retrieval from Sensors}
-Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} proposes a solution for reliable retrieval of data from different wireless producers which can answer to the same Interest packet. This is highly applicable to a sensor network where you want to communicate with closest sensor, e.g. the light in \textit{this} room.
+Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of data from different wireless producers which can answer to the same Interest packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in \textit{this} room.
 In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate data aggregation in wireless sensor networks.
 Jeff Burke et al. addresses efficient and secure sensing over \gls{NDN}~\cite{DBLP:conf/nca/BurkeGNT14}.
 Burke has also contributed in developing and installing a system that secures building management systems at \gls{UCLA} using \gls{NDN}~\cite{DBLP:journals/network/ShangDMBZ14}.
 
 \subsection{Identity-Based Cryptography in Named Data Networking}
-There is done little research on \gls{IBC} in \gls{NDN}. 
-In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Xinwen Zhang et al. proposes a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
+There is little research done on \gls{IBC} in \gls{NDN}. 
+In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Xinwen Zhang et al. propose a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
+
+\todo{explain whats differs to this thesis}

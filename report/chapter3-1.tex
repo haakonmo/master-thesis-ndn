@@ -4,7 +4,7 @@ The possibilities to use the file synchronization module to do key distribution 
 
 \section{Concept}\label{ibc}
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
-Shamir did propose a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
+Shamir proposed a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
 The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the \gls{PK}. 
 This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a Name (\autoref{name}).
 The \gls{SK} that is extracted from the \gls{ID} is issued by a \gls{TTP}.
@@ -32,7 +32,8 @@ In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as wel
 \texttt{device0}, which do not have a \gls{SK} generated from the \texttt{PKG} and thus is not a part of the trust domain, sends a request to \texttt{device1} that is declined.
 
 \begin{enumerate}\label{ibc-methods}
-  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
+  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. 
+  These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
   \item \texttt{Extract(MPK\textsubscript{PKG}, MSK\textsubscript{PKG}, ID\textsubscript{device})} generates a secret key from a given ID. 
   \item \texttt{Encrypt(MPK\textsubscript{PKG}, ID\textsubscript{device}, message)} encrypts the message.
   \item \texttt{Decrypt(MPK\textsubscript{PKG}, SK\textsubscript{device}, cipher)} decrypts the cipher generated from the encryption.
@@ -53,7 +54,6 @@ The user encrypts the message using the \gls{CEK} together with symmetric encryp
 
 There are some drawbacks related to \gls{IBE} such as issues around trusting the \gls{PKG} considering that the \gls{PKG} generates all \gls{SK}s.  
 If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all \gls{SK}s belonging to the corresponding \gls{ID}. 
-Also, do every ID trust the \gls{PKG}? 
 Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, can be a problem for users.
 The same issue does however occur in Kerberos, which is a well recognized security system.
 Initializing might also be a problem because to allocate \gls{SK}s, a secure channel has to be established. 
@@ -65,7 +65,7 @@ When designing protocols in cryptography one first usually designs an ideal syst
 A random oracle is like a ``black box'' that outputs truly random numbers.
 Second, one replaces the oracle access with a hash function.
 This gives an implementation of an ideal system in the real world, but without random oracles~\cite{DBLP:conf/ccs/BellareR93}. 
-It is just fine to make statements based on the ideal system, but debatable whether the same statements yields for the implementation in the real world.
+It is perfectly fine to make statements based on the ideal system, but debatable whether the same statements yields for the implementation in the real world.
 Canetti et al. concluded that there exist secure schemes in the \textit{Random Oracle Model}, but for which any implementation of the random oracle results in insecure schemes~\cite{DBLP:journals/jacm/CanettiGH04}.
 Boneh and Franklins \gls{IBE} scheme is only secure when using random oracles, and relies on elliptic curves~\cite{DBLP:conf/crypto/BonehF01}.
 
@@ -88,7 +88,8 @@ We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_
 For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader is encouraged to take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
 
 \section{Key Distribution}\label{key-distribution}
-Instead of in \gls{PKI} where each public key is signed by a certificate authority and the generated certificate is sent as a response in \gls{HTTPS} then validated by the the client, I want to make the certificate authority obsolete by distributing every \gls{ID} (public key) issued by the \gls{PKG}.
+In traditional \gls{PKI}, each public key is signed by a certificate authority and the generated certificate is sent as a response over a secure channel then validated by the the client.
+I want to make the certificate authority obsolete by distributing every \gls{ID}.
 This can be done through the \gls{FSM} presented in~\autoref{file-sync}.
 In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the trust domain.
 Each device can verify the integrity and authenticity of the sync state Data and validate that the \gls{ID} list surely originates from its own \gls{PKG}, i.e. the distributor.
@@ -107,7 +108,7 @@ However, few alternatives to revocation schemes in \gls{IBE} \gls{PKI} have been
 One suggestion is to allocate secret keys with the \gls{ID} combined with some sort of date, e.g. month-year or just year~\cite[section 1.1.1]{DBLP:conf/crypto/BonehF01}. 
 In this alternative a user has to renew its secret key each time the date changes, i.e. either the month or the year depending on the date format.
 The problem with this revocation solution is that it can be cumbersome for the \gls{PKG}.
-Boldyreva et al. proposes an revocation scheme~\cite{DBLP:journals/iacr/BoldyrevaGK12} based on efficient key-update, which makes the workload for the \gls{PKG} a lot easier. 
+Boldyreva et al. proposes a revocation scheme~\cite{DBLP:journals/iacr/BoldyrevaGK12} based on efficient key-update, which makes the workload for the \gls{PKG} a lot easier. 
 This scheme was only proven secure in the selective-ID setting where adversaries can attack an \gls{ID} given they choose which one at the beginning of the game.
 The work done by Beno\^{i}t Libert and Damien Vergnaud in~\cite{DBLP:conf/ctrsa/LibertV09} solves this problem. 
 However, efficiently delegating both the key generation and revocation functionalities was a problem left open.
@@ -119,5 +120,4 @@ However, a partially revocation can be sufficient in some networks.
 By partially, I do not mean revoking the private key, but rather only distributing the new public key (i.e. \gls{ID}) to every node in the trust domain.
 In short, the compromised key should be removed from a distributed ID-list and the list containing only valid \gls{ID}s should be disseminated.
 With the \gls{FSM}, the list is distributed automatically when updated, and only a \gls{DoS} attack together with a compromised key would make the system vulnerable. 
-This makes renewal of key only when needed. 
 On the other side, some periodic renewal might be necessary because it is not always known that a key has been compromised.
