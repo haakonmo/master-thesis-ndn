@@ -6,16 +6,16 @@ The possibilities to use the file synchronization module to do key distribution 
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
 Shamir proposed a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
 The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the \gls{PK}. 
-This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a Name (\autoref{name}).
+This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a \gls{name} (\autoref{name}).
 The \gls{SK} that is extracted from the \gls{ID} is issued by a \gls{TTP}.
 Notice that if every user could have created their own \gls{SK}, then so could anybody else with the same computational power, since the user does not obtain any ``privileged'' information about its \gls{ID}~\cite{Bidgoli06}.
-This eliminates the need of certificates. \todo{explain why}
+This eliminates the need of certificates because the \gls{SK} allocation itself is a verfication by the \gls{TTP}.
 The \gls{IBE} implementation remained unsolved until 2001, when Dan Boneh and Matthew K. Franklin proposed~\cite{DBLP:conf/crypto/BonehF01}.
 However the scheme has only been shown to be secure within the random oracles model~\cite{DBLP:journals/iacr/Waters04}, hence less practical.
 
 \gls{IBE} is based on performing asymmetric encryption with a publicly know \gls{ID} working as the \gls{PK}.
-As seen in~\autoref{eq:mapping-id-name-pk}, the \gls{ID} can be a Name (e.g. ``/ndn/no/ntnu/haakon'').
-Hence the Name becomes the \gls{PK} (from now referred to as \gls{ID}).
+As seen in~\autoref{eq:mapping-id-name-pk}, the \gls{ID} can be a \gls{name} (e.g. ``/ndn/no/ntnu/haakon'').
+Hence the \gls{name} becomes the \gls{PK} (from now referred to as \gls{ID}).
 Therefore \gls{IBE} is highly applicable to \gls{NDN}.
 
 \begin{equation}\label{eq:mapping-id-name-pk}
@@ -27,7 +27,7 @@ The \gls{PKG}s task is to extract a secret key given an \gls{ID} and provide pub
 First the \texttt{PKG} runs \texttt{Setup()}. 
 \texttt{device1} can then request a \texttt{SK} by sending \texttt{ID\textsubscript{d1}} to the \texttt{PKG}. 
 In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as well as the \texttt{MPK\textsubscript{PKG}}.
-\texttt{device2}, which is already a part of the trust domain, sends a signed request for data to \texttt{device1}. 
+\texttt{device2}, which is already a part of the trust domain, sends a signed request for \gls{data} to \texttt{device1}. 
 \texttt{device1} verifies the signature and responds to the request with a signed, encrypted content.
 \texttt{device0}, which do not have a \gls{SK} generated from the \texttt{PKG} and thus is not a part of the trust domain, sends a request to \texttt{device1} that is declined.
 
@@ -79,8 +79,7 @@ But as David Naccache states in his paper~\cite{DBLP:journals/iacr/Naccache05}, 
 Naccache proves that he was able to construct a practical and fully secure scheme in the standard model based on the \gls{DBDH} assumption.
 The scheme is a modification of Waters' scheme, but with public parameters of just a few \gls{KB} size.
 
-Waters created a fully secure \gls{IBE} system with short parameters under simple assumption in 2009~\cite{DBLP:conf/crypto/Waters09}.
-\todo{simple assumption?}
+Waters created a fully secure \gls{IBE} system with short parameters under \gls{simple_assumption} in 2009~\cite{DBLP:conf/crypto/Waters09}.
 
 The complexity assumptions is based on bilinear maps.
 Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order $p$, and $g$ be a generator of $\mathbb{G}$. 
@@ -92,7 +91,7 @@ In traditional \gls{PKI}, each public key is signed by a certificate authority a
 I want to make the certificate authority obsolete by distributing every \gls{ID}.
 This can be done through the \gls{FSM} presented in~\autoref{file-sync}.
 In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the trust domain.
-Each device can verify the integrity and authenticity of the sync state Data and validate that the \gls{ID} list surely originates from its own \gls{PKG}, i.e. the distributor.
+Each device can verify the integrity and authenticity of the sync state \gls{data} and validate that the \gls{ID} list surely originates from its own \gls{PKG}, i.e. the distributor.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{pkg_sync.png}

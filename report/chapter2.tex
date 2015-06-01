@@ -41,7 +41,7 @@ In the years after the birth of Internet, it was discovered that Internet needed
 \gls{IPsec} is a very good example of work trying to patch up security flaws in the design of Internet.
 
 Today, WiFi is disseminated across homes and buildings in many countries. 
-Wireless technology has grown rapidly and it is predicted continuous growth in the years to come.\todo{find a cite} 
+Wireless technology has grown rapidly and it is predicted continuous growth in the years to come~\cite{DBLP:journals/jthtl/Rosston14}. 
 The \gls{IoT} trend is coming and the \gls{IP} network is not designed for broadcast.
 Therefore wireless connection is not as easy as it should and could be.
 Devices should easily be able to communicate directly with each other without having to interconnect through a router.
@@ -66,7 +66,7 @@ Jacobsen has contributed to \gls{TCP}/\gls{IP} with his flow control algorithms~
 \gls{CCN} focuses on naming content, instead of naming \gls{IP}-addresses. 
 The research project is lead by \gls{PARC}.
 A branch of \gls{CCN} is the \gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} research project started in 2010, which Jacobsen also have contributed to.
-One of the biggest contributers is \gls{UCLA}, with Lixia Zhang \todo{history on Zhang} in the lead. 
+One of the biggest contributers is \gls{UCLA}, with Lixia Zhang in the lead. 
 Zhang is known for her contribution to, amongst many other, \gls{RSVP}~\cite{rfc2205} and \gls{MACAW}~\cite{DBLP:conf/sigcomm/BharghavanDSZ94}.
 The \gls{NDN} project is also one of few projects funded by \gls{NSF} in their \gls{FIA} program~\cite{nsf-fia}.
 
@@ -75,21 +75,16 @@ Since the knowledge of how \gls{NDN} works is not disseminated amongst computer 
 This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} and compare some solutions with the equivalent solutions in \gls{IP}.
 
 \subsection{Brief Introduction}
-In \gls{NDN} there are two types of packets, Interest and Data packet.
-All data has be given a content Name by its publisher. 
-To publish some content to the network, a user have to register the prefix, i.e. announcing the contents Name, which tells the network that the content can be retrieved on the announced Name. 
-The retrieval can only be achieved if someone expresses an Interest to the content Name.
-If a user expresses Interest in the Name, the network will route the Interest to the closest node that holds the Data. 
-The Data packet can be retrieved from any node, trusted or not, over any type of communication channel, secure or not. 
-Finally the requester will receive the Data packet containing the content.
-The Data can be verified by the requester ensuring that the publisher who ``owns'' the content actually is the owner, because its cryptographically signed.
-It is because of the signature we can retrieve the Data from any node.
-If confidentiality is needed, the Data can be encrypted itself. 
-
-In this paper, the term ``node'' is referred to as a machine participating in a network.
-A ``host'' is a node that holds the relevant Data.
-A ``publisher'' is the owner of the Data, and is required to signed its Data.
-A ``receiver'' is a node that has expressed an Interest to some Data.
+In \gls{NDN} there are two types of packets, \gls{interest} and \gls{data} packet.
+All \gls{data} has be given a content \gls{name} by its \gls{publisher}. 
+To publish some content to the network, a user have to register the prefix, i.e. announcing the contents \gls{name}, which tells the network that the content can be retrieved on the announced \gls{name}. 
+The retrieval can only be achieved if someone expresses an \gls{interest} to the content \gls{name}.
+If a user expresses \gls{interest} in the \gls{name}, the network will route the \gls{interest} to the closest \gls{node} that holds the \gls{data}. 
+The \gls{data} packet can be retrieved from any \gls{node}, trusted or not, over any type of communication channel, secure or not. 
+Finally the requester will receive the \gls{data} packet containing the content.
+The \gls{data} can be verified by the requester ensuring that the \gls{publisher} who ``owns'' the content actually is the owner, because its cryptographically signed.
+It is because of the signature we can retrieve the \gls{data} from any \gls{node}.
+If confidentiality is needed, the \gls{data} can be encrypted itself. 
 
 \subsection{NDN - Based on Existing Concepts}
 The goal for the network design is essentially making it more secure and applicable for content without removing the communication service that \gls{IP} was designed for. 
@@ -101,58 +96,63 @@ Some examples are:
   The concept of sharing bits of files between peers in a network is a well-working distributed method for sharing content. 
   Requester does not care where the content comes from, but only that the content is what is requested.
   \item \gls{CDN} - 
-  Many \gls{ASP}s, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their data close to where the users is located.
+  Many \gls{ASP}s, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their \gls{data} close to where the users is located.
 \end{itemize}
 
 \subsection{Packets}\label{packets}
 There are two types of packets in \gls{NDN};
-\textit{Interest packet} and the corresponding answer, i.e. the \textit{Data packet}, illustrated in~\autoref{fig:packets}.
+\textit{\gls{interest} packet} and the corresponding answer, i.e. the \textit{\gls{data} packet}, illustrated in~\autoref{fig:packets}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{packets.png}
-  \caption{Interest packet and Data packet}
+  \caption{\gls{interest} packet and \gls{data} packet}
   \label{fig:packets}
 \end{figure}
 
-The Interest packet specifies a Content Name. 
-The Name can have a hierarchical structure and signatures can be added after the \gls{URI}, e.g. ``/ndn/no/ntnu/haakon/file/1/<signature>''.
-An Interest can also contain a set of different Selectors to specify original requirements for the Data response. 
+The \gls{interest} packet specifies a content \gls{name}. 
+The \gls{name} can have a hierarchical structure and signatures can be added after the \gls{URI}, e.g. ``/ndn/no/ntnu/haakon/file/1/<signature>''.
+An \gls{interest} can also contain a set of different Selectors to specify original requirements for the \gls{data} response. 
 Some of the Selector fields are:
 \begin{itemize}
   \item KeyLocator - can be used to specify where the Public Key for the signature can be found.
-  \item Exclude - can be used to specify a list or a range of names that should be excluded from the Name. 
-  I.e. if the Name is ``/ndn/no/ntnu'' and the Exclude contains ``/item'', the returned Data cannot contain ``/ndn/no/ntnu/item''.
-  \item MustBeFresh - if True, a node cannot answer with a Data packet where the FreshnessPeriod has expired.
-  FreshnessPeriod is a time value of how long some Data is fresh.
+  \item Exclude - can be used to specify a list or a range of names that should be excluded from the \gls{name}. 
+  I.e. if the \gls{name} is ``/ndn/no/ntnu'' and the Exclude contains ``/item'', the returned \gls{data} cannot contain ``/ndn/no/ntnu/item''.
+  \item MustBeFresh - if True, a \gls{node} cannot answer with a \gls{data} packet where the FreshnessPeriod has expired.
+  FreshnessPeriod is a time value of how long some \gls{data} is fresh.
   \item ChildSelector - can be used to select either the leftmost (least) or the rightmost (greatest) child, e.g. content version. 
-  \item Min/MaxSuffixComponents - refers to name components that occur in the matching Data beyond the prefix. 
+  \item Min/MaxSuffixComponents - refers to \gls{name} components that occur in the matching \gls{data} beyond the prefix. 
 \end{itemize}
 The Nonce field sets automatically. 
-This is used to uniquely identify an Interest and prevent looping in the network.
+This is used to uniquely identify an \gls{interest} and prevent looping in the network.
 
-The Data packet is a response to the Interest packet, and contains the Content Name and the Content itself.
+The \gls{data} packet is a response to the \gls{interest} packet, and contains the content \gls{name} and the Content itself.
 It also has a MetaInfo field that is used to specify the FreshnessPeriod (milliseconds), ContentType and FinalBlockId. 
-When somebody requests a file ``/ndn/no/ntnu/haakon/file/1'' with an Interest, the response will have the same name, but also containing the file.
+When somebody requests a file ``/ndn/no/ntnu/haakon/file/1'' with an \gls{interest}, the response will have the same \gls{name}, but also containing the file.
 
-Because a Data packet can only exists if there is a corresponding Interest, \gls{NDN} is pull-based.
-Hence unsolicited Data packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.
+Because a \gls{data} packet can only exists if there is a corresponding \gls{interest}, \gls{NDN} is pull-based.
+Hence unsolicited \gls{data} packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.
 This reduces unwanted traffic compared to \gls{UDP} in \gls{IP}, and minimizes the \gls{DoS} vulnerability drastically.
 
 \subsection{Names}\label{name}
-In the \gls{NDN} network there is no strict rules for a Name.
-This means that a network node only routes an Interest based on longest prefix match.
-Naming is left to the application design, thus it can be customized for the applications best purpose.
-However the network assumes hierarchical structured names, hence routing will perform better with a hierarchical name design.
+In todays Internet we are well familiar with the mapping of \gls{URL} and \gls{IP} addresses.
+This mapping, done by the \gls{DNS}, eases the pain of remembering an \gls{IPv4} (32-bit) address and lately also \gls{IPv6} (128-bit) addresses.
 
-For the network to perform even better, the Interest can append some Selectors that can help the network to decide which Data to retrieve and where to route.
-With Selectors a partially known name can successfully retrieve the right Data.
+In the \gls{NDN} network a \gls{node} does not have an address nor a \gls{name}.
+The routing of packets is done by content lookup, rather than address lookup.
+This means that all content in the network do have a \gls{name}.
+When an \gls{interest} is sent, each \gls{node} asks the network: ``Where can I find a node that can provide me with this content?''.
+
+There is no strict rules for a \gls{name} in \gls{NDN}.
+This means that a network \gls{node} only routes an \gls{interest} based on longest prefix match.
+Naming is left to the application design, thus it can be customized for the applications best purpose.
+However the network assumes hierarchical structured names, hence routing will perform better with a hierarchical \gls{name} design.
+
+For the network to perform even better, the \gls{interest} can append some Selectors that can help the network to decide which \gls{data} to retrieve and where to route.
+With Selectors a partially known \gls{name} can successfully retrieve the right \gls{data}.
 E.g. when a user want to download the newest version of some content, lets say ``/ndn/no/ntnu/haakon/file/<version?>'', but do not know which version is the newest, the user can append a ChildSelector to choose the newest version.
 
-When designing applications for the \gls{NDN} network, one might learn from \gls{DNS} and \gls{OS} naming.
-\todo{write more}
-
-The fact that Data has a Name makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
+The fact that \gls{data} has a \gls{name} makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
 Namespace-based trust was introduced in \gls{SDSI}~\cite{rivest1996sdsi}, binding names to public keys.
 \gls{IBC} will be explained in detail in~\autoref{chp:ibc}.
 
@@ -161,16 +161,16 @@ It may sound like a impossible task to force todays network from \gls{IP} to \gl
 But as \gls{IP} first ran over the telecommunication network and later established its own, \gls{NDN} can run over the \gls{IP} network and later create its own network. 
 Also, if we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and compare it to a \gls{NDN} node~\autoref{fig:icn-model-node}, we see that they look much the same.
 The only significant difference in hardware is the storing capacity, which becomes cheaper and cheaper each month.
-However, the logic behind a \gls{NDN} node is a bit more complex, and thus lead to more knowledge about \textit{what} content the node has to offer.
-To understand this, the following entities in a \gls{NDN} node should be understood:
+However, the logic behind a \gls{NDN} \gls{node} is a bit more complex, and thus lead to more knowledge about \textit{what} content the node has to offer.
+To understand this, the following entities in a \gls{NDN} \gls{node} should be understood:
 \begin{enumerate}\label{ndn-node-modules}
   \item Face - A term used for generalization of different interfaces, e.g. physical like Ethernet, or overlay like \gls{TCP} and \gls{UDP}. A Face can also be a UNIX-domain socket for communication with a local application.
-  \item \gls{PIT} - All pending or recently satisfied Interests are stored here, together with the incoming and outgoing Face.
-  If a new incoming Interest matches an entry in the \gls{PIT}, the incoming Face will be added to the entry. 
-  \item \gls{CS} - When a node receives a Data packet that has the corresponding entry in the \gls{PIT}, it stores the Data packet in \gls{CS} as long as possible. 
-  The \gls{CS} works like a cache for the node.
-  \item \gls{FIB} - Forwarding strategy is stored for each Name prefix. 
-  When a node forwards an Interest, it will do a longest prefix lookup in the \gls{FIB} and send the Interest further to the best matching Face.
+  \item \gls{PIT} - All pending or recently satisfied \gls{interest}s are stored here, together with the incoming and outgoing Face.
+  If a new incoming \gls{interest} matches an entry in the \gls{PIT}, the incoming Face will be added to the entry. 
+  \item \gls{CS} - When a \gls{node} receives a \gls{data} packet that has the corresponding entry in the \gls{PIT}, it stores the \gls{data} packet in \gls{CS} as long as possible. 
+  The \gls{CS} works like a cache for the \gls{node}.
+  \item \gls{FIB} - Forwarding strategy is stored for each \gls{name} prefix. 
+  When a \gls{node} forwards an \gls{interest}, it will do a longest prefix lookup in the \gls{FIB} and send the \gls{interest} further to the best matching Face.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -185,61 +185,72 @@ To understand this, the following entities in a \gls{NDN} node should be underst
   \centering
   \includegraphics[width=0.8\textwidth]{icn_model_node.png}
   \caption{Model of NDN node. A packet enters through an Face. 
-  The node checks whether the Interest is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.}
+  The node checks whether the \gls{interest} is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.}
   \label{fig:icn-model-node}
 \end{figure}
 
 In contrary to an \gls{IP} node, a \gls{NDN} node knows \textit{what} content comes through itself. 
-Since all content is associated with a Name, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
-With this knowledge the network can now satisfy Interests with content already stored in cache, hence the network can naturally offer multicast.
-\todo{Unicast (TcpFace, UdpFace) vs Multicast (MulticastUdp, Ethernet)}
+Since all content is associated with a \gls{name}, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
+With this knowledge the network can now satisfy \texttt{Interests} with content already stored in cache, hence the network can naturally offer multicast on network layer.
 ~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly have to send equal amount of traffic than in an \gls{IP} network.
-The mobile expresses an Interest (1) in a file named \path{/ntnu/file1}.
-The Interest finds its way to the publisher of the file, and thus the publisher responds with a Data packet (2) named \path{/ntnu/file1} containing the file.
-When the second computer expresses the same Interest (3), the consecutive node has already cached the Data response matching to the Interest in its \gls{CS}, hence the Interest is satisfied already at this point (4), and not forwarded any further.
-Same happens when the third computer expresses again the same Interest (5) to the network.
+The mobile expresses an \gls{interest} (1) in a file named \path{/ntnu/file1}.
+The \gls{interest} finds its way to the \gls{publisher} of the file, and thus the \gls{publisher} responds with a \gls{data} packet (2) named \path{/ntnu/file1} containing the file.
+When the second computer expresses the same \gls{interest} (3), the consecutive node has already cached the \gls{data} response matching to the \gls{interest} in its \gls{CS}, hence the \gls{interest} is satisfied already at this point (4), and not forwarded any further.
+Same happens when the third computer expresses again the same \gls{interest} (5) to the network.
 Given that the file (\path{/ntnu/file1}) these computers are interested in is 4 gigabyte, the network saves a lot of traffic with multicast.
-\todo{table of how much data transmission that is saved}
+Best case scenario in \gls{NDN} is illustrated in~\autoref{tbl:node_comparison-ip-ndn}.
+Worst case scenario, the \gls{NDN} nodes will perform equal to the \gls{IP} nodes.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-multicast.png}
   \caption{Multicast in NDN.}
   \label{fig:ndn-multicast}
 \end{figure}
+
+\begin{table}[h]
+  \begin{tabular}{llll}
+  Node        & Data in/out IP  & Data in/out NDN   & \% bandwidth needed in NDN    \\ \hline
+  1           & 8GB/8GB         & 4GB/8GB           & 50\%/100\%      \\ %\hline
+  2           & 8GB/8GB         & 4GB/4GB           & 50\%/50\%     \\ %\hline
+  3           & 12GB/12GB       & 4GB/8GB           & 33\%/66\%     \\ %\hline
+  Publisher   & -/12GB          & -/4GB             & -/33\%        \\ %\hline
+  \end{tabular}
+  \caption{Node bandwidth allocation comparison in IP and NDN (best case). Mobile, 2\textsuperscript{nd}device and 3\textsuperscript{rd}device requests \protect\path{/ntnu/file1} (4GB). The NDN nodes allocates bandwidth 44.3\% (in) and 66.3\% (out) compared to IP nodes.}
+  \label{tbl:node_comparison-ip-ndn}
+\end{table}
  
 \subsection{Incoming Interest}\label{incoming-interest}
-In~\autoref{fig:icn-model-node-decision-interest} we see an incoming Interest through a Face. 
-The node checks the \gls{PIT} for pending or recently satisfied Interests. 
-If there is no match, the node will do a lookup in \gls{CS} to see if a corresponding Data packet is cached. 
-If there is a match in the \gls{PIT} it will only add the Face to the \gls{PIT} entry. If there is a match in the \gls{CS} the node will return the Data. 
-If there is no match in either the \gls{PIT} or the \gls{CS} the node will make a new \gls{PIT} entry and do a longest prefix match lookup in the \gls{FIB} to decide which Face(s) to forward the Interest.
-The node waits for incoming Data and satisfies the \gls{PIT} entry when the Data arrives, explained in~\autoref{incoming-data}. 
+In~\autoref{fig:icn-model-node-decision-interest} we see an incoming \gls{interest} through a Face. 
+The node checks the \gls{PIT} for pending or recently satisfied \texttt{Interests}. 
+If there is no match, the node will do a lookup in \gls{CS} to see if a corresponding \gls{data} packet is cached. 
+If there is a match in the \gls{PIT} it will only add the Face to the \gls{PIT} entry. If there is a match in the \gls{CS} the node will return the \gls{data}. 
+If there is no match in either the \gls{PIT} or the \gls{CS} the node will make a new \gls{PIT} entry and do a longest prefix match lookup in the \gls{FIB} to decide which Face(s) to forward the \gls{interest}.
+The node waits for incoming \gls{data} and satisfies the \gls{PIT} entry when the \gls{data} arrives, explained in~\autoref{incoming-data}. 
 Each \gls{PIT} entry has its own routing strategy. 
-I.e. whether, when, and where to forward the Interest.
+I.e. whether, when, and where to forward the \gls{interest}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-interest.png}
-  \caption{Decision tree for a NDN node when receiving an Interest.}
+  \caption{Decision tree for a NDN node when receiving an \gls{interest}.}
   \label{fig:icn-model-node-decision-interest}
 \end{figure}
 
 \subsection{Incoming Data}\label{incoming-data}
-In~\autoref{fig:icn-model-node-decision-data} we see incoming Data.
-The node will check  the \gls{PIT} for an entry, if a match is found the node will forward the data to all the Faces registered in the \gls{PIT} entry.
-If no match, the node will disregard the data because it is unsolicited content.
-The node checks the data from local applications cached in \gls{CS} first, if there is no match, it stores the content in \gls{CS} and sends the data to all requesters (i.e. through all Faces stored in the \gls{PIT} entry).
+In~\autoref{fig:icn-model-node-decision-data} we see incoming \gls{data}.
+The node will check  the \gls{PIT} for an entry, if a match is found the node will forward the \gls{data} to all the Faces registered in the \gls{PIT} entry.
+If no match, the node will disregard the \gls{data} because it is unsolicited content.
+The node checks the \gls{data} from local applications cached in \gls{CS} first, if there is no match, it stores the content in \gls{CS} and sends the \gls{data} to all requesters (i.e. through all Faces stored in the \gls{PIT} entry).
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-data.png}
-  \caption{Decision tree for a NDN node when receiving Data packet.}
+  \caption{Decision tree for a NDN node when receiving \gls{data} packet.}
   \label{fig:icn-model-node-decision-data}
 \end{figure}
 
 
 \subsection{Security}\label{ndn-security}
 Below I will present why \gls{NDN} facilitates good security properties, explaining some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}, and the difference in securing data and securing channel.
-
-\todo{this section needs to be refactored}
 
 \subsubsection{Trusting Host versus Trusting Content}
 Doing a whole lot of mapping at different layers is not a good security model since each mapping introduces a potentially vulnerable target for forgery.
@@ -257,37 +268,37 @@ This makes it problematic to retrieve content over \gls{IP} from other sources t
 The host does not provide any assurance that the content is verified by the host itself, it only assures a secure channel.
 
 A goal is to get the desired content from the intended source, unmodified in transit.
-Therefore a better solution would be to trust the content rather than the host of the content.
+Therefore a better solution would be to trust the content rather than the \gls{host} of the content.
 This concept requires us to change the network trust.
 Skipping 1) all the trust based in mapping of hosts, 2) where the data comes from, and 3) securing the channel.
-The content should be linked to the publisher and this linkage should be signed by the publisher. 
-The concept is to mathematically prove that the content originates from the believed publisher, and that its not modified nor been exposed to unauthorized parties (if necessary).
+The content should be linked to the \gls{publisher} and this linkage should be signed by the \gls{publisher}. 
+The concept is to mathematically prove that the content originates from the believed \gls{publisher}, and that its not modified nor been exposed to unauthorized parties (if necessary).
 This introduces a possibility that anyone can retrieve any piece of data from anyone, trusted or not, regardless of secure channel or not.
 The question is how can this idea be achieved? 
 As Diana Smetters and Van Jacobsen says~\cite{secure-network-content}, we must ensure the content's validity, provenance and relevance.
 
 \begin{itemize}
-  \item Validity - Complete and unmodified content from the publisher.
-  \item Provenance - Should the publisher be trusted with the content requested?
+  \item Validity - Complete and unmodified content from the \gls{publisher}.
+  \item Provenance - Should the \gls{publisher} be trusted with the content requested?
   \item Relevance - Is the content what the requester intended?
 \end{itemize}
 
 There exist concepts to achieve these goals.
 One can do hash verification on the content to be sure that the content is unmodified. 
-But there should also be a binding between the Name to the content.
-However this does not provide provenance nor relevance. \todo{explain why}
-For this there should be a linkage between the publisher, the Name and the content.
-A solution is to do a triple mapping of the Name (N) and content (C), cryptographically signed by the publisher (P) seen in~\autoref{eq:mapping_name-content}.
+But there should also be a binding between the \gls{name} to the content.
+However, this does not provide provenance nor relevance because the \gls{publisher} is not linked to the data, and thus we cannot be sure the \gls{publisher} knows what the content contains.
+Hence there should be a linkage between the \gls{publisher}, the \gls{name} and the content.
+A solution is to do a triple mapping of the \gls{name} (N) and content (C), cryptographically signed by the \gls{publisher} (P) seen in~\autoref{eq:mapping_name-content}.
 This mapping is unique, relying on the hash computation done in the signing, providing validity, provenance and relevance.
-A requester can easily verify the Name and content binding, as well as authenticating that the data originates from the publisher who knows what the content is.
-Now anybody can retrieve \texttt{M\textsubscript{(N,P,C)}}, hence an untrusted host and an insecure channel is not so bad anymore.
+A requester can easily verify the \gls{name} and content binding, as well as authenticating that the data originates from the \gls{publisher} who knows what the content is.
+Now anybody can retrieve \texttt{M\textsubscript{(N,P,C)}}, hence an untrusted \gls{host} and an insecure channel is not so bad anymore.
 
 \begin{equation}\label{eq:mapping_name-content}
 M_{(N, P, C)} = (N,C,Sign_{P}(N,C))
 \end{equation}
 
 A clear benefit of this approach is that it scales. 
-The Name can be of any form because of the nature of hashing. 
+The \gls{name} can be of any form because of the nature of hashing. 
 Different naming rules should apply for different applications as there are no global naming rules that are optimal for each application.
 
 This concept is integrated in the \gls{NDN} protocol and it is required that every packet delivered from application layer is signed by the application.
@@ -298,12 +309,12 @@ Encrypting the content with symmetric keys that are distributed to parties obtai
 % TOR network
 Based on the nature of this architecture, \gls{NDN} facilitates the practice of anonymity in the network. 
 In a Tor network~\cite{DBLP:conf/uss/DingledineMS04}, each node participating in a circuit only knows the two neighboring nodes.
-Only a ``global passive adversary'' that can monitor the entire network is able to decide the whole packet path, hence an adversary can know \textit{who} is requesting and \textit{who} is responding.
+Only a \gls{gpa} that can monitor the entire network is able to decide the whole packet path, hence an adversary can know \textit{who} is requesting and \textit{who} is responding.
 Since the packet format (\autoref{packets}) in \gls{NDN} has no source or destination specific field as in a \gls{IP} packet, the privacy of the network is more similar to a Tor network.
-If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the data name. 
+If a packet is captured at any arbitrary point of its path, the only information an adversary will get, is the two nodes between the packet capture and the content \gls{name}. 
 Unless monitoring a complete network, it should be close to impossible to track packets.  
-However, because of the semantic naming there are some issues related to privacy as it easily can be seen in the Name \textit{what} the content contains in many cases.
-Also since signing of each Interest is required by the sender, some privacy information might leak.
+However, because of the semantic naming there are some issues related to privacy as it easily can be seen in the \gls{name} \textit{what} the content contains in many cases.
+Also since signing of each \gls{interest} is required by the sender, some privacy information might leak.
 DiBenedetto et al. try to address these problems in~\cite{DBLP:conf/ndss/DiBenedettoGTU12} with an approach that use existing solutions from the Tor network.
 In 2010 the \gls{NDN}-team planned to implement TORNADO~\cite[Section 3.7]{NDN-0001}, the \gls{NDN} version of Tor, to demonstrate the privacy preservation capabilities of the network.
 
@@ -314,21 +325,22 @@ In 2010 the \gls{NDN}-team planned to implement TORNADO~\cite[Section 3.7]{NDN-0
 Paolo Gasti et al. identifies several \gls{DoS} attacks on \gls{NDN} in their paper about \gls{DoS} and \gls{DDoS} in \gls{NDN} ~\cite{DBLP:conf/icccn/GastiTU013}. 
 Other works have been done related to \gls{DoS} in \gls{NDN}~\cite{DBLP:journals/ijcomsys/WangCZQZ14, DBLP:conf/ancs/SoNO13, DBLP:journals/corr/abs-1303-4823}
 
-In~\cite{DBLP:journals/tifs/LiZZSF15} Zhang et al. propose an extension of the \gls{NDN} protocol for addressing the access problem of cached data in nodes.  
+In~\cite{DBLP:journals/tifs/LiZZSF15} Zhang et al. propose an extension of the \gls{NDN} protocol for addressing the access problem of cached \gls{data} in nodes.  
 The \gls{NDN} network is also potentially susceptible to content poisoning attacks which Ghali et al. addresses in~\cite{DBLP:journals/ccr/GhaliTU14}.
 
 \section{Related work}
-The work in this thesis builds upon three main concepts: synchronization, sensor networking and \gls{IBC}. 
+The work in this thesis builds upon three main concepts: synchronization, theoretical sensor networking and \gls{IBC}. 
 Some related work done will shortly be presented in this section.
 
 \subsection{Synchronization}
-\todo{write more..}
-A synchronization application over \gls{NDN} is called iSync~\cite{DBLP:conf/acmicn/FuAC14}.
-A synchronization application built by the \gls{NDN} team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
+There have been done work to show that \gls{NDN} is well suited for synchronization. 
+A synchronization application built by the \gls{NDN}-team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
+As explained in~\autoref{chp3:file-sync}, I use ChronoSync to achieve synchronization of files over \gls{NDN}.
+There is also an application called iSync~\cite{DBLP:conf/acmicn/FuAC14}, which is a scalable and high performance synchronization protocol.
 
 \subsection{Secure Data Retrieval from Sensors}
-Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of data from different wireless producers which can answer to the same Interest packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in \textit{this} room.
-In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate data aggregation in wireless sensor networks.
+Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of \gls{data} from different wireless producers which can answer to the same \gls{interest} packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in \textit{this} room.
+In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate \gls{data} aggregation in wireless sensor networks.
 Jeff Burke et al. addresses efficient and secure sensing over \gls{NDN}~\cite{DBLP:conf/nca/BurkeGNT14}.
 Burke has also contributed in developing and installing a system that secures building management systems at \gls{UCLA} using \gls{NDN}~\cite{DBLP:journals/network/ShangDMBZ14}.
 

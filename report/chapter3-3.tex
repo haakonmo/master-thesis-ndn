@@ -28,9 +28,9 @@ This face functionality is not yet implemented, and thus \gls{NDN} is running ov
 The work done in this thesis is written in Python, hence the \gls{PyNDN2}~\cite{pyndn2-git} is used.
 This is an easy to use implementation of \gls{NDN} and comes with great code examples.
 
-Because the \gls{NDN} protocol require signing of Data packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
+Because the \gls{NDN} protocol require signing of \gls{data} packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
 I added the \path{python/pyndn/sha256_with_ibswaters_signature.py} file that follows the pattern of the existing RSA Signature (\path{python/pyndn/sha256_with_rsa_signature.py}) and is of type \texttt{Signature}.
-Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the \gls{IBS} when the Data packet is encoded and decoded.
+Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the \gls{IBS} when the \gls{data} packet is encoded and decoded.
 
 \section{Installing Identity-Based Cryptography}
 To be able to run \gls{IBC} the \gls{PBC}~\cite{ben2007implementation} needs to be installed.
@@ -52,33 +52,33 @@ The code can be retrieved from the thesis work repository~\cite[fileSync.py]{gar
 
 The implementation of the \gls{FSM} does not use \gls{IBS}. 
 This is because all packets that are sent is managed by ChronoSync. 
-ChronoSync uses the PyNDN2 KeyChain to sign and verify all Interest and Data packets.
+ChronoSync uses the PyNDN2 KeyChain to sign and verify all \gls{interest} and \gls{data} packets.
 I do however demonstrate that it works perfectly fine to perform both \gls{IBE} and \gls{IBS} over \gls{NDN} in the \gls{HSS} implementation.
 % \subsection{Packet Design}
 % The packet format is designed with Google Protocol Buffers.
 % The code can be reviewed in~\cite[fileSyncBuf.proto]{garseg15}.
 
 % \begin{description}
-%   \item[Init Interest] - 
-%   The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-interest}.
-%   \item[Sync Interest] -
-%   ~\autoref{fig:sync-interest-data}
-%   \item[Sync Data] - 
-%   ~\autoref{fig:sync-interest-data}
+%   \item[Init \gls{interest}] - 
+%   The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-\gls{interest}}.
+%   \item[Sync \gls{interest}] -
+%   ~\autoref{fig:sync-\gls{interest}-\gls{data}}
+%   \item[Sync \gls{data}] - 
+%   ~\autoref{fig:sync-\gls{interest}-\gls{data}}
 % \end{description}
 
 % \begin{figure}[ht]
 %   \centering
-%   \includegraphics[width=1\textwidth]{init-sync-interest.png}
-%   \caption{Initialization Interest for joining a synchronization folder.}
-%   \label{fig:init-sync-interest}
+%   \includegraphics[width=1\textwidth]{init-sync-\gls{interest}.png}
+%   \caption{Initialization \gls{interest} for joining a synchronization folder.}
+%   \label{fig:init-sync-\gls{interest}}
 % \end{figure}
 
 % \begin{figure}[ht]
 %   \centering
-%   \includegraphics[width=1\textwidth]{sync-interest-data.png}
-%   \caption{Sync Interest and Data}
-%   \label{fig:sync-interest-data}
+%   \includegraphics[width=1\textwidth]{sync-\gls{interest}-\gls{data}.png}
+%   \caption{Sync \gls{interest} and \gls{data}}
+%   \label{fig:sync-\gls{interest}-\gls{data}}
 % \end{figure}
 
 The module triggers synchronization when files that are watched is changed, or when a file is added or removed.
@@ -88,7 +88,7 @@ The implementation is illustrated in the class FileWatch in~\autoref{fig:code-to
 \section{Health Sensor System - Implementation}
 The \gls{HSS} is a python application that runs over \gls{NDN}.
 Application flow explained in~\autoref{sensor-application}.
-The implementation does not deal with sensor data retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
+The implementation does not deal with sensor \gls{data} retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
 The code is divided into several pieces shown in~\autoref{fig:code-topology}.
 
 \todo{explain better}
@@ -118,51 +118,51 @@ In~\autoref{access_control} I present a possible solution for access control.
 This is however not implemented in the application, because it is considered too high workload for this thesis.
 
 \subsection{Packet Design}
-The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
+The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured \gls{data}.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
-Initially the idea was to have the \textit{\gls{TMPK}} appended to the Content Name. 
-However, I experienced a problem where the Init Data never arrived at destination node. 
-After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the Init Data exceeded this limit and reached 8904 bytes.
-Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the Content Name in the Interest, the Data response off course had to have the same Content Name, hence 2\gls{KB} overhead in the Name. 
-The \gls{TMPK} can as easily be appended to the KeyLocator Name, hence the Data response can be 2\gls{KB} less, resulting to a 6866 bytes Init Data packet.
+Initially the idea was to have the \textit{\gls{TMPK}} appended to the content \gls{name}. 
+However, I experienced a problem where the Init \gls{data} never arrived at destination node. 
+After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the Init \gls{data} exceeded this limit and reached 8904 bytes.
+Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the content \gls{name} in the \gls{interest}, the \gls{data} response off course had to have the same content \gls{name}, hence 2\gls{KB} overhead in the \gls{name}. 
+The \gls{TMPK} can as easily be appended to the KeyLocator \gls{name}, hence the \gls{data} response can be 2\gls{KB} less, resulting to a 6866 bytes Init \gls{data} packet.
 
 Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data}.
 The code can be reviewed i~\cite[messageBuf.proto]{garseg15}.
 \begin{description}
-	\item[Init Interest] - 
-  The initialization Interest seen in~\autoref{fig:init_interest-data}
-  KeyLocator can be of type Name. 
-  As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the Interest.
-  However, in the trust model I use this field to publish the requesters Name, i.e. the requesters public key. 
+	\item[Init \gls{interest}] - 
+  The initialization \gls{interest} seen in~\autoref{fig:init_interest-data}
+  KeyLocator can be of type \gls{name}. 
+  As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the \gls{interest}.
+  However, in the trust model I use this field to publish the requesters \gls{name}, i.e. the requesters public key. 
   This is very useful when using \gls{IBE} and \gls{IBS}.
-	\item[Init Data] - 
-  The Data response the the initialization Interest contains data with a structure defined in~\cite[messageBuf.proto]{garseg15} and illustrated in~\autoref{fig:init_interest-data}.
+	\item[Init \gls{data}] - 
+  The \gls{data} response the the initialization \gls{interest} contains \gls{data} with a structure defined in~\cite[messageBuf.proto]{garseg15} and illustrated in~\autoref{fig:init_interest-data}.
   \todo{explain}
-	\item[Sensor Interest] -
-	As in the initialization Interest the KeyLocator field is used to define the ID\textsubscript{requester}. 
+	\item[Sensor \gls{interest}] -
+	As in the initialization \gls{interest} the KeyLocator field is used to define the ID\textsubscript{requester}. 
   The packet is illustrated in~\autoref{fig:sensor_interest-data}.
-	\item[Sensor Data] - 
-  The Data response to the Sensor Interest uses the same structure as the initialization Data. 
+	\item[Sensor \gls{data}] - 
+  The \gls{data} response to the Sensor \gls{interest} uses the same structure as the initialization \gls{data}. 
   It is illustrated in~\autoref{fig:sensor_interest-data}
 \end{description}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{init_interest-data.png}
-  \caption{Initialization Interest and Data}
+  \caption{Initialization \gls{interest} and \gls{data}}
   \label{fig:init_interest-data}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{sensor_interest-data.png}
-  \caption{Sensor Interest and Data}
+  \caption{Sensor \gls{interest} and \gls{data}}
   \label{fig:sensor_interest-data}
 \end{figure}
 
 \subsection{Running the Code}
 First the \gls{NFD} must be started on each device shown in~\autoref{lst:nfd-start}, if not already running. 
-Then we have to make sure that each device participating in the network know the Name and \gls{IP} address binding, since the testing will run \gls{NDN} over \gls{IP}.
+Then we have to make sure that each device participating in the network know the \gls{name} and \gls{IP} address binding, since the testing will run \gls{NDN} over \gls{IP}.
 This is accomplished by registering the mapping in the \gls{FIB} at each device showed in the second line in~\autoref{lst:nfd-start}.
 
 On the device playing the role of the \gls{PKG}, run the code presented in~\autoref{lst:pkg}. 
@@ -173,11 +173,11 @@ This will automatically register the prefix of the sensor, and start the initial
 
 On the device playing the role of the user device (e.g. a mobile), run the code presented in~\autoref{lst:pull}.
 This will automatically start the initialize protocol with the \gls{PKG}.
-Running \texttt{r} will make the device expressing an Interest for sensor data from the sensor.
+Running \texttt{r} will make the device expressing an \gls{interest} for sensor \gls{data} from the sensor.
 
 \begin{lstlisting}[language=bash, caption={NFD Start}, label={lst:nfd-start}]
   $ nfd-start
-  $ nfdc register /ndn/no/ntnu/<data-device> udp://<device-ip-address>
+  $ nfdc register /ndn/no/ntnu/<\gls{data}-device> udp://<device-ip-address>
   $ nfdc register /ndn/no/ntnu/<pull-device> udp://<device-ip-address>
   $ nfdc register /ndn/no/ntnu/<pkg> udp://<pkg-ip-address>
 \end{lstlisting}
@@ -189,10 +189,10 @@ Running \texttt{r} will make the device expressing an Interest for sensor data f
 
 \begin{lstlisting}[language=bash, caption={Start a device registering a prefix.}, label={lst:data}]
   $ python application.py
-  $ data 
+  $ \gls{data} 
 \end{lstlisting}
 
-\begin{lstlisting}[language=bash, caption={Start a device that will express Interest in data.}, label={lst:pull}]
+\begin{lstlisting}[language=bash, caption={Start a device that will express \gls{interest} in \gls{data}.}, label={lst:pull}]
   $ python application.py
   $ pull
   $ r
@@ -222,7 +222,7 @@ Each computer is assigned an ID which will be used for reference in the performa
 \subsection{Key Sizes}
 It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to the \gls{IBE} and \gls{IBS} that is used in the \gls{HSS} implementation.
 The \gls{CEK} is generated as a group element and is extracted to 40 bytes when performing encryption and decryption with \gls{AES}.
-I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format on the data, and thus the whole \gls{CEK} must be sent.
+I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format on the \gls{data}, and thus the whole \gls{CEK} must be sent.
 The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and is generated with \texttt{group.random(GT)}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
@@ -274,13 +274,13 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 \end{table}
 
 
-The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
+The initialization protocol described in~\autoref{init} and the \gls{data} pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
 The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
   Initialization                          & 202.9 ms      & 70.8 ms       & 116.3 ms     \\ %\hline
-  Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
+  \gls{data} Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
   \end{tabular}
   \caption{Round trip time chart. Time is measured in milliseconds.}
   \label{tbl:rtt_chart}

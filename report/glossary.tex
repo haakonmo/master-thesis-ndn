@@ -36,6 +36,8 @@ description={A dummy symbol }}
 
 % Computer acronyms
 \newacronym{IP}{IP}{Internet Protocol}
+\newacronym{IPv4}{IPv4}{IP version 4}
+\newacronym{IPv6}{IPv6}{IP version 6}
 \newacronym{TCP}{TCP}{Transmission Control Protocol}
 \newacronym{UDP}{UDP}{User Datagram Protocol}
 \newacronym{IPsec}{IPsec}{Internet Protocol Security}
@@ -93,3 +95,77 @@ description={A dummy symbol }}
 \newacronym{PBC}{PBC}{Pairing-Based Cryptosystems}
 \newacronym{PK}{PK}{Public Key}
 \newacronym{SK}{SK}{Secret Key}
+
+\newglossaryentry{simple_assumption}
+{
+  name=simple assumption,
+  description={is defined through a security game in which an adversary first gets a a challenge whose size only depends on the security
+  parameter, and must then output a unique solution without further interaction~\cite{DBLP:conf/pkc/HofheinzKS15}}
+}
+
+\newglossaryentry{p}
+{
+  name=$p$,
+  description={prime order}
+}
+
+\newglossaryentry{g}
+{
+  name=$\mathbb{G}$,
+  description={group of prime order}
+}
+
+\newglossaryentry{name}
+{
+  name=\texttt{Name},
+  description={is the name of content related to a \texttt{Data} packet in NDN}
+}
+
+\newglossaryentry{interest}
+{
+  name=\texttt{Interest},
+  description={is the packet sent from a node to another, requesting some content with a \texttt{Name}}
+}
+
+
+\newglossaryentry{data}
+{
+  name=\texttt{Data},
+  description={is the packet sent in response to an \texttt{Interest}}
+}
+
+\newglossaryentry{gpa}
+{
+  name=global passive adversary,
+  description={is an adversary which can monitor the entire network flow}
+}
+
+\newglossaryentry{node}
+{
+  name=node,
+  description={is referred to as a machine participating in a NDN network}
+}
+
+\newglossaryentry{host}
+{
+  name=host,
+  description={is a node that holds the relevant \gls{data}}
+}
+
+\newglossaryentry{publisher}
+{
+  name=publisher,
+  description={is the owner/producer of the \gls{data}, and is required to signed its \gls{data}}
+}
+
+\newglossaryentry{receiver}
+{
+  name=receiver,
+  description={is a node that has expressed an \gls{interest} to some \gls{data}}
+}
+
+\newglossaryentry{synchronization_group}
+{
+  name=synchronization group,
+  description={is group of nodes that synchronizes with a given URL}
+}

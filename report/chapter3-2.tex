@@ -9,7 +9,7 @@ Sensors that can read your blood pressure, heart rate and measure insulin levels
 Sensors that can detect whether your body is missing a substance, or if it is poisoned. 
 There is no limit for what can be done.
 Everything that should be measured, will be measured by sensors integrated in the human body.
-But who will be able to read the data?
+But who will be able to read the \gls{data}?
 Or perform instructions to the sensors/devices?
 There is some major privacy issues related to this discussion, and problems that needs to be solved.
 
@@ -64,15 +64,15 @@ The \gls{PKG} creates two key pairs that is used to do \gls{IBE} and \gls{IBS}.
 Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
 
 In~\autoref{fig:init_ibe_1} the device plays the role as the mobile. 
-The \gls{ID} of every device is a part of the Name.
+The \gls{ID} of every device is a part of the \gls{name}.
 A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
 To be able to communicate securely under initialization, the device have to create a key pair, \gls{TMPK} and \gls{TMSK}, and then extract a temporary secret key for its \gls{ID}. 
-At first, the device has to act as a key generator for itself to ensure that the receiver (i.e. the \gls{PKG}) can encrypt the extracted \gls{SK}.
+At first, the device has to act as a key generator for itself to ensure that the \gls{receiver} (i.e. the \gls{PKG}) can encrypt the extracted \gls{SK}.
 The trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
-The device sends an Interest appending the \gls{TMPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s trust domain.
+The device sends an \gls{interest} appending the \gls{TMPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s trust domain.
 The \gls{PKG} encrypts a \gls{CEK} with the \gls{TMPK} and the \gls{ID} received from the device. 
 The \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do symmetric \gls{AES} encryption on the secret key. 
-The Data packet response to the initialization Interest will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
+The \gls{data} packet response to the initialization \gls{interest} will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
 To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
 The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
 
@@ -102,24 +102,24 @@ This results in a rendezvous authentication between the device and the mobile, a
 % do
 % 	device -> connect to pkg;
 % 	pkg -> verify device then issue secret key;
-% 	device -> subscribe Name Sync and Public Key
+% 	device -> subscribe \gls{name} Sync and Public Key
 % done
 % \end{lstlisting}
 
 \subsection{Data Pull}\label{data_pull}
-The goal for this protocol is to achieve a secure one-round data pull with authorization and integrity.
-For the protocol to work and the data pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
+The goal for this protocol is to achieve a secure one-round \gls{data} pull with authorization and integrity.
+For the protocol to work and the \gls{data} pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
 
 As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and is ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
-First the requester has to express an Interest to the target device asking for a specific resource. 
-The requester signs the Interest and appends it to the Content Name.
-The receiver checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
-If the requester is authorized, the receiver responds with the Data containing the resource. 
-The receiver will also do a symmetric encryption on the sensor data and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
-This step is only performed if data confidentiality is needed. 
-Then the Data packet is signed and sent.
-Finally the requester receives the Data, verifies the signature and decrypts the sensor data.
+First the requester has to express an \gls{interest} to the target device asking for a specific resource. 
+The requester signs the \gls{interest} and appends it to the content \gls{name}.
+The \gls{receiver} checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
+If the \gls{receiver} is authorized, the \gls{receiver} responds with the \gls{data} containing the resource. 
+The \gls{receiver} will also do a symmetric encryption on the sensor \gls{data} and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
+This step is only performed if \gls{data} confidentiality is needed. 
+Then the \gls{data} packet is signed and sent.
+Finally the requester receives the \gls{data}, verifies the signature and decrypts the sensor \gls{data}.
 
 \begin{figure}[ht]
   \centering
@@ -157,8 +157,8 @@ Using \gls{HIBC}, one can extend the key hierarchy by another level that is time
 These time-based keys can then be downloaded to the mobile on a daily basis, hence the time the mobile will be compromised is reduced.
 
 \subsection{Access Control}\label{access_control}
-Since the ID\textsubscript{device} is appended to the Interest and the Interest is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
-When a device retrieves an Interest for its sensor data, there should be an authorization mechanism. 
+Since the ID\textsubscript{device} is appended to the \gls{interest} and the \gls{interest} is signed by the corresponding SK\textsubscript{device}, the \gls{ID} of the device can easily be authenticated. 
+When a device retrieves an \gls{interest} for its sensor \gls{data}, there should be an authorization mechanism. 
 One can argue that once a device has been authenticated in the \gls{PKG}s trust domain, everyone in the domain can be sure that the device will not abuse the information or functionalities available. 
 However, due to scalability this is not a secure way to handle access control. 
 If a device does not need a privilege, it does not need it.
@@ -179,7 +179,7 @@ Another solution can be an \gls{ACL} based approach equivalent to what Wentao Sh
 
 \subsection{Confidentiality}
 The confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
-As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each Interest appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
+As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each \gls{interest} appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
 Since the ID\textsubscript{requester} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
 
 \subsection{Integrity and Authenticity}
@@ -187,12 +187,12 @@ Each device will obtain a secret key allocated by its superior \gls{PKG}, as exp
 With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
 In this setting, a verified signature acts as an assurance of authentication and integrity. 
 
-Every Interest has a timestamp attached to the Name (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that can be used for protection against replay attack. 
+Every \gls{interest} has a timestamp attached to the \gls{name} (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that can be used for protection against replay attack. 
 
 \subsection{Availability}
 This is a harder problem to solve.
 The network is purely wireless, hence vulnerable to jamming. 
-An adversary could try to send infinite Interests to a device with an invalid signature, hence the device may be overloaded with work and might run out of battery fast.
+An adversary could try to send infinite \gls{interest}s to a device with an invalid signature, hence the device may be overloaded with work and might run out of battery fast.
 Therefore one should check the \gls{MPK} before doing any crypto.
 This is also why I have chosen to append the MPK in the packet~\autoref{fig:sensor_interest-data}. 
 
@@ -201,7 +201,7 @@ For a system to be secure, cryptography together with trust is essential.
 The \gls{HSS} trust model is built upon trusting a centralized authority, typically the user's home server, rendezvous authentication and \gls{IBC}.
 The fact that it runs over \gls{NDN} makes it easier to achieve security goals and usability for third party developers.
 
-The \gls{PK} is the Name of the device, and all content published by the device will begin with this Name, hence it is easy to verify that the publisher is the owner of the content.
+The \gls{PK} is the \gls{name} of the device, and all content published by the device will begin with this \gls{name}, hence it is easy to verify that the \gls{publisher} is the owner of the content.
 To be able to verify and encrypt messages, the device need the MPK\textsubscript{PKG} and the ID of the user it wants to communicate with. 
 If allowed by the PKG, the public parameters MPK\textsubscript{PKG} is public for everybody that is not a part of the trust domain. 
 To be able to sign and decrypt messages the device have to be a member of the trust domain and be issued a secret key mapping to the ID\textsubscript{device}.
