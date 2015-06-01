@@ -4,7 +4,7 @@ This chapter will present ChronoSync, and explaining what the \gls{FSM} is built
 \section{ChronoSync}\label{chronosync}
 Since \gls{NDN} provides multicast in the network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
 To achieve distributed synchronization of a \gls{data}set, the \gls{NDN}-team has developed ChronoSync, a decentralized synchronization framework over \gls{NDN}. 
-ChronoSync assumes that a group of nodes knows the \gls{name} of a ``synchronization group'', e.g \path{/ndn/broadcast/FileSync-0.1/<group_room>/}.
+ChronoSync assumes that a group of nodes knows the \gls{name} of a \gls{synchronization_group}, e.g \path{/ndn/broadcast/FileSync-0.1/<group_room>/}.
 The synchronication application is built upon state digests, which is that each participating node stores a hash of its current \gls{data}set. 
 Each node in a ChronoSync application broadcasts its sync state in a Sync \gls{interest} (e.g. \path{/ndn/broadcast/FileSync-0.1/<group_room>/<state>}).
 When a node receives a Sync \gls{interest}, it will inspect the state of the \gls{interest}, and compare with its own state.

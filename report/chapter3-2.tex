@@ -147,7 +147,7 @@ Security analysis code in~\autoref{apx:scyther-analysis}
 I assume the following threat model:
 \begin{enumerate}
   \item An adversary might try to eavesdrop information.
-  \item An adversary might try to send bogus commands.
+  \item An adversary might try to send bogus commands (new, replay).
   \item Devices might be physically hijacked, e.g. theft of mobile.
 \end{enumerate}
 \todo{write more..}
@@ -187,7 +187,7 @@ Each device will obtain a secret key allocated by its superior \gls{PKG}, as exp
 With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
 In this setting, a verified signature acts as an assurance of authentication and integrity. 
 
-Every \gls{interest} has a timestamp attached to the \gls{name} (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC 1970-01-01 00:00:00}, that can be used for protection against replay attack. 
+Every \gls{interest} has a timestamp attached to the \gls{name} (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC} \texttt{1970-01-01} \texttt{00:00:00}, that can be used for protection against replay attack. 
 
 \subsection{Availability}
 This is a harder problem to solve.
