@@ -258,12 +258,14 @@ Naccache suggested that if the prime \gls{p} is 1024-bit, the scheme would provi
 For comparison reasons, the RSA key pair is therefore generated with the size of 1024-bit.
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
+\todo{finish table!}
 \begin{table}[h]
   \begin{tabular}[c]{lllll}
   Method                                      & Scheme          & C1              & C2          & C3              \\ \hline
   IBE PKG key pair generation                 & Waters09        & 99.65 ms        & 27.09 ms    & 36.08 ms     \\ %\hline
-  IBE Encrypting CEK                          & Waters09        & 52.65 ms        & 189.15 ms   & 24.86 ms     \\ %\hline
   IBE Secret Key (SK) generation              & Waters09        & 56.14 ms        & 17.86 ms    & 23.27 ms     \\ %\hline
+  IBE Encrypting CEK                          & Waters09        & 52.65 ms        & 189.15 ms   & 24.86 ms     \\ %\hline
+  IBE Decrypting CEK                          & Waters09        & - ms            & - ms        & 12.86 ms      \\ %\hline  
   Encrypting SK                               & AES             & 0.13 ms         & 0.10 ms     & 0.15 ms     \\ %\hline
   IBS PKG key pair generation                 & Waters          & 97.55 ms        & 27.15 ms    & 35.02 ms     \\ %\hline
   IBS Secret Key (SSK) generation             & Waters          & 9.76 ms         & 2.87 ms     & 3.72 ms     \\ %\hline
@@ -275,9 +277,9 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
   RSA Decryption                              & RSA             & 14.72 ms        & 4.45 ms     & 6.49 ms     \\ %\hline
   RSA Sign                                    & RSA             & 16.15 ms        & 4.59 ms     & 6.69 ms     \\ %\hline
   RSA Verify                                  & RSA             & 15.72 ms        & 4.53 ms     & 6.74 ms     \\ %\hline
-  ECDSA key pair generation                   & ECDSA           & 0.57 ms         & 0.20 ms     & 0.32 ms     \\ %\hline
-  ECDSA Sign                                  & ECDSA           & 0.50 ms         & 0.21 ms     & 0.33 ms     \\ %\hline
-  ECDSA Verify                                & ECDSA           & 0.90 ms         & 0.37 ms     & 0.58 ms     \\ %\hline
+  %ECDSA key pair generation                   & ECDSA           & 0.57 ms         & 0.20 ms     & 0.32 ms     \\ %\hline
+  %ECDSA Sign                                  & ECDSA           & 0.50 ms         & 0.21 ms     & 0.33 ms     \\ %\hline
+  %ECDSA Verify                                & ECDSA           & 0.90 ms         & 0.37 ms     & 0.58 ms     \\ %\hline
   \end{tabular}
   \caption{Cryptographic methods time chart. Each measurement is the mean time of 100 rounds and measured in milliseconds. }
   \label{tbl:time_chart}

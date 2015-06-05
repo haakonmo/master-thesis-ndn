@@ -1,4 +1,4 @@
-\chapter{Security in Sensor Network}\label{sensor-application}
+\chapter{Security in Wireless Sensor Network}\label{sensor-application}
 In this chapter the sensor application will be presented. 
 Several sequence diagrams will be explained, as well as concepts needed to understand the flow of the application. 
 
@@ -47,7 +47,9 @@ In the proposed system, I assume that this type of authentication is achieved in
 Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
 This authentication method uses a shared secret before authentication. 
 
-\subsection{Initialization}\label{init}
+\subsection{System Initialization Phase}
+
+\subsection{Device Registration Phase}\label{init}
 The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
 For the protocol to be secure, there are several issues that need to be addressed. 
 The response message containing the secret key has to be 1) encrypted. 
@@ -106,7 +108,7 @@ This results in a rendezvous authentication between the device and the mobile, a
 % done
 % \end{lstlisting}
 
-\subsection{Data Pull}\label{data_pull}
+\subsection{Deployment Phase}\label{data_pull}
 The goal for this protocol is to achieve a secure one-round \gls{data} pull with authorization and integrity.
 For the protocol to work and the \gls{data} pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
 
@@ -130,7 +132,7 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
 
 \todo{prove secureness of data pull protocol}
 
-\subsection{Distribution using File Synchronization Module}
+\subsection{Key Distribution using File Synchronization Module}
 
 The Stig wants to have full control over the devices that are a part of the trust domain, and be able to remove a device if necessary.
 Each device should have an updated list of all public keys, i.e. every devices' \gls{ID}.
@@ -144,14 +146,18 @@ In this section the security of the protocols presented in~\autoref{init} and ~\
 Security analysis code in~\autoref{apx:scyther-analysis}
 
 \subsection{Threat Model}
+Threats that I find relevant for the \gls{HSS} can be catigorized into three main categories: threats to privacy, threats to availability and threats to control.
 I assume the following threat model:
 \begin{enumerate}
-  \item An adversary might try to eavesdrop information.
-  \item An adversary might try to send bogus commands (new, replay).
-  \item Devices might be physically hijacked, e.g. theft of mobile.
+  \item An adversary might try to eavesdrop information (privacy).
+  \item An adversary might try to send bogus commands, e.g. injection, replay and \gls{MITM} (control).
+  \item Jamming, node compromise (such as theft of mobile) and \gls{DoD} (availability).
 \end{enumerate}
-\todo{write more..}
+
 I assume that the \gls{PKG} cannot be compromised by any adversary, and thus the \gls{MSK} will always be hidden from any adversaries. 
+However, it is extremely important that the machine which plays the role of the \gls{PKG} is secured in a physical matter, as well as remote secureness. 
+The \gls{PKG} is the single point of failure in the whole system.
+
 An idea introduced by Aaditeshwar Seth and Srinivasan Keshav in~\cite[Section 5.4]{Seth:2005:PSD:1897159.1897165} is to avoid storing the \gls{SK}s in devices that is more likely to be lost or stolen, e.g. a mobile.
 Using \gls{HIBC}, one can extend the key hierarchy by another level that is time-based.
 These time-based keys can then be downloaded to the mobile on a daily basis, hence the time the mobile will be compromised is reduced.
@@ -184,7 +190,8 @@ Since the ID\textsubscript{requester} always is appended it can always be used t
 
 \subsection{Integrity and Authenticity}
 Each device will obtain a secret key allocated by its superior \gls{PKG}, as explained in~\autoref{ibc}.
-With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. Hence all signed packets can be verified by anyone with the \gls{MPK}.
+With the concept from~\autoref{rendezvous_authentication} together with the \gls{PKG}s \gls{MPK}, you can trust that the device is authorized for the \gls{PKG}s trust domain. 
+Hence all signed packets can be verified by anyone with the \gls{MPK}.
 In this setting, a verified signature acts as an assurance of authentication and integrity. 
 
 Every \gls{interest} has a timestamp attached to the \gls{name} (e.g. \path{/ndn/no/ntnu/device/name2/sensorPull/1429710873778}), i.e. milliseconds from \texttt{UTC} \texttt{1970-01-01} \texttt{00:00:00}, that can be used for protection against replay attack. 

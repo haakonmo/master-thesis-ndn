@@ -217,7 +217,7 @@ def encrypt(key, content):
         end = time.clock()
         results += end-start
     mean = results / number
-    logging.info(str(mean))
+    logging.info("AES encrypt: " + str(mean))
 
     cipher = a.encrypt(content)
     return cipher
@@ -232,7 +232,7 @@ def decrypt(key, cipher):
         end = time.clock()
         results += end-start
     mean = results / number
-    logging.info(str(mean))
+    logging.info("AES decrypt: " + str(mean))
 
     content = a.decrypt(cipher)
     return content

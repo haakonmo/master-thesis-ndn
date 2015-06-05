@@ -1,98 +1,54 @@
-\chapter{Identity-Based Cryptography}\label{chp:ibc}
-This chapter will present the concept of \gls{IBE} and \gls{IBS}, and why it is highly applicable to use this type of cryptography in \gls{NDN}. 
-The possibilities to use the file synchronization module to do key distribution and revocation will be introduced.
+\chapter{Key Distribution Scheme}\label{chp3:file-sync}
+This chapter will first introduce the application that makes the key distribution scheme possible over \gls{NDN}.
+The application, \gls{FSM}, is designed to be applicable to any other distribution of files over \gls{NDN}.
+The key distribution scheme and key revocation I use in the~\autoref{sensor-application} will be presented.
 
-\section{Concept}\label{ibc}
-\gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
-Shamir proposed a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
-The concept of \gls{IBE} builds upon every user having an \gls{ID} that is used as the \gls{PK}. 
-This \gls{ID} can be anything, i.e. email, phone number, \gls{SSN}, or a \gls{name} (\autoref{name}).
-The \gls{SK} that is extracted from the \gls{ID} is issued by a \gls{TTP}.
-Notice that if every user could have created their own \gls{SK}, then so could anybody else with the same computational power, since the user does not obtain any ``privileged'' information about its \gls{ID}~\cite{Bidgoli06}.
-This eliminates the need of certificates because the \gls{SK} allocation itself is a verfication by the \gls{TTP}.
-The \gls{IBE} implementation remained unsolved until 2001, when Dan Boneh and Matthew K. Franklin proposed~\cite{DBLP:conf/crypto/BonehF01}.
-However the scheme has only been shown to be secure within the random oracles model~\cite{DBLP:journals/iacr/Waters04}, hence less practical.
+\section{File Synchronization Module}\label{file-sync}
+The \gls{FSM} is built upon ChronoSync, which is explained in~\autoref{apx:chronosync}.
+The goal for the \gls{FSM} is to distribute \gls{data} to a large group of nodes.
+Each node wants to verify that the distributed \gls{data} originate from the \gls{publisher}.
+Each node always wants to have the newest version of the \gls{data}. 
+One example where \gls{FSM} is applicable is when we want to distribute a list of public keys within a domain.
+Let us say there is a list owner, e.g. a \gls{TTP} that could be a university like the \gls{ntnu}.
+\gls{ntnu} wants to distribute to a large set of nodes, i.e. each student and employee at \gls{ntnu}.
+Every node wants to have every public key in \gls{ntnu}s domain up-to-date.
+When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with the updated list.
 
-\gls{IBE} is based on performing asymmetric encryption with a publicly know \gls{ID} working as the \gls{PK}.
-As seen in~\autoref{eq:mapping-id-name-pk}, the \gls{ID} can be a \gls{name} (e.g. ``/ndn/no/ntnu/haakon'').
-Hence the \gls{name} becomes the \gls{PK} (from now referred to as \gls{ID}).
-Therefore \gls{IBE} is highly applicable to \gls{NDN}.
+There can be two types of roles in the \gls{FSM}. 
+\begin{enumerate}
+	\item Distributor
+	\item Subscriber
+\end{enumerate}
+Distributors are list-owners and have read-write access.
+Subscribers only have read access.
+A node can be both a distributor and a subscriber, and there can be several distributors that are equal, i.e. several owners of the list.
+However, there is one root distributor (i.e. the true owner) that should be able to delegate write access to other nodes that should act as a distributor. 
+The capabilities is distributed to all nodes and signed by the root distributor.
+These capabilities is needed so that every node can verify the integrity and authenticity of the distributed list.
+If confidentiality is required, it can be achieved by symmetric encryption, and key exchange in the subscription protocol, i.e. using asymmetric encryption.
+However this becomes quite complicated concerning possible key leakage and redistribution of a new symmetric key when the number of subscribers is high. 
+In the case of public keys list, the \gls{data} would not have to be confidential, but rather rely on integrity and authenticity.
 
-\begin{equation}\label{eq:mapping-id-name-pk}
-ID_{device} = PK_{device} = Name_{device}
-\end{equation}
-
-In \gls{IBE} there is a \gls{TTP} that is called \gls{PKG}.
-The \gls{PKG}s task is to extract a secret key given an \gls{ID} and provide public parameters (\gls{MPK}) needed for performing encryption, decryption, signing and verifying. In~\autoref{fig:pkg_functions} the \gls{IBC} methods is illustrated in practice. 
-First the \texttt{PKG} runs \texttt{Setup()}. 
-\texttt{device1} can then request a \texttt{SK} by sending \texttt{ID\textsubscript{d1}} to the \texttt{PKG}. 
-In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as well as the \texttt{MPK\textsubscript{PKG}}.
-\texttt{device2}, which is already a part of the trust domain, sends a signed request for \gls{data} to \texttt{device1}. 
-\texttt{device1} verifies the signature and responds to the request with a signed, encrypted content.
-\texttt{device0}, which do not have a \gls{SK} generated from the \texttt{PKG} and thus is not a part of the trust domain, sends a request to \texttt{device1} that is declined.
-
-\begin{enumerate}\label{ibc-methods}
-  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. 
-  These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
-  \item \texttt{Extract(MPK\textsubscript{PKG}, MSK\textsubscript{PKG}, ID\textsubscript{device})} generates a secret key from a given ID. 
-  \item \texttt{Encrypt(MPK\textsubscript{PKG}, ID\textsubscript{device}, message)} encrypts the message.
-  \item \texttt{Decrypt(MPK\textsubscript{PKG}, SK\textsubscript{device}, cipher)} decrypts the cipher generated from the encryption.
-  \item \texttt{Signing(MPK\textsubscript{PKG}, SK\textsubscript{device}, message)} signs a hash digest of the message (e.g. \gls{SHA1}).
-  \item \texttt{Verify(MPK\textsubscript{PKG}, ID\textsubscript{device}, message, signature)} verifies the signature.
+In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributor's (\texttt{d}) list of public keys.
+In order to achieve this goal, the following actions should occur.
+\begin{enumerate}
+	\item \texttt{d} announces that it wants to distribute a list to the network by registering the synchronization group prefix. 
+	\item \texttt{a}, \texttt{b} and \texttt{c} ask for subscription to this list, and somehow authenticates them selves to \texttt{d} if confidentiality is required.
+	\item \texttt{d} approves those who should be approved, and returns a symmetric synchronization key. 
+	This step is only done if confidentiality is required.
+	\item \texttt{a}, \texttt{b} and \texttt{c} now knows that they are a part of the synchronization and have read access. They expresses a Sync \gls{interest} with their state, receiving Sync \gls{data} whenever \texttt{d} has announced a newer state.
 \end{enumerate}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=1\textwidth]{pkg_functions.png}
-  \caption{Methods of an IBC systems illustrated in practice.}
-  \label{fig:pkg_functions}
+  \includegraphics[width=1\textwidth]{ndn-sync.png}
+  \caption{File Synchronization in NDN.}
+  \label{fig:ndn-sync}
 \end{figure}
-
-To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{ID}.
-The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encrypted content to the requester. 
-
-Two main
-Deploy a secure \gls{PKG}.
-Identify each device before issuing \gls{SK}.
-
-There are some drawbacks related to \gls{IBE} such as issues around trusting the \gls{PKG} considering that the \gls{PKG} generates all \gls{SK}s.  
-If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all \gls{SK}s belonging to the corresponding \gls{ID}. 
-Suspicion of \gls{MITM}, where the \gls{PKG} is the adversary, can be a problem for users.
-The same issue does however occur in Kerberos, which is a well recognized security system.
-Initializing might also be a problem because to allocate \gls{SK}s, a secure channel has to be established. 
-However, this is not a bugger problem than in existing networks. 
-Pre-shared secrets or Diffie-Hellman key exchange might be a good solution.
-
-\section{Secureness}\label{ibe-secureness}
-When designing protocols in cryptography one first usually designs an ideal system where all parties have random oracle access, then proves the security.
-A random oracle is like a ``black box'' that outputs truly random numbers.
-Second, one replaces the oracle access with a hash function.
-This gives an implementation of an ideal system in the real world, but without random oracles~\cite{DBLP:conf/ccs/BellareR93}. 
-It is perfectly fine to make statements based on the ideal system, but debatable whether the same statements yields for the implementation in the real world.
-Canetti et al. concluded that there exist secure schemes in the \textit{Random Oracle Model}, but for which any implementation of the random oracle results in insecure schemes~\cite{DBLP:journals/jacm/CanettiGH04}.
-Boneh and Franklins \gls{IBE} scheme is only secure when using random oracles, and relies on elliptic curves~\cite{DBLP:conf/crypto/BonehF01}.
-
-Following the \textit{Standard Model} one does not resort to the random oracle heuristic and does not rely on non-standard complexity assumptions.
-Hence proving security in the standard model is preferably.
-In 2004 Boneh and Boyen proposed a fully secure scheme in the standard model~\cite{DBLP:conf/crypto/BonehB04}.
-However the scheme is not efficient. 
-
-First practical scheme was introduces by Brent Waters~\cite{DBLP:journals/iacr/Waters04}.
-But as David Naccache states in his paper~\cite{DBLP:journals/iacr/Naccache05}, Waters' scheme without random oracles introduces too large public parameters (164\gls{KB}!).
-Naccache proves that he was able to construct a practical and fully secure scheme in the standard model based on the \gls{DBDH} assumption.
-The scheme is a modification of Waters' scheme, but with public parameters of just a few \gls{KB} size.
-
-Waters created a fully secure \gls{IBE} system with short parameters under \gls{simple_assumption} in 2009~\cite{DBLP:conf/crypto/Waters09}.
-
-The complexity assumptions is based on bilinear maps.
-Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order \gls{p}, and $g$ be a generator of \gls{g}. 
-We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ if $e$ is efficiently computable, $e$ is bilinear, i.e. $e(g^a, g^b) = e(g, g)^{ab}$ (for all $a$ and $b$), and $e$ is non-degenerate, i.e. $e(g,g)\neq 1$.
-For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader is encouraged to take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
 
 \section{Key Distribution}\label{key-distribution}
 In traditional \gls{PKI}, each public key is signed by a certificate authority and the generated certificate is sent as a response over a secure channel then validated by the the client.
-I want to make the certificate authority obsolete by distributing every \gls{ID}.
-This can be done through the \gls{FSM} presented in~\autoref{file-sync}.
+I want to make the certificate authority obsolete by distributing every \gls{ID} with the \gls{PKG} acting as a \gls{kdc}, as explained in the above section.
 In~\autoref{fig:pkg_sync} we see that the \gls{PKG} multicasts the \gls{ID} list to all devices that have joined the trust domain.
 Each device can verify the integrity and authenticity of the sync state \gls{data} and validate that the \gls{ID} list surely originates from its own \gls{PKG}, i.e. the distributor.
 \begin{figure}[ht]
@@ -102,7 +58,6 @@ Each device can verify the integrity and authenticity of the sync state \gls{dat
   \label{fig:pkg_sync}
 \end{figure}
 
-\todo{more existing solutions}
 
 \section{Key Revocation}
 Key revocation in systems are studied well in traditional \gls{PKI}.
@@ -116,10 +71,17 @@ The work done by Beno\^{i}t Libert and Damien Vergnaud in~\cite{DBLP:conf/ctrsa/
 However, efficiently delegating both the key generation and revocation functionalities was a problem left open.
 Jae Hong Seo and Keita Emura solves this in~\cite{DBLP:journals/iacr/SeoE13a}.
 
+Basically there exist two use cases where we want to renew a \gls{SK}: 
+\begin{enumerate}
+  \item when the \gls{SK} is compromised.
+  \item when the renewal period has expired.
+\end{enumerate}
 If a key is compromised, we want to revoke the key immediately letting everybody know that this specific \gls{ID} has been revoked. 
 One problem with key revocation is that there is no way of revoking this key, and thus the \gls{ID} has to be changed and distributed. 
 However, a partially revocation can be sufficient in some networks. 
-By partially, I do not mean revoking the private key, but rather only distributing the new public key (i.e. \gls{ID}) to every node in the trust domain.
+By partially, I do not mean revoking the \gls{SK}, but rather only distributing the new \gls{ID} to every node in the trust domain.
 In short, the compromised key should be removed from a distributed ID-list and the list containing only valid \gls{ID}s should be disseminated.
 With the \gls{FSM}, the list is distributed automatically when updated, and only a \gls{DoS} attack together with a compromised key would make the system vulnerable. 
-On the other side, some periodic renewal might be necessary because it is not always known that a key has been compromised.
+
+Some periodic renewal might be necessary in many systems because it is not always known that a key has been compromised.
+If such an \gls{ID} structure is applied, the key distribution should only contain the base key of each device. 

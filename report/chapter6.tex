@@ -32,7 +32,13 @@ Security is easily applied in \gls{NDN}.
 
 \section{Health Sensor System}
 The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
+
+Power efficiency
 \todo{more on this}
+
+A problem with \gls{wsn} in \gls{IP} networks, is that it is a limited number of \gls{IP} adderesses (especially in \gls{IPv4}).
+So the global scalability issue arises due to the potentially large number of sensors that could be deployed. 
+With the naming rules in \gls{NDN}, this is not a issue.
 
 In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography, RSA. 
 
@@ -59,6 +65,11 @@ One drawback with the key distribution using \gls{FSM} is that for the sender to
 Likewise when a \gls{receiver} verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
 Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution to reduce the time of exposure when compromised.
 
+There are some issues that could occur in such a system. 
+\gls{DoS} on Sync \gls{interest} and Sync \gls{data}. 
+If the \gls{FSM} is used to revoke public keys as suggested, an attacker who has found the compromised \gls{SK}, can try to deny the distribution of the new list, i.e. the Sync \gls{data}, from the distributor. 
+This is however a complicated attack and an updated list would spread fast.
+Performing \gls{DoS} on every node is not easy, and would block the network access for the adversary anyway.
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
 
@@ -66,10 +77,12 @@ All applications that relies on some sort of crucial information derived using \
 The trust model used in the \gls{HSS} can be used in any network where the use of a \gls{TTP} is accepted. 
 Such a system can for instance be:
 \begin{enumerate}
-	\item Home Automation Systems
+	\item Home automation systems
 	\item \gls{BAS}
 	\item \gls{BMS}
-	\item Open mHealth
+	\item Health care
+	\item Military networks
+	\item Sensor networks such as disaster, habitat and hazard monitoring
 \end{enumerate}
 
 
