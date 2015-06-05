@@ -127,6 +127,7 @@ Now that the mobile is authenticated, devices can connect to the mobile through 
 This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device can join the \gls{PKG}s trust domain.
 
 \subsubsection{Security Analysis}
+Security analysis code in~\autoref{apx:scyther-analysis-dr}
 
 \textit{Authenticity}.
 
@@ -229,6 +230,7 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
 % \end{figure}
 
 \subsubsection{Security Analysis}
+Security analysis code in~\autoref{apx:scyther-analysis-dp}
 
 \textit{Authenticity}.
 
@@ -248,8 +250,6 @@ The \gls{PKG} will be the distributor in this synchronization and each device wi
 
 \section{Security Analysis}
 In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
-\todo{!!}
-Security analysis code in~\autoref{apx:scyther-analysis}
 
 \subsection{Threat Model}
 Threats that I find relevant for the \gls{HSS} can be catigorized into three main categories: threats to privacy, threats to availability and threats to control.
