@@ -78,12 +78,47 @@ The \gls{data} packet response to the initialization \gls{interest} will contain
 To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
 The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
 
-\begin{figure}[ht]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{Initialization.png}
-  \caption{Initialization IBE}
+  \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
+      \node[] (server) {PKG};
+      \node[left = of server] (client) {Device};
+      \node[below of=server, node distance=6cm] (server_ground) {};
+      \node[below of=client, node distance=6cm] (client_ground) {};
+      %
+      \draw (client) -- (client_ground);
+      \draw (server) -- (server_ground);
+      
+      \draw ($(client)!0.15!(client_ground)$) -- node[above,scale=0.8,left]{ID\textsubscript{device}, tk} ($(client)!0.15!(client_ground)$);
+      \draw ($(server)!0.15!(server_ground)$) -- node[above,scale=0.8,right]{(msk, mpk), ID\textsubscript{PKG}} ($(server)!0.15!(server_ground)$);
+      
+      \draw[->] ($(client)!0.25!(client_ground)$) -- node[above,scale=1,midway]{ID\textsubscript{device} || tk} ($(server)!0.25!(server_ground)$);
+      \draw[<-] ($(client)!0.40!(client_ground)$) -- node[above,scale=1,midway]{ID\textsubscript{PKG}} ($(server)!0.40!(server_ground)$);
+      \draw ($(server)!0.50!(server_ground)$) -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{device}} ($(server)!0.50!(server_ground)$);
+
+      \draw[->] ($(client)!0.70!(client_ground)$) -- node[above,scale=1,midway]{Interest: Enc\textsubscript{tk}[ID\textsubscript{device} || nonce]} ($(server)!0.70!(server_ground)$);
+      \draw ($(server)!0.75!(server_ground)$) -- node[above,scale=0.8,right]{c = Enc\textsubscript{tk}[sk || nonce]} ($(server)!0.75!(server_ground)$);
+      \draw[<-] ($(client)!0.85!(client_ground)$) -- node[above,scale=1,midway]{Data: Sign(c || mpk)} ($(server)!0.85!(server_ground)$);
+      \draw ($(client)!0.85!(client_ground)$) -- node[above,scale=0.8,left]{verify} ($(client)!0.85!(client_ground)$);
+      \draw ($(client)!0.90!(client_ground)$) -- node[above,scale=0.8,left]{sk = Dec\textsubscript{tk}[c]} ($(client)!0.90!(client_ground)$);
+      \draw ($(client)!0.95!(client_ground)$) -- node[above,scale=0.8,left]{mpk} ($(client)!0.95!(client_ground)$);
+  \end{tikzpicture}
+  \caption{Device Registration. 
+  The first two messages is exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus is protected against any adversaries listening outside the NFC signal range. 
+  At first the Device generates a temporary random key \texttt{tk} and sends this key and its ID to the PKG. 
+  The PKG responds with its ID and a admin user have to approve the requesting device.
+  When approved, the device sends a Init Interest and receives a response with the secret key corresponding to its ID.
+  }
   \label{fig:init_ibe_1}
 \end{figure}
+
+
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=1\textwidth]{Initialization.png}
+%   \caption{Initialization IBE}
+%   \label{fig:init_ibe_1}
+% \end{figure}
 
 Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
 This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device can join the \gls{PKG}s trust domain.
@@ -123,12 +158,73 @@ This step is only performed if \gls{data} confidentiality is needed.
 Then the \gls{data} packet is signed and sent.
 Finally the requester receives the \gls{data}, verifies the signature and decrypts the sensor \gls{data}.
 
-\begin{figure}[ht]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{DataPull.png}
-  \caption{Mobile performing a data pull from a device in the network.}
+  \begin{tikzpicture}[node distance=4.5cm,auto,>=stealth']
+      \node[] (server) {PKG};
+      \node[left = of server] (client_1) {Mobile};
+      \node[left = of client_1] (client_0) {Device};
+      \node[below of=server, node distance=8cm] (server_ground) {};
+      \node[below of=client_0, node distance=8cm] (client_0_ground) {};
+      \node[below of=client_1, node distance=8cm] (client_1_ground) {};
+      %
+      
+      \draw (server) -- (server_ground);
+      \draw (client_0) -- (client_0_ground);
+      \draw (client_1) -- (client_1_ground);
+      
+      \draw ($(client_0)!0.15!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{(ID\textsubscript{m}, sk\textsubscript{m}, mpk)} 
+      ($(client_0)!0.15!(client_0_ground)$);
+      \draw ($(client_1)!0.15!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{(ID\textsubscript{d}, sk\textsubscript{d}, mpk)} 
+      ($(client_1)!0.15!(client_1_ground)$);
+      \draw ($(server)!0.15!(server_ground)$) 
+      -- node[above,scale=0.8,left]{(msk, mpk)} 
+      ($(server)!0.15!(server_ground)$);
+
+
+      \draw[->] ($(client_0)!0.30!(client_0_ground)$) 
+      -- node[above,scale=0.8,midway]{Interest: Sign\textsubscript{ID\textsubscript{m}}(ID\textsubscript{d} || nonce || request)} 
+      ($(client_1)!0.30!(client_1_ground)$);
+
+      \draw[<-] ($(client_0)!0.60!(client_0_ground)$) 
+      -- node[above,scale=0.8,midway]{Data: Sign\textsubscript{ID\textsubscript{m}}(e\_cek || c)} 
+      ($(client_1)!0.60!(client_1_ground)$);
+
+      \draw ($(client_1)!0.35!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{verify(signature, mpk, ID\textsubscript{m})} 
+      ($(client_1)!0.35!(client_1_ground)$);
+      \draw ($(client_1)!0.40!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{AccesControl(ID\textsubscript{m}, request)} 
+      ($(client_1)!0.40!(client_1_ground)$);
+      \draw ($(client_1)!0.45!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{e\_cek = IBEnc\textsubscript{sk\textsubscript{d}}(cek || mpk)} 
+      ($(client_1)!0.45!(client_1_ground)$);
+      \draw ($(client_1)!0.50!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{cek}(data || nonce)} 
+      ($(client_1)!0.50!(client_1_ground)$);
+
+      \draw ($(client_0)!0.70!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{verify(signature, mpk, ID\textsubscript{d}, sha1(e\_cek || c))} 
+      ($(client_0)!0.70!(client_0_ground)$);
+      \draw ($(client_0)!0.75!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{cek = IBDec\textsubscript{ID\textsubscript{d}}(e\_cek || mpk)}
+      ($(client_0)!0.75!(client_0_ground)$);
+      \draw ($(client_0)!0.80!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{data, nonce = AES\_Dec\textsubscript{cek}(c)} 
+      ($(client_0)!0.80!(client_0_ground)$);
+  \end{tikzpicture}
+  \caption{Data pull under deployment.}
   \label{fig:data_pull_ibe}
 \end{figure}
+
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=1\textwidth]{DataPull.png}
+%   \caption{Mobile performing a data pull from a device in the network.}
+%   \label{fig:data_pull_ibe}
+% \end{figure}
 
 \todo{prove secureness of data pull protocol}
 
@@ -151,7 +247,7 @@ I assume the following threat model:
 \begin{enumerate}
   \item An adversary might try to eavesdrop information (privacy).
   \item An adversary might try to send bogus commands, e.g. injection, replay and \gls{MITM} (control).
-  \item Jamming, node compromise (such as theft of mobile) and \gls{DoD} (availability).
+  \item Jamming, node compromise (such as theft of mobile) and \gls{DoS} (availability).
 \end{enumerate}
 
 I assume that the \gls{PKG} cannot be compromised by any adversary, and thus the \gls{MSK} will always be hidden from any adversaries. 
