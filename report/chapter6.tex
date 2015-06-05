@@ -18,6 +18,10 @@ In RSA public key cryptography we have to find the key related to the signature.
 In worst case this will be equivalent of retrieving the \gls{MPK} each time, which is not likely. 
 Or the \gls{MPK} can be appended to the message.
 
+usability 
+
+
+
 \section{Development Usability in Named Data Networking}
 Once a basic perception of the \gls{NDN} architecture is understood, it is easy to begin developing.
 The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
@@ -28,6 +32,7 @@ Security is easily applied in \gls{NDN}.
 
 \section{Health Sensor System}
 The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
+\todo{more on this}
 
 In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography, RSA. 
 
@@ -39,6 +44,10 @@ As mentioned in~\autoref{rendezvous_authentication} and~\autoref{init} there sho
 \todo{hm... something here?}
 
 Storing the \gls{SK} in a secure fashion.
+
+Preloading secret key, offline mode, yet the initialization protocol should be used to do this, unless the sharing is done in a wired environment. 
+\gls{NFC} signal is hard (impossible?) to eavesdrop, thus the initialization protocol is not needed. 
+
 
 \section{Scalability}
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.

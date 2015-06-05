@@ -1,7 +1,8 @@
 \chapter{Implementation and Testing}
 This chapter will first introduce the most significant frameworks that must be installed to be able to run \gls{NDN} applications.
-Then the various designs and implementation choices will be explained. 
-Finally the test result will be presented.
+Then the various designs and implementation choices will be explained.
+The source code is left out from the appendix due to the size inconvenience. 
+Finally, the test result will be presented.
 
 \section{Installing Named Data Networking Protocol}
 
@@ -117,10 +118,10 @@ This is however not implemented in the application, because it is considered too
 The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured \gls{data}.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
 Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
 Initially the idea was to have the \gls{TMPK} appended to the content \gls{name}. 
-However, I experienced a problem where the Init \gls{data} never arrived at destination node. 
-After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the Init \gls{data} exceeded this limit and reached 8904 bytes.
+However, I experienced a problem where the \texttt{Init} \gls{data} never arrived at destination node. 
+After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the \texttt{Init} \gls{data} exceeded this limit and reached 8904 bytes.
 Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the content \gls{name} in the \gls{interest}, the \gls{data} response off course had to have the same content \gls{name}, hence 2\gls{KB} overhead in the \gls{name}. 
-The \gls{TMPK} can as easily be appended to the KeyLocator \gls{name}, hence the \gls{data} response can be 2\gls{KB} less, resulting to a 6866 bytes Init \gls{data} packet.
+The \gls{TMPK} can as easily be appended to the KeyLocator \gls{name}, hence the \gls{data} response can be 2\gls{KB} less, resulting to a 6866 bytes \texttt{Init} \gls{data} packet.
 
 Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data}.
 The code can be reviewed in~\cite[messageBuf.proto]{garseg15}.
@@ -186,7 +187,7 @@ Running \texttt{r} will make the device expressing an \gls{interest} for sensor 
 
 \begin{lstlisting}[language=bash, caption={NFD Start}, label={lst:nfd-start}]
   $ nfd-start
-  $ nfdc register /ndn/no/ntnu/<\gls{data}-device> udp://<device-ip-address>
+  $ nfdc register /ndn/no/ntnu/<data-device> udp://<device-ip-address>
   $ nfdc register /ndn/no/ntnu/<pull-device> udp://<device-ip-address>
   $ nfdc register /ndn/no/ntnu/<pkg> udp://<pkg-ip-address>
 \end{lstlisting}
@@ -198,7 +199,7 @@ Running \texttt{r} will make the device expressing an \gls{interest} for sensor 
 
 \begin{lstlisting}[language=bash, caption={Start a device registering a prefix.}, label={lst:data}]
   $ python application.py
-  $ \gls{data} 
+  $ data
 \end{lstlisting}
 
 \begin{lstlisting}[language=bash, caption={Start a device that will express \gls{interest} in \gls{data}.}, label={lst:pull}]
@@ -283,13 +284,13 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 \end{table}
 
 
-The initialization protocol described in~\autoref{init} and the \gls{data} pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
+The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
 The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
   Initialization                          & 202.9 ms      & 70.8 ms       & 116.3 ms     \\ %\hline
-  \gls{data} Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
+  Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
   \end{tabular}
   \caption{Round trip time chart. Time is measured in milliseconds.}
   \label{tbl:rtt_chart}
