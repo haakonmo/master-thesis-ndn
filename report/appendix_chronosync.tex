@@ -1,0 +1,29 @@
+\chapter{ChronoSync}\label{apx:chronosync}
+
+Since \gls{NDN} provides multicast in the network layer as explained in~\autoref{fig:ndn-multicast}, we do not have to think of network load in the same way as in \gls{IP}.  
+To achieve distributed synchronization of a \gls{data}set, the \gls{NDN}-team has developed ChronoSync, a decentralized synchronization framework over \gls{NDN}. 
+ChronoSync assumes that a group of nodes knows the \gls{name} of a \gls{synchronization_group}, e.g \path{/ndn/broadcast/FileSync-0.1/<group_room>/}.
+The synchronication application is built upon state digests, which is that each participating node stores a hash of its current \gls{data}set. 
+Each node in a ChronoSync application broadcasts its sync state in a Sync \gls{interest} (e.g. \path{/ndn/broadcast/FileSync-0.1/<group_room>/<state>}).
+When a node receives a Sync \gls{interest}, it will inspect the state of the \gls{interest}, and compare with its own state.
+Each node holds a state tree that is used to detect new and outdated states.
+If the incoming \gls{interest} state is equal to the receiving node's state, the node has no reason to do anything, as the system is in a \textit{stable state} from the node's point of view.
+If not, the receiving node has to find out whether the incoming \gls{interest} is 1) a state the node itself has been in, or if its 2) a new state.
+In case of 1), the receiving node has new \gls{data} and should provide the new content as a response to the incoming \gls{interest}. In case of 2), the receiving node should send out a Recovery \gls{interest} for the new state.
+
+\begin{enumerate}
+  \item \textit{Sync \gls{interest}} is an \gls{interest} that a participating node sends out to discover new \gls{data}.
+  \item \textit{Sync \gls{data}} is a response to 1), if a participating node has new \gls{data}.
+  \item \textit{Recovery \gls{interest}} is an \gls{interest} sent out if a node discovers that another node has a newer state.
+  \item \textit{Recovery \gls{data}} is a response to 3).
+\end{enumerate}
+
+When the group is in a stable state, each Sync \gls{interest} is equivalent, hence only one entry at each router's \gls{PIT} is created, forming a temporary multicast three.
+This \gls{interest} is periodically sent out from each subscriber maintaining the multicast three, resulting in that the producer has the possibility to answer the Sync \gls{interest} with Sync \gls{data} whenever the producer has a new \gls{data}set.
+
+ChronoSync is only taking care of \gls{data} discovery, and leaves other logic to the application that is using ChronoSync. 
+Such logic can be e.g. what should happen when a new participant enters the room.
+Should all history be downloaded? 
+Or who is allowed to publish content in each \gls{synchronization_group}?
+
+ChronoSync is explained in detail here~\cite{DBLP:conf/icnp/ZhuA13}.
