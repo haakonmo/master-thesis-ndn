@@ -1,4 +1,4 @@
-hashfunction SHA256;
+hashfunction SHA1;
 usertype ContentEncryptionKey, Content;
 
 const pk: Function;
@@ -27,12 +27,12 @@ protocol HSSDataPull (PKG, D1, D2)
 		fresh Rb: Nonce;
 		
 		# send Interest D2
-		send_1(D1, D2,  Rb, D1,  {SHA256(Rb, D1)}sk(D1) );
+		send_1(D1, D2,  Rb, D1,  {SHA1(Rb, D1)}sk(D1) );
 
 		# reveive Data D2
 		var CEK: ContentEncryptionKey;
 		var Data: Content;
-		recv_2(D2, D1,       Rb,   {D2, CEK}pk(D1),     { Data }k(D2,D1)  ,  {SHA256( Rb,     { {CEK}pk(D1) }sk(D2),     { Data }k(D2,D1) )}sk(D2));
+		recv_2(D2, D1,      {CEK}pk(D1) ,     { Data, Rb }k(D2,D1) ,  {SHA1(  { CEK}pk(D1) ,     { Data, Rb }k(D2,D1))  }sk(D2));
 
 		claim_D11(D1, Alive);
 		claim_D12(D1, Secret, CEK);
@@ -51,12 +51,12 @@ protocol HSSDataPull (PKG, D1, D2)
 		var Rb: Nonce;
 
 		# receive Interest D1
-		recv_1(D1, D2,   Rb, D1,  {SHA256(Rb, D1)}sk(D1) );
+		recv_1(D1, D2,   Rb, D1,  {SHA1(Rb, D1)}sk(D1) );
 		
 		# send Data D1
 		fresh CEK: ContentEncryptionKey;
 		fresh Data: Content;
-		send_2(D2, D1,       Rb,     {D2, CEK}pk(D1) ,     { Data }k(D2,D1) ,  {SHA256( Rb,     { {CEK}pk(D1) }sk(D2),     { Data }k(D2,D1) )}sk(D2));
+		send_2(D2, D1,      {CEK}pk(D1) ,     { Data, Rb }k(D2,D1) ,  {SHA1(  { CEK}pk(D1) ,     { Data, Rb }k(D2,D1))  }sk(D2));
 
 		claim_D27(D2, Alive);
 		claim_D28(D2, Secret, CEK);
