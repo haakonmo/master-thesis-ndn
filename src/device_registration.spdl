@@ -1,0 +1,45 @@
+hashfunction SHA1;
+usertype SecretKey;
+
+const pk: Function;
+secret sk: Function;
+inversekeys (pk,sk);
+
+
+protocol HSSDeviceRegisteration (PKG, D) 
+{
+	
+	role PKG 
+	{
+		var Rb: Nonce;
+	
+		recv_1(D, PKG,      { D, Rb }k(PKG,D));
+		
+		fresh SK: SecretKey;
+
+		send_2(PKG, D,     {   { SK, Rb }k(PKG,D)  }sk(PKG) );
+
+		claim_PKG1(PKG, Alive);
+		claim_PKG2(PKG, Secret, SK);
+		claim_PKG3(PKG, Weakagree);
+		claim_PKG4(PKG, Niagree);
+		claim_PKG5(PKG, Nisynch);
+	}
+	
+	role D
+	{
+		fresh Rb: Nonce;
+		
+		send_1(D, PKG,  { D, Rb }k(PKG,D));
+
+		var SK: SecretKey;
+		
+		recv_2(PKG, D,     {   { SK, Rb }k(PKG,D)  }sk(PKG) );
+
+		claim_D1(D, Alive);
+		claim_D2(D, Secret, SK);
+		claim_D3(D, Weakagree);
+		claim_D4(D, Niagree);
+		claim_D5(D, Nisynch);
+	}
+}

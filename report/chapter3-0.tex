@@ -37,7 +37,7 @@ In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as wel
   \item \texttt{Extract(MPK\textsubscript{PKG}, MSK\textsubscript{PKG}, ID\textsubscript{device})} generates a secret key from a given ID. 
   \item \texttt{Encrypt(MPK\textsubscript{PKG}, ID\textsubscript{device}, message)} encrypts the message.
   \item \texttt{Decrypt(MPK\textsubscript{PKG}, SK\textsubscript{device}, cipher)} decrypts the cipher generated from the encryption.
-  \item \texttt{Signing(MPK\textsubscript{PKG}, SK\textsubscript{device}, message)} signs a hash digest of the message (e.g. \gls{SHA1}).
+  \item \texttt{Sign(MPK\textsubscript{PKG}, SK\textsubscript{device}, message)} signs a hash digest of the message (e.g. \gls{SHA1}).
   \item \texttt{Verify(MPK\textsubscript{PKG}, ID\textsubscript{device}, message, signature)} verifies the signature.
 \end{enumerate}
 

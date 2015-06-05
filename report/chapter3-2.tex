@@ -1,4 +1,4 @@
-\chapter{Security in Wireless Sensor Network}\label{sensor-application}
+\chapter{Sensor Application}\label{sensor-application}
 In this chapter the sensor application will be presented. 
 Several sequence diagrams will be explained, as well as concepts needed to understand the flow of the application. 
 
@@ -81,30 +81,33 @@ The device has established a trust with its \gls{PKG} and can verify other devic
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
-      \node[] (server) {PKG};
-      \node[left = of server] (client) {Device};
-      \node[below of=server, node distance=6cm] (server_ground) {};
-      \node[below of=client, node distance=6cm] (client_ground) {};
+      \node[] (server) {pkg};
+      \node[left = of server] (client) {device};
+      \node[below of=server, node distance=9cm] (server_ground) {};
+      \node[below of=client, node distance=9cm] (client_ground) {};
       %
       \draw (client) -- (client_ground);
       \draw (server) -- (server_ground);
       
-      \draw ($(client)!0.15!(client_ground)$) -- node[above,scale=0.8,left]{ID\textsubscript{device}, tk} ($(client)!0.15!(client_ground)$);
-      \draw ($(server)!0.15!(server_ground)$) -- node[above,scale=0.8,right]{(msk, mpk), ID\textsubscript{PKG}} ($(server)!0.15!(server_ground)$);
+      \draw ($(client)!0.10!(client_ground)$) -- node[above,scale=0.8,right]{ID\textsubscript{d}, tk} ($(client)!0.10!(client_ground)$);
+      \draw ($(server)!0.10!(server_ground)$) -- node[above,scale=0.8,right]{(msk, mpk), (ID\textsubscript{pkg}, sk\textsubscript{pkg})} ($(server)!0.10!(server_ground)$);
       
-      \draw[->] ($(client)!0.25!(client_ground)$) -- node[above,scale=1,midway]{ID\textsubscript{device} || tk} ($(server)!0.25!(server_ground)$);
-      \draw[<-] ($(client)!0.40!(client_ground)$) -- node[above,scale=1,midway]{ID\textsubscript{PKG}} ($(server)!0.40!(server_ground)$);
-      \draw ($(server)!0.50!(server_ground)$) -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{device}} ($(server)!0.50!(server_ground)$);
+      \draw[->] ($(client)!0.25!(client_ground)$) -- node[above,scale=0.8,midway]{ID\textsubscript{d} || tk} ($(server)!0.25!(server_ground)$);
+      \draw[<-] ($(client)!0.35!(client_ground)$) -- node[above,scale=0.8,midway]{ID\textsubscript{pkg} || mpk} ($(server)!0.35!(server_ground)$);
+      \draw ($(server)!0.50!(server_ground)$) -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{d}} ($(server)!0.50!(server_ground)$);
 
-      \draw[->] ($(client)!0.70!(client_ground)$) -- node[above,scale=1,midway]{Interest: Enc\textsubscript{tk}[ID\textsubscript{device} || nonce]} ($(server)!0.70!(server_ground)$);
-      \draw ($(server)!0.75!(server_ground)$) -- node[above,scale=0.8,right]{c = Enc\textsubscript{tk}[sk || nonce]} ($(server)!0.75!(server_ground)$);
-      \draw[<-] ($(client)!0.85!(client_ground)$) -- node[above,scale=1,midway]{Data: Sign(c || mpk)} ($(server)!0.85!(server_ground)$);
-      \draw ($(client)!0.85!(client_ground)$) -- node[above,scale=0.8,left]{verify} ($(client)!0.85!(client_ground)$);
-      \draw ($(client)!0.90!(client_ground)$) -- node[above,scale=0.8,left]{sk = Dec\textsubscript{tk}[c]} ($(client)!0.90!(client_ground)$);
-      \draw ($(client)!0.95!(client_ground)$) -- node[above,scale=0.8,left]{mpk} ($(client)!0.95!(client_ground)$);
+      \draw[->] ($(client)!0.55!(client_ground)$) -- node[above,scale=0.8,midway]{Interest: AES\_Enc\textsubscript{tk}[ID\textsubscript{d} || nonce]} ($(server)!0.55!(server_ground)$);
+      \draw ($(server)!0.60!(server_ground)$) -- node[above,scale=0.8,right]{ID\textsubscript{d}, nonce = AES\_Dec\textsubscript{tk}[ID\textsubscript{d} || nonce]} ($(server)!0.60!(server_ground)$);
+      \draw ($(server)!0.65!(server_ground)$) -- node[above,scale=0.8,right]{sk = Extract(mpk || msk || ID\textsubscript{d})} ($(server)!0.65!(server_ground)$);
+      \draw ($(server)!0.70!(server_ground)$) -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{tk}[sk || nonce]} ($(server)!0.70!(server_ground)$);
+
+      \draw[<-] ($(client)!0.75!(client_ground)$) -- node[above,scale=0.8,midway]{Data: Sign(mpk || sk\textsubscript{pkg} || c)} ($(server)!0.75!(server_ground)$);
+      \draw ($(client)!0.85!(client_ground)$) -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{pkg} || c || s)} ($(client)!0.85!(client_ground)$);
+      \draw ($(client)!0.90!(client_ground)$) -- node[above,scale=0.8,right]{sk, nonce = AES\_Dec\textsubscript{tk}[c]} ($(client)!0.90!(client_ground)$);
+      \draw ($(client)!0.95!(client_ground)$) -- node[above,scale=0.8,right]{mpk} ($(client)!0.95!(client_ground)$);
   \end{tikzpicture}
   \caption{Device Registration. 
-  The first two messages is exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus is protected against any adversaries listening outside the NFC signal range. 
+  The first two messages are exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus are protected against any adversaries outside the range of the NFC signal. 
   At first the Device generates a temporary random key \texttt{tk} and sends this key and its ID to the PKG. 
   The PKG responds with its ID and a admin user have to approve the requesting device.
   When approved, the device sends a Init Interest and receives a response with the secret key corresponding to its ID.
@@ -123,25 +126,15 @@ The device has established a trust with its \gls{PKG} and can verify other devic
 Now that the mobile is authenticated, devices can connect to the mobile through e.g. \gls{NFC} for initialization.
 This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device can join the \gls{PKG}s trust domain.
 
-\todo{prove secureness of initialization protocol}
+\subsubsection{Security Analysis}
 
+\textit{Authenticity}.
 
-% \begin{figure}[ht]
-%   \centering
-%   \includegraphics[width=1\textwidth]{init_ibe_2.png}
-%   \caption{Initialization IBE through authorized device}
-%   \label{fig:init_ibe_2}
-% \end{figure}
+\textit{Integrity}.
 
-% \begin{lstlisting}[language=BASH, caption={Initialization}, label={lst:ibe-initialization}]
-% pkg = new PublicKeyGenerator;
-% for device in {devices}
-% do
-% 	device -> connect to pkg;
-% 	pkg -> verify device then issue secret key;
-% 	device -> subscribe \gls{name} Sync and Public Key
-% done
-% \end{lstlisting}
+\textit{Confidentiality}. Key and data confidentiality.
+
+\textit{Replay}.
 
 \subsection{Deployment Phase}\label{data_pull}
 The goal for this protocol is to achieve a secure one-round \gls{data} pull with authorization and integrity.
@@ -162,8 +155,8 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
   \centering
   \begin{tikzpicture}[node distance=4.5cm,auto,>=stealth']
       \node[] (server) {PKG};
-      \node[left = of server] (client_1) {Mobile};
-      \node[left = of client_1] (client_0) {Device};
+      \node[left = of server] (client_1) {Device};
+      \node[left = of client_1] (client_0) {Mobile};
       \node[below of=server, node distance=8cm] (server_ground) {};
       \node[below of=client_0, node distance=8cm] (client_0_ground) {};
       \node[below of=client_1, node distance=8cm] (client_1_ground) {};
@@ -173,49 +166,58 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
       \draw (client_0) -- (client_0_ground);
       \draw (client_1) -- (client_1_ground);
       
-      \draw ($(client_0)!0.15!(client_0_ground)$) 
+      \draw ($(client_0)!0.10!(client_0_ground)$) 
       -- node[above,scale=0.8,right]{(ID\textsubscript{m}, sk\textsubscript{m}, mpk)} 
-      ($(client_0)!0.15!(client_0_ground)$);
-      \draw ($(client_1)!0.15!(client_1_ground)$) 
+      ($(client_0)!0.10!(client_0_ground)$);
+      \draw ($(client_1)!0.10!(client_1_ground)$) 
       -- node[above,scale=0.8,right]{(ID\textsubscript{d}, sk\textsubscript{d}, mpk)} 
-      ($(client_1)!0.15!(client_1_ground)$);
-      \draw ($(server)!0.15!(server_ground)$) 
+      ($(client_1)!0.10!(client_1_ground)$);
+      \draw ($(server)!0.10!(server_ground)$) 
       -- node[above,scale=0.8,left]{(msk, mpk)} 
-      ($(server)!0.15!(server_ground)$);
+      ($(server)!0.10!(server_ground)$);
 
 
+      \draw ($(client_0)!0.15!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{msg\textsubscript{1} = (ID\textsubscript{d} || nonce || request)} 
+      ($(client_0)!0.15!(client_0_ground)$);
       \draw[->] ($(client_0)!0.30!(client_0_ground)$) 
-      -- node[above,scale=0.8,midway]{Interest: Sign\textsubscript{ID\textsubscript{m}}(ID\textsubscript{d} || nonce || request)} 
+      -- node[above,scale=0.8,midway]{Interest: Sign(mpk || ID\textsubscript{m} || msg\textsubscript{1})} 
       ($(client_1)!0.30!(client_1_ground)$);
-
-      \draw[<-] ($(client_0)!0.60!(client_0_ground)$) 
-      -- node[above,scale=0.8,midway]{Data: Sign\textsubscript{ID\textsubscript{m}}(e\_cek || c)} 
-      ($(client_1)!0.60!(client_1_ground)$);
-
       \draw ($(client_1)!0.35!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{verify(signature, mpk, ID\textsubscript{m})} 
+      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{m} || msg\textsubscript{1} || sign)} 
       ($(client_1)!0.35!(client_1_ground)$);
       \draw ($(client_1)!0.40!(client_1_ground)$) 
       -- node[above,scale=0.8,right]{AccesControl(ID\textsubscript{m}, request)} 
       ($(client_1)!0.40!(client_1_ground)$);
       \draw ($(client_1)!0.45!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{e\_cek = IBEnc\textsubscript{sk\textsubscript{d}}(cek || mpk)} 
+      -- node[above,scale=0.8,right]{c\_cek = Encrypt(mpk || ID\textsubscript{d} || cek)} 
       ($(client_1)!0.45!(client_1_ground)$);
       \draw ($(client_1)!0.50!(client_1_ground)$) 
       -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{cek}(data || nonce)} 
       ($(client_1)!0.50!(client_1_ground)$);
+      \draw ($(client_1)!0.55!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{msg\textsubscript{2} = (c\_cek || c)} 
+      ($(client_1)!0.55!(client_1_ground)$);
+      \draw[<-] ($(client_0)!0.60!(client_0_ground)$) 
+      -- node[above,scale=0.8,midway]{Data: Sign(mpk || ID\textsubscript{m} || msg\textsubscript{2})} 
+      ($(client_1)!0.60!(client_1_ground)$);
 
       \draw ($(client_0)!0.70!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{verify(signature, mpk, ID\textsubscript{d}, sha1(e\_cek || c))} 
+      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{d} || msg\textsubscript{2} || sign)} 
       ($(client_0)!0.70!(client_0_ground)$);
       \draw ($(client_0)!0.75!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{cek = IBDec\textsubscript{ID\textsubscript{d}}(e\_cek || mpk)}
+      -- node[above,scale=0.8,right]{cek = Decrypt(mpk || sk\textsubscript{d} || c\_cek)}
       ($(client_0)!0.75!(client_0_ground)$);
       \draw ($(client_0)!0.80!(client_0_ground)$) 
       -- node[above,scale=0.8,right]{data, nonce = AES\_Dec\textsubscript{cek}(c)} 
       ($(client_0)!0.80!(client_0_ground)$);
   \end{tikzpicture}
-  \caption{Data pull under deployment.}
+  \caption{Data pull under deployment. 
+  The mobile sends a Sensor Interest to the device. 
+  The Interest is signed with the mobile's SK and verified at the device. 
+  The device checks whether the mobile has a valid capability for the requested resource and encrypts the data if granted.
+  The Data response is signed with the device's SK.
+  The mobile receives the data after decryption of the content encryption key (cek) and the cipher (c).}
   \label{fig:data_pull_ibe}
 \end{figure}
 
@@ -226,7 +228,15 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
 %   \label{fig:data_pull_ibe}
 % \end{figure}
 
-\todo{prove secureness of data pull protocol}
+\subsubsection{Security Analysis}
+
+\textit{Authenticity}.
+
+\textit{Integrity}.
+
+\textit{Confidentiality}. Key and data confidentiality.
+
+\textit{Replay}.
 
 \subsection{Key Distribution using File Synchronization Module}
 
