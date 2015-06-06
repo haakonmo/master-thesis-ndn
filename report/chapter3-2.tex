@@ -48,8 +48,10 @@ Also there is the concept of human-computer authentication~\cite{DBLP:journals/i
 This authentication method uses a shared secret before authentication. 
 
 \subsection{System Initialization Phase}
+\todo{refactor section}
 
 \subsection{Device Registration Phase}\label{init}
+\todo{refactor section}
 The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
 For the protocol to be secure, there are several issues that need to be addressed. 
 The response message containing the secret key has to be 1) encrypted. 
@@ -83,36 +85,99 @@ The device has established a trust with its \gls{PKG} and can verify other devic
   \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
       \node[] (server) {pkg};
       \node[left = of server] (client) {device};
+      \node[below of=server, node distance=4cm] (server_ground) {};
+      \node[below of=client, node distance=4cm] (client_ground) {};
+      %
+      \draw (client) -- (client_ground);
+      \draw (server) -- (server_ground);
+      
+      \draw ($(client)!0.15!(client_ground)$) 
+      -- node[above,scale=0.8,right]{ID\textsubscript{d}, tk} 
+      ($(client)!0.15!(client_ground)$);
+      \draw ($(server)!0.15!(server_ground)$) 
+      -- node[above,scale=0.8,right]{(msk, mpk), (ID\textsubscript{pkg}, sk\textsubscript{pkg})} 
+      ($(server)!0.15!(server_ground)$);
+      
+      \draw[->] ($(client)!0.45!(client_ground)$) 
+      -- node[above,scale=0.8,midway]{ID\textsubscript{d} || tk} 
+      ($(server)!0.45!(server_ground)$);
+      \draw[<-] ($(client)!0.65!(client_ground)$) 
+      -- node[above,scale=0.8,midway]{ID\textsubscript{pkg} || mpk} 
+      ($(server)!0.65!(server_ground)$);
+      \draw ($(server)!0.80!(server_ground)$) 
+      -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{d}} 
+      ($(server)!0.80!(server_ground)$);
+  \end{tikzpicture}
+  \caption{Device Registration, phase 1.
+  The messages are exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus are protected against any adversaries outside the range of the NFC signal (\textasciitilde{1} meter).
+  At first the Device generates a temporary random key \texttt{tk} and sends this key and its \texttt{ID\textsubscript{d}} to the PKG. 
+  The PKG responds with its \texttt{ID\textsubscript{PKG}} and finally an admin user have to approve the requesting device. 
+  }
+  \label{fig:init_ibe_1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
+      \node[] (server) {pkg};
+      \node[left = of server] (client) {device};
       \node[below of=server, node distance=9cm] (server_ground) {};
       \node[below of=client, node distance=9cm] (client_ground) {};
       %
       \draw (client) -- (client_ground);
       \draw (server) -- (server_ground);
-      
-      \draw ($(client)!0.10!(client_ground)$) -- node[above,scale=0.8,right]{ID\textsubscript{d}, tk} ($(client)!0.10!(client_ground)$);
-      \draw ($(server)!0.10!(server_ground)$) -- node[above,scale=0.8,right]{(msk, mpk), (ID\textsubscript{pkg}, sk\textsubscript{pkg})} ($(server)!0.10!(server_ground)$);
-      
-      \draw[->] ($(client)!0.25!(client_ground)$) -- node[above,scale=0.8,midway]{ID\textsubscript{d} || tk} ($(server)!0.25!(server_ground)$);
-      \draw[<-] ($(client)!0.35!(client_ground)$) -- node[above,scale=0.8,midway]{ID\textsubscript{pkg} || mpk} ($(server)!0.35!(server_ground)$);
-      \draw ($(server)!0.50!(server_ground)$) -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{d}} ($(server)!0.50!(server_ground)$);
 
-      \draw[->] ($(client)!0.55!(client_ground)$) -- node[above,scale=0.8,midway]{Interest: AES\_Enc\textsubscript{tk}[ID\textsubscript{d} || nonce]} ($(server)!0.55!(server_ground)$);
-      \draw ($(server)!0.60!(server_ground)$) -- node[above,scale=0.8,right]{ID\textsubscript{d}, nonce = AES\_Dec\textsubscript{tk}[ID\textsubscript{d} || nonce]} ($(server)!0.60!(server_ground)$);
-      \draw ($(server)!0.65!(server_ground)$) -- node[above,scale=0.8,right]{sk = Extract(mpk || msk || ID\textsubscript{d})} ($(server)!0.65!(server_ground)$);
-      \draw ($(server)!0.70!(server_ground)$) -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{tk}[sk || nonce]} ($(server)!0.70!(server_ground)$);
+      \draw ($(client)!0.15!(client_ground)$) 
+      -- node[above,scale=0.8,right]{ID\textsubscript{d}, tk} 
+      ($(client)!0.15!(client_ground)$);
+      \draw ($(server)!0.15!(server_ground)$) 
+      -- node[above,scale=0.8,right]{(msk, mpk), (ID\textsubscript{pkg}, sk\textsubscript{pkg})} 
+      ($(server)!0.15!(server_ground)$);
 
-      \draw[<-] ($(client)!0.75!(client_ground)$) -- node[above,scale=0.8,midway]{Data: Sign(mpk || sk\textsubscript{pkg} || c)} ($(server)!0.75!(server_ground)$);
-      \draw ($(client)!0.85!(client_ground)$) -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{pkg} || c || s)} ($(client)!0.85!(client_ground)$);
-      \draw ($(client)!0.90!(client_ground)$) -- node[above,scale=0.8,right]{sk, nonce = AES\_Dec\textsubscript{tk}[c]} ($(client)!0.90!(client_ground)$);
-      \draw ($(client)!0.95!(client_ground)$) -- node[above,scale=0.8,right]{mpk} ($(client)!0.95!(client_ground)$);
+      \draw ($(client)!0.20!(client_ground)$) 
+      -- node[above,scale=0.8,right]{c\textsubscript{1} = AES\_Enc\textsubscript{tk}[ID\textsubscript{d} || n] } 
+      ($(client)!0.20!(client_ground)$);
+      \draw[->] ($(client)!0.35!(client_ground)$) 
+      -- node[above,scale=0.8,midway]{Interest: c\textsubscript{1}} 
+      ($(server)!0.35!(server_ground)$);
+      \draw ($(server)!0.40!(server_ground)$) 
+      -- node[above,scale=0.8,right]{ID\textsubscript{\~{d}}, \~{n} = AES\_Dec\textsubscript{tk}[\~{c}\textsubscript{1}] } 
+      ($(server)!0.40!(server_ground)$);
+      \draw ($(server)!0.45!(server_ground)$) 
+      -- node[above,scale=0.8,right]{AccessControl(ID\textsubscript{\~{d}}) } 
+      ($(server)!0.45!(server_ground)$);
+      \draw ($(server)!0.50!(server_ground)$) 
+      -- node[above,scale=0.8,right]{sk = Extract(mpk || msk || ID\textsubscript{\~{d}}) } 
+      ($(server)!0.50!(server_ground)$);
+      \draw ($(server)!0.55!(server_ground)$) 
+      -- node[above,scale=0.8,right]{c\textsubscript{2} = AES\_Enc\textsubscript{tk}[sk || \~{n}] } 
+      ($(server)!0.55!(server_ground)$);
+      \draw ($(server)!0.60!(server_ground)$) 
+      -- node[above,scale=0.8,right]{s = Sign(mpk || sk\textsubscript{pkg} || c\textsubscript{2}) } 
+      ($(server)!0.60!(server_ground)$);
+      
+
+      \draw[<-] ($(client)!0.65!(client_ground)$) 
+      -- node[above,scale=0.8,midway]{Data: c\textsubscript{2} || s} 
+      ($(server)!0.65!(server_ground)$);
+      \draw ($(client)!0.75!(client_ground)$) 
+      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{pkg} || c\textsubscript{2} || s) } 
+      ($(client)!0.75!(client_ground)$);
+      \draw ($(client)!0.80!(client_ground)$) 
+      -- node[above,scale=0.8,right]{sk, \^{n} = AES\_Dec\textsubscript{tk}[c\textsubscript{2}] } 
+      ($(client)!0.80!(client_ground)$);
+      \draw ($(client)!0.85!(client_ground)$) 
+      -- node[above,scale=0.8,right]{\^{n} == n } 
+      ($(client)!0.85!(client_ground)$);
+      \draw ($(client)!0.90!(client_ground)$) 
+      -- node[above,scale=0.8,right]{mpk} 
+      ($(client)!0.90!(client_ground)$);
   \end{tikzpicture}
-  \caption{Device Registration. 
-  The first two messages are exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus are protected against any adversaries outside the range of the NFC signal. 
-  At first the Device generates a temporary random key \texttt{tk} and sends this key and its ID to the PKG. 
-  The PKG responds with its ID and a admin user have to approve the requesting device.
-  When approved, the device sends a Init Interest and receives a response with the secret key corresponding to its ID.
+  \caption{Device Registration, phase 2. 
+  The device sends a Init Interest encrypting nonce \texttt{n} and its \texttt{ID\textsubscript{d}}.
+  The device receives the response, decrypts the cipher \texttt{c\textsubscript{1}}, checks if the \texttt{ID\textsubscript{d}} is approved, extracts the secret key corresponding to \texttt{ID\textsubscript{d}}, encrypts the secret key and finally signs the Data.
   }
-  \label{fig:init_ibe_1}
+  \label{fig:init_ibe_2}
 \end{figure}
 
 
@@ -127,19 +192,37 @@ Now that the mobile is authenticated, devices can connect to the mobile through 
 This results in a rendezvous authentication between the device and the mobile, and if the mobile is given the authorities to perform initialization (\autoref{access_control}), the new device can join the \gls{PKG}s trust domain.
 
 \subsubsection{Security Analysis}
-Security analysis code in~\autoref{apx:scyther-analysis-dr}
+It is important that the protocol possesses privacy, availability and control properties. 
+I shortly present a formal security analysis by modeling the protocol in \gls{spdl} and verifying certain claims through Scyther~\cite{DBLP:conf/cav/Cremers08}.
+After that, an informal discussion of the security in the protocol will be presented.
+
+\textit{Scyther}.
+The analysis proves that the protocol is confidential, replay and injection resistant, and possesses integrity and authenticity.
+All claims made (i.e. \texttt{alive}, \texttt{secret}, \texttt{weakagree}, \texttt{niagree}, \texttt{nisynch}) shows no attacks in Scyther. 
+\todo{mapping} Mapping of the code and~\autoref{fig:init_ibe_2}.
+The \gls{spdl} code of the protocol can be reviewed in~\autoref{apx:scyther-analysis-dr}.
 
 \textit{Authenticity}.
+The protocol holds the required authenticity and integrity. 
+The pre-shared temporary random key \texttt{tk} is shared in an assumed secure manner, thus appending an encrypted message to the Init Interest, is used as an authentication for the \gls{PKG}.
+Thus the encryption, with the \texttt{tk} as key, protects against \gls{MITM} attacks.
+The response \gls{data} is hashed and signed with the \gls{PKG}s \gls{SK} which provides authenticity and integrity for the requesting device.
+The signature can easily be verified, and since an adversary do not obtain a polynomial time algorithm that can forge the \gls{SK} the device can be sure that the message is signed by the corresponding ID, which is the ID\textsubscript{PKG} received in the device registration phase 1, seen in~\autoref{fig:init_ibe_1}.
+Thus the signature protects against \gls{MITM} attacks.
 
-\textit{Integrity}.
-
-\textit{Confidentiality}. Key and data confidentiality.
+\textit{Confidentiality}. 
+The \gls{SK} will be encrypted with the pre-shared temporary random key \texttt{tk}, and thus the confidentiality is preserved.
+An adversary will only be able to know the \gls{MPK}, cipher texts, signatures and both IDs, which is not required to be confidential and not sufficient to compute the \gls{SK} that is extracted. 
+The adversary do not obtain a polynomial time algorithm that can compute the \gls{SK} from the known parameters.
+Hence an adversary have to obtain a algorithm to compute the secret keys, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
 
 \textit{Replay}.
+Since the adversary cannot compute \texttt{tk} nor forge the signature, it cannot send \gls{interest} nor \gls{data} that is captured at any arbitrary point. 
+Devices keep track of the nonce corresponding to a data pull, hence a replay with will be detected and thrown away.
 
 \subsection{Deployment Phase}\label{data_pull}
-The goal for this protocol is to achieve a secure one-round \gls{data} pull with authorization and integrity.
-For the protocol to work and the \gls{data} pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
+The goal for this protocol is to achieve a secure one-round data pull with authorization and integrity.
+For the protocol to work and the data pull to be successful, 1) both devices has to belong to the same trust domain (i.e. has initialized with the same \gls{PKG}) and 2) the requester has to have granted access rights for the resource requested.
 
 As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and is ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
@@ -179,46 +262,55 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
 
 
       \draw ($(client_0)!0.15!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{msg\textsubscript{1} = (ID\textsubscript{d} || nonce || request)} 
+      -- node[above,scale=0.8,right]{m\textsubscript{1} = (ID\textsubscript{d} || n || request)} 
       ($(client_0)!0.15!(client_0_ground)$);
-      \draw[->] ($(client_0)!0.30!(client_0_ground)$) 
-      -- node[above,scale=0.8,midway]{Interest: Sign(mpk || ID\textsubscript{m} || msg\textsubscript{1})} 
-      ($(client_1)!0.30!(client_1_ground)$);
-      \draw ($(client_1)!0.35!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{m} || msg\textsubscript{1} || sign)} 
+      \draw ($(client_0)!0.20!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{s\textsubscript{1} = Sign(mpk || sk\textsubscript{m} || c\textsubscript{1})} 
+      ($(client_0)!0.20!(client_0_ground)$);
+      \draw[->] ($(client_0)!0.35!(client_0_ground)$) 
+      -- node[above,scale=0.8,midway]{Interest: m\textsubscript{1} || s\textsubscript{1}} 
       ($(client_1)!0.35!(client_1_ground)$);
       \draw ($(client_1)!0.40!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{AccesControl(ID\textsubscript{m}, request)} 
+      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{m} || m\textsubscript{1} || sign)} 
       ($(client_1)!0.40!(client_1_ground)$);
       \draw ($(client_1)!0.45!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{c\_cek = Encrypt(mpk || ID\textsubscript{d} || cek)} 
+      -- node[above,scale=0.8,right]{AccesControl(ID\textsubscript{m}, request)} 
       ($(client_1)!0.45!(client_1_ground)$);
       \draw ($(client_1)!0.50!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{cek}(data || nonce)} 
+      -- node[above,scale=0.8,right]{c\_cek = Encrypt(mpk || ID\textsubscript{d} || cek)} 
       ($(client_1)!0.50!(client_1_ground)$);
       \draw ($(client_1)!0.55!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{msg\textsubscript{2} = (c\_cek || c)} 
+      -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{cek}(data || \~{n})} 
       ($(client_1)!0.55!(client_1_ground)$);
-      \draw[<-] ($(client_0)!0.60!(client_0_ground)$) 
-      -- node[above,scale=0.8,midway]{Data: Sign(mpk || ID\textsubscript{m} || msg\textsubscript{2})} 
+      \draw ($(client_1)!0.60!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{c\textsubscript{2} = (c\_cek || c)} 
       ($(client_1)!0.60!(client_1_ground)$);
+      \draw ($(client_1)!0.65!(client_1_ground)$) 
+      -- node[above,scale=0.8,right]{s\textsubscript{2} = Sign(mpk || sk\textsubscript{d} || c\textsubscript{2})} 
+      ($(client_1)!0.65!(client_1_ground)$);
+      \draw[<-] ($(client_0)!0.70!(client_0_ground)$) 
+      -- node[above,scale=0.8,midway]{Data: c\textsubscript{2} || s\textsubscript{2}} 
+      ($(client_1)!0.70!(client_1_ground)$);
 
-      \draw ($(client_0)!0.70!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{d} || msg\textsubscript{2} || sign)} 
-      ($(client_0)!0.70!(client_0_ground)$);
-      \draw ($(client_0)!0.75!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{cek = Decrypt(mpk || sk\textsubscript{d} || c\_cek)}
-      ($(client_0)!0.75!(client_0_ground)$);
       \draw ($(client_0)!0.80!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{data, nonce = AES\_Dec\textsubscript{cek}(c)} 
+      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{d} || c\textsubscript{2} || sign)} 
       ($(client_0)!0.80!(client_0_ground)$);
+      \draw ($(client_0)!0.85!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{cek = Decrypt(mpk || ID\textsubscript{m} || c\_cek)}
+      ($(client_0)!0.85!(client_0_ground)$);
+      \draw ($(client_0)!0.90!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{data, \^{n} = AES\_Dec\textsubscript{cek}(c)} 
+      ($(client_0)!0.90!(client_0_ground)$);
+      \draw ($(client_0)!0.95!(client_0_ground)$) 
+      -- node[above,scale=0.8,right]{\^{n} == n} 
+      ($(client_0)!0.95!(client_0_ground)$);
   \end{tikzpicture}
   \caption{Data pull under deployment. 
-  The mobile sends a Sensor Interest to the device. 
-  The Interest is signed with the mobile's SK and verified at the device. 
+  The mobile sends a Sensor Interest to the device appending the request for a resource and a nonce \texttt{n}. 
+  The Interest is signed with the mobile's secret key \texttt{sk\textsubscript{m}} and verified by the device. 
   The device checks whether the mobile has a valid capability for the requested resource and encrypts the data if granted.
-  The Data response is signed with the device's SK.
-  The mobile receives the data after decryption of the content encryption key (cek) and the cipher (c).}
+  The Data response is signed with the device's secret key \texttt{sk\textsubscript{d}}.
+  The mobile decrypts of the content encryption key \texttt{cek} and the cipher \texttt{c}, checks whether the received nonce \texttt{\^{n}} is equal to \texttt{n} and finally accepts the data as correct.}
   \label{fig:data_pull_ibe}
 \end{figure}
 
@@ -230,22 +322,34 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
 % \end{figure}
 
 \subsubsection{Security Analysis}
-Security analysis code in~\autoref{apx:scyther-analysis-dp}. 
-Below an informal discussion of the protocol is presented.
+It is important that the protocol possesses privacy, availability and control properties. 
+I shortly present a formal security analysis by modeling the protocol in \gls{spdl} and verifying certain claims through Scyther.
+After that, an informal discussion of the security in the protocol will be presented.
+
+\textit{Scyther}.
+The analysis proves that the protocol is confidential, replay and injection resistant, and possesses integrity and authenticity.
+All claims made (i.e. \texttt{alive}, \texttt{secret}, \texttt{weakagree}, \texttt{niagree}, \texttt{nisynch}) shows no attacks in Scyther. 
+\todo{mapping} Mapping of the code and~\autoref{fig:data_pull_ibe}.
+The \gls{spdl} code of the protocol can be reviewed in~\autoref{apx:scyther-analysis-dp}.
 
 \textit{Authenticity}.
-Holds the requirement ..
-How ..
-Adversary cannot sign ..
-Protects against ..
+The protocol holds the required authenticity and integrity. 
+The message is hashed and signed with the senders \gls{SK} which provides authenticity and integrity.
+The signature can easily be verified by the receiver, and since an adversary do not obtain a polynomial time algorithm that can forge the \gls{SK} one can be sure that the message is signed by the corresponding ID.
+Thus the signature protects against \gls{MITM} attacks.
 
-\textit{Integrity}.
-
-\textit{Confidentiality}. Key and data confidentiality.
-What is available to the adversary ..
-
+\textit{Confidentiality}. 
+All \gls{data} that flows through the \gls{HSS} can be encrypted if necessary. 
+When a resource is requested, the \gls{publisher} will do an access control to decide whether the ID\textsubscript{requester} has the right capabilities. 
+The \gls{CEK} will be asymmetrically encrypted, and the resource data will be symmetrically encrypted, thus both key and data is confidential and only available to whoever has the corresponding \gls{SK} to the ID\textsubscript{requester}.
+An adversary will only be able to know the \gls{MPK}, nonce, request, cipher and both IDs, which is not required to be confidential and not sufficient to compute the resource data. 
+The adversary do not obtain a polynomial time algorithm that can compute the resource data from the known parameters.
+Hence an adversary have to obtain a algorithm to compute the secret keys, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
 
 \textit{Replay}.
+Since the adversary cannot forge the signature, it cannot send \gls{interest} nor \gls{data} that is captured at any arbitrary point. 
+This is due to the nonce presence in all packets. 
+Devices keep track of the nonce corresponding to a data pull, hence a replay with will be detected and thrown away.
 
 \subsection{Key Distribution using File Synchronization Module}
 
@@ -256,10 +360,11 @@ The \gls{PKG} will be the distributor in this synchronization and each device wi
 
 
 \section{Security Analysis}
+\todo{refactor section}
 In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
 
 \subsection{Threat Model}
-Threats that I find relevant for the \gls{HSS} can be catigorized into three main categories: threats to privacy, threats to availability and threats to control.
+Threats that I find relevant for the \gls{HSS} can be categorized into three main categories: threats to privacy, threats to availability and threats to control.
 I assume the following threat model:
 \begin{enumerate}
   \item An adversary might try to eavesdrop information (privacy).

@@ -87,6 +87,7 @@ A library that makes it possible to watch files in OS X, Linux or Windows, is Wa
 The implementation is illustrated in the class FileWatch in~\autoref{fig:code-topology}.
 
 \section{Health Sensor System - Implementation}
+\todo{refactor section so it corresponds to the security analysis}
 The \gls{HSS} is a python application that runs over \gls{NDN}.
 Application flow explained in~\autoref{sensor-application}.
 The implementation does not deal with sensor \gls{data} retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
@@ -273,8 +274,8 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
   IBS Verify                                  & Waters          & 7.58 ms         & 2.66 ms     & 4.32 ms     \\ %\hline
   Encrypting SSK                              & AES             & 0.06 ms         & 0.02 ms     & 0.04 ms     \\ %\hline
   RSA (1024-bit) key pair generation          & RSA             & 254.27 ms       & 119.34 ms   & 165.99 ms     \\ %\hline
-  RSA Encryption                              & RSA             & 14.80 ms        & 4.40 ms     & 6.52 ms     \\ %\hline
-  RSA Decryption                              & RSA             & 14.72 ms        & 4.45 ms     & 6.49 ms     \\ %\hline
+  RSA Encryption (40 bytes)                   & RSA             & 14.80 ms        & 4.40 ms     & 6.52 ms     \\ %\hline
+  RSA Decryption (40 bytes)                   & RSA             & 14.72 ms        & 4.45 ms     & 6.49 ms     \\ %\hline
   RSA Sign                                    & RSA             & 16.15 ms        & 4.59 ms     & 6.69 ms     \\ %\hline
   RSA Verify                                  & RSA             & 15.72 ms        & 4.53 ms     & 6.74 ms     \\ %\hline
   %ECDSA key pair generation                   & ECDSA           & 0.57 ms         & 0.20 ms     & 0.32 ms     \\ %\hline
@@ -288,6 +289,7 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 
 The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
 The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
+\todo{re-run?}
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline

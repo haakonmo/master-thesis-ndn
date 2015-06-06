@@ -114,6 +114,8 @@ def measure(function):
 
 def test():
     global number
+    global cek
+    global data
     ibe = Ibe()
     ibs = Ibs()
 
@@ -239,6 +241,8 @@ def decrypt(key, cipher):
 
 def rsa():
     global number
+    global cek
+    global data
     rsa = RSA_Enc()
 
     results = 0.0
@@ -250,7 +254,7 @@ def rsa():
     mean = results / number
     logging.info("RSA key generation time: " + str(mean))
 
-    msg = b'This is a test'
+    msg = str(extractor(cek))
 
     results = 0.0
     for i in range (0, number):
@@ -275,7 +279,7 @@ def rsa():
     decrypted_msg = rsa.decrypt(public_key, secret_key, cipher_text)
     decrypted_msg == msg
 
-    msg = b'This is a test message.'
+    msg = str(data)
     rsa = RSA_Sig()
     (public_key, secret_key) = rsa.keygen(1024)
 
