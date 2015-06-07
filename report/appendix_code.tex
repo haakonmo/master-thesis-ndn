@@ -11,11 +11,49 @@
     }
 
 \section{Scyther Security Analysis of Device Registration}\label{apx:scyther-analysis-dr}
+To better understand the code,~\autoref{tbl:mapping_code} is presents mapping of the~\autoref{fig:init_ibe_2} to the code.
+
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Figure      				& SPDL Code     			& Description 				\\ \hline
+  ID\textsubscript{d}  		& D   						& Identity of the device 	\\ %\hline
+  ID\textsubscript{PKG}   	& PKG      					& Identity of the PKG 		\\ %\hline
+  n      					& R            				& Random nonce 				\\ %\hline
+  sk      					& SK           				& Secret key to an identity	\\ %\hline
+  c\textsubscript{1} = AES\_Enc\textsubscript{tk}[ID\textsubscript{d} || n]  & c1 = \{ D, R \}k(PKG,D)   & AES encrypted content		\\ %\hline
+  c\textsubscript{2} = AES\_Enc\textsubscript{tk}[sk || \~{n}]     	& c2 = \{ SK, R \}k(PKG,D)	& AES encrypted content 	\\ %\hline
+  s = Sign(mpk || sk\textsubscript{pkg} || c\textsubscript{2})      & s = \{ SHA1(c2) \}sk(PKG)   & Signature				\\ %\hline
+  \end{tabular}
+  \caption{Mapping of the~\autoref{fig:init_ibe_2} and the \gls{spdl} code.}
+  \label{tbl:mapping_code}
+\end{table}
+
 \begin{lstinputlisting}
 [language=Python]{../src/device_registration.spdl}
 \end{lstinputlisting}
 
+\clearpage
 \section{Scyther Security Analysis of Data Pull}\label{apx:scyther-analysis-dp}
+To better understand the code,~\autoref{tbl:mapping_code_data} is presents mapping of the~\autoref{fig:data_pull_ibe} to the code.
+
+\begin{table}[h]
+  \begin{tabular}{lll}
+  Figure      				& SPDL Code     			& Description 				\\ \hline
+  ID\textsubscript{d}  		& D   						& Identity of the device 	\\ %\hline
+  ID\textsubscript{m}   	& M      					& Identity of the mobile	\\ %\hline
+  n      					& R            				& Random nonce 				\\ %\hline
+  sk      					& SK           				& Secret key to an identity	\\ %\hline
+  c\_cek = Encrypt(mpk || ID\textsubscript{d} || cek)	& ccek = \{ cek \}pk(D) 		& IBEncrypted CEK 	\\
+  c = AES\_Enc\textsubscript{cek}(data || \~{n}) 		& c = \{ data , R \}k(M,D) 	& AES encrypted content 	\\
+  m\textsubscript{1} = (ID\textsubscript{d} || n || request)  & m1 = (M, D, R)   	& Message		\\ %\hline
+  c\textsubscript{2} = (c\_cek || c)     	& c2 = (M, c, ccek)						& Message 	\\ %\hline
+  s\textsubscript{1} = Sign(mpk || sk\textsubscript{m} || c\textsubscript{1})      	& s1 = { SHA1(m1) }sk(M)   & Signature				\\ %\hline
+  s\textsubscript{2} = Sign(mpk || sk\textsubscript{d} || c\textsubscript{2}      	& s2 = { SHA1(c2) }sk(D)   & Signature				\\ %\hline
+  \end{tabular}
+  \caption{Mapping of the~\autoref{fig:init_ibe_2} and the \gls{spdl} code.}
+  \label{tbl:mapping_code_data}
+\end{table}
+
 \begin{lstinputlisting}
 [language=Python]{../src/data_pull.spdl}
 \end{lstinputlisting}

@@ -49,38 +49,37 @@ This authentication method uses a shared secret before authentication.
 
 \subsection{System Initialization Phase}
 \todo{refactor section}
-
-\subsection{Device Registration Phase}\label{init}
-\todo{refactor section}
-The goal for the initialization protocol is to achieve a secure one-round secret key exchange.
-For the protocol to be secure, there are several issues that need to be addressed. 
-The response message containing the secret key has to be 1) encrypted. 
-This can be achieved by using asymmetric encryption on a \gls{CEK} which is used to do symmetric encryption on the secret key.
-The response message has to be 2) signed by the \gls{PKG} for integrity and authenticity reasons.
-For it to make sense applying 3) a nonce for replay protection, the communication between the device and the \gls{PKG} has to be unique of some kind.
-This implies that the device has to authenticate itself in a way that an adversary cannot do, e.g. a shared secret.
-This secret can for instance be a hardware implemented secret in the device that the user reads (from the package) and authenticates manually at the \gls{PKG} before the initialization.
-% This leads to 4) mutual authentication. 
-
 When The Stig is setting up his \gls{HSS}, first he wants to configure the \gls{PKG}. 
 Any type of computer can play the role of the \gls{PKG} and The Stig has chosen his home server, from now ``the PKG''.
-The \gls{PKG} creates two key pairs that is used to do \gls{IBE} and \gls{IBS}.
+The \gls{PKG} runs the \texttt{Setup()} which creates key pairs that is used to do \gls{IBE} and \gls{IBS}.
 Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
 
-In~\autoref{fig:init_ibe_1} the device plays the role as the mobile. 
-The \gls{ID} of every device is a part of the \gls{name}.
-A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
-To be able to communicate securely under initialization, the device have to create a key pair, \gls{TMPK} and \gls{TMSK}, and then extract a temporary secret key for its \gls{ID}. 
-At first, the device has to act as a key generator for itself to ensure that the \gls{receiver} (i.e. the \gls{PKG}) can encrypt the extracted \gls{SK}.
-The trust between the device and the real \gls{PKG} is based on the concept explained in~\autoref{rendezvous_authentication}.
-The device sends an \gls{interest} appending the \gls{TMPK} and the \gls{ID} to the \gls{PKG} asking to join the \gls{PKG}s trust domain.
-The \gls{PKG} encrypts a \gls{CEK} with the \gls{TMPK} and the \gls{ID} received from the device. 
-The \gls{PKG} extracts the secret key for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \gls{CEK} to do symmetric \gls{AES} encryption on the secret key. 
-The \gls{data} packet response to the initialization \gls{interest} will contain the identity-based encrypted \gls{CEK}, the symmetric encrypted secret key and the \gls{PKG}s \gls{MPK}.
-To finish the initialization protocol, the device decrypts the \gls{CEK}, throws away the temporary keys, and finally decrypts the secret key.
-The device has established a trust with its \gls{PKG} and can verify other devices in this domain. 
+\subsection{Device Registration Phase}\label{init}
+The goal for the device registration protocol is to achieve a secure one-round secret key exchange.
+For the protocol to be secure, there are several issues that need to be addressed. 
+1) The response message containing the secret key has to be encrypted. 
+This can be achieved by using a pre-shared symmetric key to do encryption on the \gls{SK}.
+2) The response message has to be signed by the \gls{PKG} for integrity and authenticity reasons.
+3) A nonce have to be present for replay protection.
+The pre-shared symmetric key should be a temporary random generated key. 
+Thus the device registration \gls{interest} between the device and the \gls{PKG} can be unique.
+This implies that the device can authenticate itself in a way that an adversary cannot do.
 
-\begin{figure}[H]
+The device registration is divided into two phases. 
+Phase 1 is the sharing of a temporary random key \texttt{tk} used to secure phase 2, illustrated in~\autoref{fig:init_ibe_1}.
+Phase 2 is the \gls{SK} allocation, illustrated in~\autoref{fig:init_ibe_2}.
+
+\textit{Phase 1}.
+Trust is difficult to be established without a rendezvous authentication or any form of pre-established trust chain like e.g. a certificate chain.
+I do not assume that every device is a part of such trust chain before registration, and thus the trust between the device and the \gls{PKG} have to be based on the concept explained in~\autoref{rendezvous_authentication}, with manually inspection of the device and preloading of a temporary random key \texttt{tk}.
+The packet flow of the key preloading, done over e.g. \gls{NFC}, is shown in~\autoref{fig:init_ibe_1}.
+The device generates a temporary random key \texttt{tk} and together with the ID\textsubscript{d}, are loaded onto the \gls{PKG}.
+The device receives the ID\textsubscript{PKG} and the MPK\textsubscript{PKG} in return.
+Since $ID_{PKG} = Name_{PKG}$, the device now what \gls{Name} the \texttt{Init} \gls{interest} should have.
+It can also verify signatures from the \gls{PKG}, with the MPK\textsubscript{PKG}. 
+Before phase 2, an admin user have to approve the requesting ID\textsubscript{d} and the corresponding \texttt{tk}.
+
+\begin{figure}[ht]
   \centering
   \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
       \node[] (server) {pkg};
@@ -116,7 +115,15 @@ The device has established a trust with its \gls{PKG} and can verify other devic
   \label{fig:init_ibe_1}
 \end{figure}
 
-\begin{figure}[H]
+\textit{Phase 2}.
+Now that both the device and the \gls{PKG} possesses the shared secret \texttt{tk} and the device have been approved by an admin user, the phase 2 can begin.
+The device sends an \texttt{Init} \gls{interest} that contains its ID\textsubscript{d} and a nonce which is encrypted with the \texttt{tk}.
+The \gls{PKG} decrypts the message and uses the received ID to extract the \gls{SK} for the device (this will be the key belonging to the \gls{PKG}s trust domain) and uses the \texttt{tk} to do symmetric \gls{AES} encryption on the secret key. 
+The \gls{data} response to the \texttt{Init} \gls{interest} will contain the encrypted \gls{SK}, the nonce and a signature.
+To finish the device registration protocol, the device decrypts the secret key, checks the nonce and verify that the \gls{SK} allocated actually belongs to the earlier received \gls{MPK} and that is corresponds to its \gls{ID}.
+The device has established a trust with its \gls{PKG} and can verify other devices within this trust domain. 
+
+\begin{figure}[ht]
   \centering
   \begin{tikzpicture}[node distance=6cm,auto,>=stealth']
       \node[] (server) {pkg};
@@ -198,8 +205,7 @@ After that, an informal discussion of the security in the protocol will be prese
 
 \textit{Scyther}.
 The analysis proves that the protocol is confidential, replay and injection resistant, and possesses integrity and authenticity.
-All claims made (i.e. \texttt{alive}, \texttt{secret}, \texttt{weakagree}, \texttt{niagree}, \texttt{nisynch}) shows no attacks in Scyther. 
-\todo{mapping} Mapping of the code and~\autoref{fig:init_ibe_2}.
+All claims made (i.e. \texttt{alive}, \texttt{secret}, \texttt{weakagree}, \texttt{niagree}, \texttt{nisynch}) shows no attacks in Scyther.
 The \gls{spdl} code of the protocol can be reviewed in~\autoref{apx:scyther-analysis-dr}.
 
 \textit{Authenticity}.
@@ -227,15 +233,15 @@ For the protocol to work and the data pull to be successful, 1) both devices has
 As illustrated in~\autoref{fig:health-sensor-system}, the device has joined the \gls{PKG}s trust domain and is ready to communicate with other devices.
 This flow is illustrated in~\autoref{fig:data_pull_ibe}.
 First the requester has to express an \gls{interest} to the target device asking for a specific resource. 
-The requester signs the \gls{interest} and appends it to the content \gls{name}.
 The \gls{receiver} checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
 If the \gls{receiver} is authorized, the \gls{receiver} responds with the \gls{data} containing the resource. 
+The requester signs the \gls{interest} and appends it to the content \gls{name}.
 The \gls{receiver} will also do a symmetric encryption on the sensor \gls{data} and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
 This step is only performed if \gls{data} confidentiality is needed. 
 Then the \gls{data} packet is signed and sent.
 Finally the requester receives the \gls{data}, verifies the signature and decrypts the sensor \gls{data}.
 
-\begin{figure}[H]
+\begin{figure}[ht]
   \centering
   \begin{tikzpicture}[node distance=4.5cm,auto,>=stealth']
       \node[] (server) {PKG};
@@ -329,7 +335,6 @@ After that, an informal discussion of the security in the protocol will be prese
 \textit{Scyther}.
 The analysis proves that the protocol is confidential, replay and injection resistant, and possesses integrity and authenticity.
 All claims made (i.e. \texttt{alive}, \texttt{secret}, \texttt{weakagree}, \texttt{niagree}, \texttt{nisynch}) shows no attacks in Scyther. 
-\todo{mapping} Mapping of the code and~\autoref{fig:data_pull_ibe}.
 The \gls{spdl} code of the protocol can be reviewed in~\autoref{apx:scyther-analysis-dp}.
 
 \textit{Authenticity}.
@@ -355,6 +360,8 @@ Devices keep track of the nonce corresponding to a data pull, hence a replay wit
 
 The Stig wants to have full control over the devices that are a part of the trust domain, and be able to remove a device if necessary.
 Each device should have an updated list of all public keys, i.e. every devices' \gls{ID}.
+The \gls{ID} of every device is a part of the \gls{name}.
+A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
 The distribution of this list can easily be achieved by using the \gls{FSM} (\autoref{file-sync} \& \autoref{key-distribution}).
 The \gls{PKG} will be the distributor in this synchronization and each device will be a subscriber.
 

@@ -5,21 +5,24 @@ const pk: Function;
 secret sk: Function;
 inversekeys (pk,sk);
 
-macro ccek =  { cek }pk(D);
-macro c = { data , Rb }k(M,D);
-macro msg = (M, c, ccek);
+macro m1 = (M, D, R);
+macro s1 = { SHA1(m1) }sk(M);
+macro ccek = { cek }pk(D);
+macro c = { data , R }k(M,D);
+macro c2 = ( M, c, ccek);
+macro s2 = { SHA1(c2) }sk(D);
 
 protocol HSSDataPull (M, D) 
 {
 	role M
 	{
-		fresh Rb: Nonce;
+		fresh R: Nonce;
 
-		send_1(M, D,  {  M, D, Rb  }sk(M) );
+		send_1(M, D, m1 , s1 );
 
 		var cek: ContentEncryptionKey;
 		var data: Content;
-		recv_2(D, M,   msg, {  SHA1(msg) }sk(D) );
+		recv_2(D, M, c2, s2 );
 
 		claim_M1(M, Alive);
 		claim_M2(M, Secret, cek);
@@ -31,13 +34,13 @@ protocol HSSDataPull (M, D)
 
 	role D
 	{
-		var Rb: Nonce;
+		var R: Nonce;
 
-		recv_1(M, D,  { M, D, Rb }sk(M) );
+		recv_1(M, D, m1 , s1 );
 		
 		fresh cek: ContentEncryptionKey;
 		fresh data: Content;
-		send_2(D, M,   msg,  {  SHA1(msg) }sk(D) );
+		send_2(D, M, c2, s2 );
 
 		claim_D1(D, Alive);
 		claim_D2(D, Secret, cek);

@@ -5,20 +5,21 @@ const pk: Function;
 secret sk: Function;
 inversekeys (pk,sk);
 
-macro msg =  { SK, Rb }k(PKG,D);
-
+macro c1 =  { D, R }k(PKG,D);
+macro c2 =  { SK, R }k(PKG,D);
+macro s = { SHA1(c2) }sk(PKG);
 protocol HSSDeviceRegisteration (PKG, D) 
 {
 	
 	role PKG 
 	{
-		var Rb: Nonce;
+		var R: Nonce;
 	
-		recv_1(D, PKG,      { D, Rb }k(PKG,D));
+		recv_1(D, PKG,  c1);
 		
 		fresh SK: SecretKey;
 
-		send_2(PKG, D,    msg,  {   SHA1(msg)  }sk(PKG) );
+		send_2(PKG, D, c2 , s );
 
 		claim_PKG1(PKG, Alive);
 		claim_PKG2(PKG, Secret, SK);
@@ -29,13 +30,13 @@ protocol HSSDeviceRegisteration (PKG, D)
 	
 	role D
 	{
-		fresh Rb: Nonce;
+		fresh R: Nonce;
 		
-		send_1(D, PKG,  { D, Rb }k(PKG,D));
+		send_1(D, PKG, c1);
 
 		var SK: SecretKey;
 		
-		recv_2(PKG, D,    msg,  {   SHA1(msg)  }sk(PKG));
+		recv_2(PKG, D, c2 , s );
 
 		claim_D1(D, Alive);
 		claim_D2(D, Secret, SK);

@@ -20,7 +20,7 @@ Or the \gls{MPK} can be appended to the message.
 
 usability 
 
-
+Compared to \gls{PKI} where the recipient have to download the public key certificate to verify the digital signature.
 
 \section{Development Usability in Named Data Networking}
 Once a basic perception of the \gls{NDN} architecture is understood, it is easy to begin developing.
@@ -59,6 +59,9 @@ Preloading secret key, offline mode, yet the initialization protocol should be u
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
 However, this might not be a huge problem in the use cases that is addressed in this thesis, considering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
 
+Example:
+ID size * devices = x bytes 
+
 \section{Sync}
 The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
 One drawback with the key distribution using \gls{FSM} is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
@@ -77,6 +80,8 @@ All applications that relies on some sort of crucial information derived using \
 IBE vs RSA
 
 RTT on protocols
+
+
 
 \section{Other Use Cases}
 The trust model used in the \gls{HSS} can be used in any network where the use of a \gls{TTP} is accepted. 
