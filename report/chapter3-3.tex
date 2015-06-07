@@ -55,42 +55,15 @@ The implementation of the \gls{FSM} does not use \gls{IBS}.
 This is because all packets that are sent is managed by ChronoSync. 
 ChronoSync uses the PyNDN2 KeyChain to sign and verify all \gls{interest} and \gls{data} packets.
 I do however demonstrate that it works perfectly fine to perform both \gls{IBE} and \gls{IBS} over \gls{NDN} in the \gls{HSS} implementation.
-% \subsection{Packet Design}
-% The packet format is designed with Google Protocol Buffers.
-% The code can be reviewed in~\cite[fileSyncBuf.proto]{garseg15}.
-
-% \begin{description}
-%   \item[Init \gls{interest}] - 
-%   The \gls{MPK} as well as the joining nodes Name is added in the KeyLocator. See~\autoref{fig:init-sync-\gls{interest}}.
-%   \item[Sync \gls{interest}] -
-%   ~\autoref{fig:sync-\gls{interest}-\gls{data}}
-%   \item[Sync \gls{data}] - 
-%   ~\autoref{fig:sync-\gls{interest}-\gls{data}}
-% \end{description}
-
-% \begin{figure}[ht]
-%   \centering
-%   \includegraphics[width=1\textwidth]{init-sync-\gls{interest}.png}
-%   \caption{Initialization \gls{interest} for joining a synchronization folder.}
-%   \label{fig:init-sync-\gls{interest}}
-% \end{figure}
-
-% \begin{figure}[ht]
-%   \centering
-%   \includegraphics[width=1\textwidth]{sync-\gls{interest}-\gls{data}.png}
-%   \caption{Sync \gls{interest} and \gls{data}}
-%   \label{fig:sync-\gls{interest}-\gls{data}}
-% \end{figure}
 
 The module triggers synchronization when files that are watched is changed, or when a file is added or removed.
 A library that makes it possible to watch files in OS X, Linux or Windows, is Watchdog~\cite{watchdog}. 
 The implementation is illustrated in the class FileWatch in~\autoref{fig:code-topology}.
 
 \section{Health Sensor System - Implementation}
-\todo{refactor section so it corresponds to the security analysis}
 The \gls{HSS} is a python application that runs over \gls{NDN}.
 Application flow explained in~\autoref{sensor-application}.
-The implementation does not deal with sensor \gls{data} retrieval from actual sensor, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in a local network.
+The implementation does not deal with sensor data retrieval from actual sensors, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in the network.
 The code is divided into several pieces shown in~\autoref{fig:code-topology}.
 
 The Device class~\cite[device.py]{garseg15} implements the role of a device that can both express \gls{interest} and offer \gls{data}.
@@ -110,6 +83,11 @@ IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{
   \caption{Packages and Classes.}
   \label{fig:code-topology}
 \end{figure}
+
+\subsection{Name Structure}
+The \gls{ID} of every device is a part of the \gls{name}.
+A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
+\todo{more..}
 
 \subsection{Access Control}
 In~\autoref{access_control} I present a possible solution for access control.
@@ -160,14 +138,14 @@ The fields are:
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{init_interest-data.png}
-  \caption{Initialization \gls{interest} and \gls{data}}
+  \caption{\texttt{Init} \gls{interest} and \gls{data}}
   \label{fig:init_interest-data}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{sensor_interest-data.png}
-  \caption{Sensor \gls{interest} and \gls{data}}
+  \caption{\texttt{Sensor} \gls{interest} and \gls{data}}
   \label{fig:sensor_interest-data}
 \end{figure}
 
@@ -259,14 +237,14 @@ Naccache suggested that if the prime \gls{p} is 1024-bit, the scheme would provi
 For comparison reasons, the RSA key pair is therefore generated with the size of 1024-bit.
 In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
-\todo{finish table!}
+\todo{finish table! equal length in encryption IBE vs RSA}
 \begin{table}[h]
   \begin{tabular}[c]{lllll}
   Method                                      & Scheme          & C1              & C2          & C3              \\ \hline
   IBE PKG key pair generation                 & Waters09        & 99.65 ms        & 27.09 ms    & 36.08 ms     \\ %\hline
   IBE Secret Key (SK) generation              & Waters09        & 56.14 ms        & 17.86 ms    & 23.27 ms     \\ %\hline
   IBE Encrypting CEK                          & Waters09        & 47.65 ms        & 18.91 ms    & 24.86 ms     \\ %\hline
-  IBE Decrypting CEK                          & Waters09        & 20.70 ms        & - ms        & 12.86 ms      \\ %\hline  
+  IBE Decrypting CEK                          & Waters09        & 20.70 ms        & 9.87 ms     & 12.86 ms      \\ %\hline  
   Encrypting SK                               & AES             & 0.13 ms         & 0.10 ms     & 0.15 ms     \\ %\hline
   IBS PKG key pair generation                 & Waters          & 97.55 ms        & 27.15 ms    & 35.02 ms     \\ %\hline
   IBS Secret Key (SSK) generation             & Waters          & 9.76 ms         & 2.87 ms     & 3.72 ms     \\ %\hline

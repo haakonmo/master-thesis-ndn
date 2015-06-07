@@ -43,16 +43,17 @@ Most cases in \gls{IoT} we have the advantage of identifying devices in a physic
 This means that it is possible to authenticate devices, such as sensors. 
 Typically, this kind of authentication will rely on 1) manually inspection and 2) digital connection, e.g. through \gls{NFC}.
 In the proposed system, I assume that this type of authentication is achieved in a secure manner and do not discuss how this should be done.
-
-Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
-This authentication method uses a shared secret before authentication. 
+Typically this kind of authenticated connection should be used to preload a secret key to devices, establishing authentication in a later phase.
+% Also there is the concept of human-computer authentication~\cite{DBLP:journals/iacr/GilbertRS05, DBLP:conf/crypto/JuelsW05, DBLP:conf/percom/Weis05}.
+% This authentication method uses a shared secret before authentication. 
 
 \subsection{System Initialization Phase}
-\todo{refactor section}
-When The Stig is setting up his \gls{HSS}, first he wants to configure the \gls{PKG}. 
+When The Stig is setting up his \gls{HSS}, first he have to configure the \gls{PKG}. 
 Any type of computer can play the role of the \gls{PKG} and The Stig has chosen his home server, from now ``the PKG''.
+The Stig is now the only admin user in the system, hence he has full control over which device that should be granted access to the trust domain.
 The \gls{PKG} runs the \texttt{Setup()} which creates key pairs that is used to do \gls{IBE} and \gls{IBS}.
-Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''.
+Second, he wants his mobile device, from now ``the mobile'', to be a part of the \gls{PKG}s trust domain, and further add all of the other devices and sensors, from now ``device(s)''. 
+This is done through a device registration phase.
 
 \subsection{Device Registration Phase}\label{init}
 The goal for the device registration protocol is to achieve a secure one-round secret key exchange.
@@ -154,21 +155,21 @@ The device has established a trust with its \gls{PKG} and can verify other devic
       -- node[above,scale=0.8,right]{AccessControl(ID\textsubscript{\~{d}}) } 
       ($(server)!0.45!(server_ground)$);
       \draw ($(server)!0.50!(server_ground)$) 
-      -- node[above,scale=0.8,right]{sk = Extract(mpk || msk || ID\textsubscript{\~{d}}) } 
+      -- node[above,scale=0.8,right]{sk = Extract(mpk, msk, ID\textsubscript{\~{d}}) } 
       ($(server)!0.50!(server_ground)$);
       \draw ($(server)!0.55!(server_ground)$) 
-      -- node[above,scale=0.8,right]{c\textsubscript{2} = AES\_Enc\textsubscript{tk}[sk || \~{n}] } 
+      -- node[above,scale=0.8,right]{c\textsubscript{2} = AES\_Enc\textsubscript{tk}[sk] } 
       ($(server)!0.55!(server_ground)$);
       \draw ($(server)!0.60!(server_ground)$) 
-      -- node[above,scale=0.8,right]{s = Sign(mpk || sk\textsubscript{pkg} || c\textsubscript{2}) } 
+      -- node[above,scale=0.8,right]{s = Sign(mpk, sk\textsubscript{pkg}, (c\textsubscript{2} || \~{n}) ) } 
       ($(server)!0.60!(server_ground)$);
       
 
       \draw[<-] ($(client)!0.65!(client_ground)$) 
-      -- node[above,scale=0.8,midway]{Data: c\textsubscript{2} || s} 
+      -- node[above,scale=0.8,midway]{Data: c\textsubscript{2} || \~{n} || s} 
       ($(server)!0.65!(server_ground)$);
       \draw ($(client)!0.75!(client_ground)$) 
-      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{pkg} || c\textsubscript{2} || s) } 
+      -- node[above,scale=0.8,right]{Verify(mpk, ID\textsubscript{pkg}, c\textsubscript{2}, s) } 
       ($(client)!0.75!(client_ground)$);
       \draw ($(client)!0.80!(client_ground)$) 
       -- node[above,scale=0.8,right]{sk, \^{n} = AES\_Dec\textsubscript{tk}[c\textsubscript{2}] } 
@@ -271,19 +272,19 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
       -- node[above,scale=0.8,right]{m\textsubscript{1} = (ID\textsubscript{d} || n || request)} 
       ($(client_0)!0.15!(client_0_ground)$);
       \draw ($(client_0)!0.20!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{s\textsubscript{1} = Sign(mpk || sk\textsubscript{m} || c\textsubscript{1})} 
+      -- node[above,scale=0.8,right]{s\textsubscript{1} = Sign(mpk, sk\textsubscript{m}, c\textsubscript{1})} 
       ($(client_0)!0.20!(client_0_ground)$);
       \draw[->] ($(client_0)!0.35!(client_0_ground)$) 
       -- node[above,scale=0.8,midway]{Interest: m\textsubscript{1} || s\textsubscript{1}} 
       ($(client_1)!0.35!(client_1_ground)$);
       \draw ($(client_1)!0.40!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{m} || m\textsubscript{1} || sign)} 
+      -- node[above,scale=0.8,right]{Verify(mpk, ID\textsubscript{m}, m\textsubscript{1}, sign)} 
       ($(client_1)!0.40!(client_1_ground)$);
       \draw ($(client_1)!0.45!(client_1_ground)$) 
       -- node[above,scale=0.8,right]{AccesControl(ID\textsubscript{m}, request)} 
       ($(client_1)!0.45!(client_1_ground)$);
       \draw ($(client_1)!0.50!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{c\_cek = Encrypt(mpk || ID\textsubscript{d} || cek)} 
+      -- node[above,scale=0.8,right]{c\_cek = Encrypt(mpk, ID\textsubscript{d}, cek)} 
       ($(client_1)!0.50!(client_1_ground)$);
       \draw ($(client_1)!0.55!(client_1_ground)$) 
       -- node[above,scale=0.8,right]{c = AES\_Enc\textsubscript{cek}(data || \~{n})} 
@@ -292,17 +293,17 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
       -- node[above,scale=0.8,right]{c\textsubscript{2} = (c\_cek || c)} 
       ($(client_1)!0.60!(client_1_ground)$);
       \draw ($(client_1)!0.65!(client_1_ground)$) 
-      -- node[above,scale=0.8,right]{s\textsubscript{2} = Sign(mpk || sk\textsubscript{d} || c\textsubscript{2})} 
+      -- node[above,scale=0.8,right]{s\textsubscript{2} = Sign(mpk, sk\textsubscript{d}, c\textsubscript{2})} 
       ($(client_1)!0.65!(client_1_ground)$);
       \draw[<-] ($(client_0)!0.70!(client_0_ground)$) 
       -- node[above,scale=0.8,midway]{Data: c\textsubscript{2} || s\textsubscript{2}} 
       ($(client_1)!0.70!(client_1_ground)$);
 
       \draw ($(client_0)!0.80!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{Verify(mpk || ID\textsubscript{d} || c\textsubscript{2} || sign)} 
+      -- node[above,scale=0.8,right]{Verify(mpk, ID\textsubscript{d}, c\textsubscript{2}, sign)} 
       ($(client_0)!0.80!(client_0_ground)$);
       \draw ($(client_0)!0.85!(client_0_ground)$) 
-      -- node[above,scale=0.8,right]{cek = Decrypt(mpk || ID\textsubscript{m} || c\_cek)}
+      -- node[above,scale=0.8,right]{cek = Decrypt(mpk, ID\textsubscript{m}, c\_cek)}
       ($(client_0)!0.85!(client_0_ground)$);
       \draw ($(client_0)!0.90!(client_0_ground)$) 
       -- node[above,scale=0.8,right]{data, \^{n} = AES\_Dec\textsubscript{cek}(c)} 
@@ -360,15 +361,13 @@ Devices keep track of the nonce corresponding to a data pull, hence a replay wit
 
 The Stig wants to have full control over the devices that are a part of the trust domain, and be able to remove a device if necessary.
 Each device should have an updated list of all public keys, i.e. every devices' \gls{ID}.
-The \gls{ID} of every device is a part of the \gls{name}.
-A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
 The distribution of this list can easily be achieved by using the \gls{FSM} (\autoref{file-sync} \& \autoref{key-distribution}).
 The \gls{PKG} will be the distributor in this synchronization and each device will be a subscriber.
 
 
-\section{Security Analysis}
-\todo{refactor section}
-In this section the security of the protocols presented in~\autoref{init} and ~\autoref{data_pull} will be proven.
+\section{Informal Security Analysis}
+In this section an informal security analysis of the whole system is presented.
+The assumed threat model will first be presented, along with access control, \gls{CIA}, and trust model.
 
 \subsection{Threat Model}
 Threats that I find relevant for the \gls{HSS} can be categorized into three main categories: threats to privacy, threats to availability and threats to control.
