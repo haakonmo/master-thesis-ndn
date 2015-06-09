@@ -62,15 +62,15 @@ The implementation is illustrated in the class FileWatch in~\autoref{fig:code-to
 
 \section{Health Sensor System - Implementation}
 The \gls{HSS} is a python application that runs over \gls{NDN}.
-Application flow explained in~\autoref{sensor-application}.
-The implementation does not deal with sensor data retrieval from actual sensors, nor deal with sending instructions from devices to each other, but rather focuses on the trust and security protocols between devices in the network.
+Application flow is explained in~\autoref{sensor-application}.
+The implementation does not deal with sensor data retrieval from actual sensors, nor deal with sending instructions from devices to each other, but rather focuses on the trust model and security in protocols between devices in the network.
 The code is divided into several pieces shown in~\autoref{fig:code-topology}.
 
-The Device class~\cite[device.py]{garseg15} implements the role of a device that can both express \gls{interest} and offer \gls{data}.
-
+The Device class~\cite[device.py]{garseg15} implements the role of a device that can express \gls{interest} and offer \gls{data}.
 The PKG class~\cite[publicKeyGenerator.py]{garseg15} implements the role of a \gls{PKG}.
-
+Both classes uses \gls{PyNDN2} and IndetityBasedCryptography. 
 IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{IBE} schemes and one \gls{IBS} scheme. 
+These schemes are listed below:
 \begin{description}
   \item[Waters05]~\cite{DBLP:journals/iacr/Naccache05} that is a variant of Brent Waters \gls{IBE} scheme~\cite{DBLP:journals/iacr/Waters04}, but with smaller key size, hence more practical.
   \item[Waters09]~\cite{DBLP:conf/crypto/Waters09} that is also a fully secure implementation of \gls{IBE} scheme.
@@ -80,13 +80,13 @@ IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{code-topology.png}
-  \caption[Class topology]{Packages and Classes.}
+  \caption[Class topology]{Package and slass topology related to the work done in conjuction to this thesis.}
   \label{fig:code-topology}
 \end{figure}
 
 \subsection{Key Management}
-Not implemented.
-Storing the \gls{SK} in a secure fashion.
+Sufficient key management is not implemented.
+Storing of secret keys should be done in a secure fashion.
 
 \subsection{Name Structure}
 The \gls{ID} of every device is a part of the \gls{name}.
