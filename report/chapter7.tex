@@ -2,22 +2,30 @@
 In this chapter the conclusion of thesis will be presented and the future work will be listed.
 
 \section{Conclusion}
-\gls{NDN} is easy to use for developers once the architecture is understood. 
-
-In this thesis I have developed a Health Sensor System in Python with Identity-Based Cryptography used for signing and verification, encryption and decryption.
+In this thesis I have developed a Health Sensor System in Python with \gls{IBC} used for signing and verification, encryption and decryption.
 The system is built over the new network protocol called Named Data Networking.
-
 I have suggested how a secure system easily can be implemented, achieving confidentiality, integrity and authenticity, as well as trust.
 
-The system is tested to see how the suggested protocols for initialization and data pull performs with \gls{IBC}. 
+The system is tested to see how the suggested protocols for device registration and data pull performed with \gls{IBC}. 
 This work is an attempt to show how applicable \gls{NDN} together with \gls{IBC} are for \gls{IoT}, and to design secure protocols for local device networks.
+
+\gls{NDN} facilitates a lot of concepts that shows to be a huge benefit for todays Internet, and the predicted increase of \gls{IoT}.
+The naming of content and content routing provides usability to \gls{IoT} and \gls{wsn}.
+The concept of \gls{IBC} appears to be highly applicable to \gls{IoT} and \gls{wsn}~\cite{Patil:2012:SWS:2464778}.
+Running \gls{IBC} over \gls{NDN}, makes it even more practical, because of the naming of content concept that \gls{NDN} is built upon. 
+As mentioned it is easier to secure data, relate data to publisher, and authenticate that the publisher is aware of what content it published. 
+I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make applications with security less complex and more practical than using security such as RSA. 
+
+Developing applications on top of \gls{NDN} is easy once a basic perception of the \gls{NDN} architecture is understood.
+The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
 
 \section{Future Work}
 The implementation of the \gls{HSS} does not include integration of the \gls{FSM}, which is a part of the future work.
-The system is not tested on relevant sensors and devices.
+The system is not tested on relevant sensors and devices to measure latency and performance.
 
-An implementation of a full worthy \gls{IBC} solution in \gls{PyNDN2}.
-This include making \gls{IBC} as a part of the PyNDN2 framework, so that developers easily can make use of \gls{IBE} and \gls{IBS}.
+An implementation of a full worthy \gls{IBC} solution in \gls{PyNDN2} is not implemented.
+This implementation should include making \gls{IBC} as a part of the PyNDN2 framework, so that developers easily can make use of \gls{IBE} and \gls{IBS} performing encryption, decryption, signing and verification.
 
-The \gls{IBC} schemes used in the Charm framework does not provide a scheme that implements \gls{IBE} and \gls{IBS} together.
-This should not be a huge task to implement, but it will decrease the initialization round-trip time as well as minimizing the use of several keys, i.e. easier key management, as it is explained how to derive a signature scheme from any \gls{IBE} scheme~\cite[Section 4]{DBLP:conf/crypto/Waters09}.
+The \gls{IBC} schemes used in the Charm framework does not provide a scheme that implements \gls{IBE} and \gls{IBS} together in one scheme.
+This should not be a huge task to implement, but it will decrease the device registration round-trip time as well as minimizing the use of several keys, i.e. easier key management.
+It is explained how to derive a signature scheme from any \gls{IBE} scheme~\cite[Section 4]{DBLP:conf/crypto/Waters09}.
