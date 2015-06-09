@@ -15,35 +15,35 @@ Developing applications on top of \gls{NDN} is easy once a basic perception of t
 The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
 
 The concept of naming \gls{data} introduces more simplicity, but also a new way of application design thinking.
-Addressing is dealt with one place in the architecture compared to an equivalent system over \gls{IP}. 
-Security is easily applied in \gls{NDN}.
- 
+Addressing is dealt with in one place in the architecture compared to an equivalent system over \gls{IP}. 
+A problem with \gls{wsn} in \gls{IP} networks, is that it is a limited number of \gls{IP} addresses (especially in \gls{IPv4}).
+So the global scalability issue arises due to the potentially large number of sensors that could be deployed. 
+With the naming rules in \gls{NDN}, this is not an issue.
+Security is easily applied in \gls{NDN} which is shown to be a huge problem to many systems nowadays.
+
+\todo{more} 
 
 \section{Identity-Based Cryptography in Named Data Networking}
 The concept of \gls{IBC} appears to be highly applicable to \gls{IoT} and \gls{wsn}~\cite{Patil:2012:SWS:2464778}.
 Running \gls{IBC} over \gls{NDN}, makes it even more practical, because of the naming of content concept that \gls{NDN} is built upon. 
 As mentioned it is easier to secure data, relate data to publisher, and authenticate that the publisher is aware of what content it published. 
-I believe that using \gls{IBC} in a \gls{wsn} combined with \gls{NDN} should make applications with security in this setting less complex and more practical than using RSA. 
+I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make applications with security less complex and more practical than using security such as RSA. 
 
 Using \gls{ID} as public key eliminates the binding of ID and certificate. 
-Compared to \gls{PKI} where the recipient have to download the public key certificate to verify the digital signature.
+Compared to ordinary \gls{PKI} where the recipient have to download the public key certificate to verify the digital signature.
 This is practical, less communication overhead to establish connection, lower energy consumption.
-Less keys, IDs have to be known and distributed anyway (IP addresses).
-DNS eliminated.
-Exchanging data between nodes can be done completely without the \gls{PKG} after device registration.
+\gls{IBC} implies less keys involved, IDs of each device have to be known and distributed anyway (IP addresses).
+Also, the mapping done by \gls{DNS} is eliminated, because IP addresses is no longer needed.
+Exchanging data between nodes can be done with cryptography completely without the \gls{PKG} after device registration.
 However, there is issue of having a \gls{TTP}, i.e. the \gls{PKG}.
-Generates all secret keys.
-Single point of failure.
-Only works for networks where users trust the \gls{PKG}. 
+The \gls{PKG} generates all secret keys to every node in its trust domain. 
+This kind of trust model leads to a single point of failure.
+The model will only work for networks where users trust the \gls{PKG} because of the key escrow problem.
+This means that 1) the users do not care if the \gls{PKG} can monitor traffic or 2) they trust that the \gls{PKG} will not monitor traffic.
 In \gls{wsn} this should not be a problem.
 Typically networks that users might reacts to this kind of security structure could be telecommunication and email services. 
 However, there is limited security in these types of network now anyway. 
-Telcos have full control over all data flowing through their servers. 
-Google states that their system is analyzing all content related to a Google user:
-\begin{displayquote}
-``Our automated systems analyse your content (including emails) to provide you personally relevant product features, such as customised search results, tailored advertising, and spam and malware detection. This analysis occurs as the content is sent, received, and when it is stored.''
-~\cite{google_reads_email}
-\end{displayquote}
+Telcos have full control over all data flowing through their servers and email actors such as Google states that their system is analyzing all content related to a Google user, including email~\cite{google_reads_email}.
 The problem is that these actors do not want to make all content opaque for themselves, because they use it for their business. 
 My point being, if this is going to be the case anyway in the future, when the network switches over to \gls{NDN} they could secure their systems with cryptography such as \gls{IBC} to make it more difficult for adversaries to eavesdrop or perform any other form of attacks.
 
@@ -68,24 +68,14 @@ A comparison of \gls{IBC} and other solutions is shown in~\autoref{tbl:ibc-pkc-c
   & Key distribution 	& Number of keys & Key Directory & Digital certificate & Forward encryption & Nonrepudiation \\ \hline
   Symmetric key cryptography & Problematic & $O(n^2)$ & At each node & No & No & No \\ \hline 
   Random key predistribution & Simple & $O(n)$ & At each node & No & No & No \\ \hline
-  PKC & Complex & $O(n)$ & At each node and key center & Yes & No & 3 \\ \hline
+  PKC & Complex & $O(n)$ & At each node and key center & Yes & No & Yes \\ \hline
   IBC & Simple & $N$ & No & No & Yes & Yes \\ \hline
   \end{tabular}
-  \caption{Comparison with PKC and IBC ~\cite[Table 9.6]{Patil:2012:SWS:2464778}.}
+  \caption{Comparison with PKC and IBC~\cite[Table 9.6]{Patil:2012:SWS:2464778}.}
   \label{tbl:ibc-pkc-comparison}
 \end{table}
 
-\section{Health Sensor System}
-The application is not tested on with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.  
-
-Power efficiency
-\todo{more on this}
-
-A problem with \gls{wsn} in \gls{IP} networks, is that it is a limited number of \gls{IP} addresses (especially in \gls{IPv4}).
-So the global scalability issue arises due to the potentially large number of sensors that could be deployed. 
-With the naming rules in \gls{NDN}, this is not a issue.
-
-In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better than regular asymmetric cryptography, RSA. 
+\section{Application}
 
 Encrypting with same symmetric key for each set of \gls{data}, limits the encryption computation for the device if several devices requests the same \gls{data}.
 Using a unique key for each time \gls{data} is requested is more secure and can be used for more sensitive content.
@@ -122,7 +112,12 @@ In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions poss
 All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
 
 \section{Test Results}
+The application is not tested with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.
+However, there is done some research on \gls{ecc} in \gls{wsn}~\cite{DBLP:conf/ipsn/LiuN08, DBLP:conf/ewsn/SzczechowiakOSCD08} and \gls{IBC}s applicability to \gls{wsn}~\cite{DBLP:journals/iacr/OliveiraAMDLD07}.
+
 IBE vs RSA
+In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better on key generation, signing and verification than regular asymmetric cryptography, RSA. 
+However encryption and decryption of \gls{CEK} is not performing better.
 
 RTT on protocols
 

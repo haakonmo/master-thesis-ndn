@@ -23,12 +23,12 @@ He has developed diabetes and he does not want to manually monitor his glucose l
 He has injected a \gls{CGM} to monitor his glucose levels and report to the insulin pump, automatically.
 In addition to his diabetes, he has a heart disease which forces him to monitor his heart rate at any given time. 
 In~\autoref{fig:health-sensor-system} we can see The Stig with all his sensors and devices. 
-The \gls{CGM} reports periodically to the insulin pump, and all sensors reports to The Stig's mobile so that The Stig can watch what is going on.
+The \gls{CGM} reports periodically to the insulin pump, and all sensors reports to The Stigs' mobile so that The Stig can watch what is going on.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{health-sensor-system.png}
-  \caption{Health Sensor System}
+  \caption[Health Sensor System]{Health Sensor System}
   \label{fig:health-sensor-system}
 \end{figure}
 
@@ -108,7 +108,7 @@ Before phase 2, an admin user have to approve the requesting ID\textsubscript{d}
       -- node[above,scale=0.8,right]{Admin manually approves ID\textsubscript{d}} 
       ($(server)!0.80!(server_ground)$);
   \end{tikzpicture}
-  \caption{Device Registration, phase 1.
+  \caption[Device Registration, phase 1]{Device Registration, phase 1.
   The messages are exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus are protected against any adversaries outside the range of the NFC signal (\textasciitilde{1} meter).
   At first the Device generates a temporary random key \texttt{tk} and sends this key and its \texttt{ID\textsubscript{d}} to the PKG. 
   The PKG responds with its \texttt{ID\textsubscript{PKG}} and finally an admin user have to approve the requesting device. 
@@ -181,7 +181,7 @@ The device has established a trust with its \gls{PKG} and can verify other devic
       -- node[above,scale=0.8,right]{mpk} 
       ($(client)!0.90!(client_ground)$);
   \end{tikzpicture}
-  \caption{Device Registration, phase 2. 
+  \caption[Device Registration, phase 2]{Device Registration, phase 2. 
   The device sends a Init Interest encrypting nonce \texttt{n} and its \texttt{ID\textsubscript{d}}.
   The device receives the response, decrypts the cipher \texttt{c\textsubscript{1}}, checks if the \texttt{ID\textsubscript{d}} is approved, extracts the secret key corresponding to \texttt{ID\textsubscript{d}}, encrypts the secret key and finally signs the Data.
   }
@@ -237,7 +237,7 @@ First the requester has to express an \gls{interest} to the target device asking
 The \gls{receiver} checks whether the requester has access rights to the requested resource and verifies that the requester is a part of the same trust domain.
 If the \gls{receiver} is authorized, the \gls{receiver} responds with the \gls{data} containing the resource. 
 The requester signs the \gls{interest} and appends it to the content \gls{name}.
-The \gls{receiver} will also do a symmetric encryption on the sensor \gls{data} and do a asymmetric encryption on the \gls{CEK} with the requester's \gls{ID}.
+The \gls{receiver} will also do a symmetric encryption on the sensor \gls{data} and do a asymmetric encryption on the \gls{CEK} with the requesters' \gls{ID}.
 This step is only performed if \gls{data} confidentiality is needed. 
 Then the \gls{data} packet is signed and sent.
 Finally the requester receives the \gls{data}, verifies the signature and decrypts the sensor \gls{data}.
@@ -312,11 +312,11 @@ Finally the requester receives the \gls{data}, verifies the signature and decryp
       -- node[above,scale=0.8,right]{\^{n} == n} 
       ($(client_0)!0.95!(client_0_ground)$);
   \end{tikzpicture}
-  \caption{Data pull under deployment. 
+  \caption[Data pull under deployment]{Data pull under deployment. 
   The mobile sends a Sensor Interest to the device appending the request for a resource and a nonce \texttt{n}. 
-  The Interest is signed with the mobile's secret key \texttt{sk\textsubscript{m}} and verified by the device. 
+  The Interest is signed with the mobiles' secret key \texttt{sk\textsubscript{m}} and verified by the device. 
   The device checks whether the mobile has a valid capability for the requested resource and encrypts the data if granted.
-  The Data response is signed with the device's secret key \texttt{sk\textsubscript{d}}.
+  The Data response is signed with the devices' secret key \texttt{sk\textsubscript{d}}.
   The mobile decrypts of the content encryption key \texttt{cek} and the cipher \texttt{c}, checks whether the received nonce \texttt{\^{n}} is equal to \texttt{n} and finally accepts the data as correct.}
   \label{fig:data_pull_ibe}
 \end{figure}
@@ -379,7 +379,7 @@ I assume the following threat model:
 \end{enumerate}
 
 I assume that the \gls{PKG} cannot be compromised by any adversary, and thus the \gls{MSK} will always be hidden from any adversaries. 
-However, it is extremely important that the machine which plays the role of the \gls{PKG} is secured in a physical matter, as well as remote secureness. 
+However, it is extremely important that the machine which plays the role of the \gls{PKG} is secured in a physical manner, as well as remote secureness. 
 The \gls{PKG} is the single point of failure in the whole system.
 
 An idea introduced by Aaditeshwar Seth and Srinivasan Keshav in~\cite[Section 5.4]{Seth:2005:PSD:1897159.1897165} is to avoid storing the \gls{SK}s in devices that is more likely to be lost or stolen, e.g. a mobile.
@@ -409,7 +409,7 @@ Another solution can be an \gls{ACL} based approach equivalent to what Wentao Sh
 
 \subsection{Confidentiality}
 The confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
-As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each \gls{interest} appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
+As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each \gls{interest} appends the requesters' ID (\autoref{eq:mapping-id-name-pk}).
 Since the ID\textsubscript{requester} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
 
 \subsection{Integrity and Authenticity}
@@ -429,7 +429,7 @@ This is also why I have chosen to append the MPK in the packet~\autoref{fig:sens
 
 \subsection{Trust Model}
 For a system to be secure, cryptography together with trust is essential. 
-The \gls{HSS} trust model is built upon trusting a centralized authority, typically the user's home server, rendezvous authentication and \gls{IBC}.
+The \gls{HSS} trust model is built upon trusting a centralized authority, typically the users' home server, rendezvous authentication and \gls{IBC}.
 The fact that it runs over \gls{NDN} makes it easier to achieve security goals and usability for third party developers.
 
 The \gls{PK} is the \gls{name} of the device, and all content published by the device will begin with this \gls{name}, hence it is easy to verify that the \gls{publisher} is the owner of the content.

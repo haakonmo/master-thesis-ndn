@@ -29,7 +29,7 @@ If confidentiality is required, it can be achieved by symmetric encryption, and 
 However this becomes quite complicated concerning possible key leakage and redistribution of a new symmetric key when the number of subscribers is high. 
 In the case of public keys list, the \gls{data} would not have to be confidential, but rather rely on integrity and authenticity.
 
-In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributor's (\texttt{d}) list of public keys.
+In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributors' (\texttt{d}) list of public keys.
 In order to achieve this goal, the following actions should occur.
 \begin{enumerate}
 	\item \texttt{d} announces that it wants to distribute a list to the network by registering the synchronization group prefix. 
@@ -42,7 +42,7 @@ In order to achieve this goal, the following actions should occur.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{ndn-sync.png}
-  \caption{File Synchronization in NDN.}
+  \caption[File Synchronization in NDN]{File Synchronization in NDN.}
   \label{fig:ndn-sync}
 \end{figure}
 
@@ -54,7 +54,7 @@ Each device can verify the integrity and authenticity of the sync state \gls{dat
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{pkg_sync.png}
-  \caption{FSM with tree devices (subscribers) and a PKG (distributor).}
+  \caption[File Synchronization Module]{FSM with tree devices (subscribers) and a PKG (distributor).}
   \label{fig:pkg_sync}
 \end{figure}
 

@@ -6,7 +6,7 @@ The \gls{NDN} architecture will be reviewed.
 Finally there will be a quick summary of related work.
 
 \section{Motivation for Information-Centric Networking}
-When Internet was created in the 1960's, the researchers where inspired by the existing communication network; the telecommunication network.
+When Internet was created in the 1960s', the researchers where inspired by the existing communication network; the telecommunication network.
 Because it was natural and logical to think that people would send and receive short messages and instructions, the point-to-point communication model was a logical architecture. 
 As Internet have developed, the traffic has increased enormously over the past few years. 
 In the Global Internet Phenomena Report 1H2014 done by Sandvine~\cite{gipr2014}, close to 64\% of all \gls{IP} traffic in North America was Real-Time Entertainment streaming.
@@ -27,7 +27,7 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
     \caption{Europe}
     \label{fig:europe-ip-traffic}
   \end{subfigure}
-  \caption{
+  \caption[Peak Period Aggregate Traffic Composition]{
   (a) Peak Period Aggregate Traffic Composition - North America, Fixed Access~\cite{gipr2014}.
   (b) Peak Period Aggregate Traffic Composition - Europe, Fixed Access.
   }
@@ -49,7 +49,7 @@ Devices should easily be able to communicate directly with each other without ha
 Another problem is the network redundancy. 
 Looking at~\autoref{fig:ip-traffic} and reading~\cite{gipr2014} where it comes to light that Netflix stands for 34.21\% of all content download in America, one can conclude that there are a lot of movies downloaded from \textit{x} users geographically located close.
 And thus the network path from the source (e.g. Netflix) to this geographical place is allocated \textit{x} too many times. 
-This is because a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packet's endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
+This is because a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packets' endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
 This makes every node dumb, hence the network is designed for redundancy when it comes to content download.
 
 These design failures are some the reasons why the research for the future Internet began.  
@@ -106,7 +106,7 @@ There are two types of packets in \gls{NDN};
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{packets.png}
-  \caption{\gls{interest} packet and \gls{data} packet}
+  \caption[NDN packets]{\gls{interest} packet and \gls{data} packet}
   \label{fig:packets}
 \end{figure}
 
@@ -176,7 +176,7 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{ip_model_node.png}
-  \caption{Model of IP node. A packets enters the node through an interface. 
+  \caption[Model of IP node]{Model of IP node. A packets enters the node through an interface. 
   The node decides whether the packet is for the node itself, or passes it further to next node, found in the FIB.}
   \label{fig:ip-model-node}
 \end{figure}
@@ -184,7 +184,7 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{icn_model_node.png}
-  \caption{Model of NDN node. A packet enters through an Face. 
+  \caption[Model of NDN node]{Model of NDN node. A packet enters through an Face. 
   The node checks whether the \gls{interest} is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.}
   \label{fig:icn-model-node}
 \end{figure}
@@ -204,7 +204,7 @@ Worst case scenario, the \gls{NDN} nodes will perform equal to the \gls{IP} node
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-multicast.png}
-  \caption{Multicast in NDN.}
+  \caption[Multicast in NDN]{Multicast in NDN.}
   \label{fig:ndn-multicast}
 \end{figure}
 
@@ -216,7 +216,7 @@ Worst case scenario, the \gls{NDN} nodes will perform equal to the \gls{IP} node
   3           & 12GB/12GB       & 4GB/8GB           & 33\%/66\%     \\ %\hline
   Publisher   & -/12GB          & -/4GB             & -/33\%        \\ %\hline
   \end{tabular}
-  \caption{Node bandwidth allocation comparison in IP and NDN (best case). Mobile, 2\textsuperscript{nd}device and 3\textsuperscript{rd}device requests \protect\path{/ntnu/file1} (4GB). The NDN nodes allocates bandwidth 44.3\% (in) and 66.3\% (out) compared to IP nodes.}
+  \caption[Bandwidth comparison of NDN and IP]{Node bandwidth allocation comparison in IP and NDN (best case). Mobile, 2\textsuperscript{nd}device and 3\textsuperscript{rd}device requests \protect\path{/ntnu/file1} (4GB). The NDN nodes allocates bandwidth 44.3\% (in) and 66.3\% (out) compared to IP nodes.}
   \label{tbl:node_comparison-ip-ndn}
 \end{table}
  
@@ -232,7 +232,7 @@ I.e. whether, when, and where to forward the \gls{interest}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-interest.png}
-  \caption{Decision tree for a NDN node when receiving an \gls{interest}.}
+  \caption[Incoming Interest - NDN node]{Decision tree for a NDN node when receiving an \gls{interest}.}
   \label{fig:icn-model-node-decision-interest}
 \end{figure}
 
@@ -244,7 +244,7 @@ The node checks the \gls{data} from local applications cached in \gls{CS} first,
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{ndn-node-decision-tree-data.png}
-  \caption{Decision tree for a NDN node when receiving \gls{data} packet.}
+  \caption[Incoming Data - NDN node]{Decision tree for a NDN node when receiving \gls{data} packet.}
   \label{fig:icn-model-node-decision-data}
 \end{figure}
 
@@ -275,7 +275,7 @@ The content should be linked to the \gls{publisher} and this linkage should be s
 The concept is to mathematically prove that the content originates from the believed \gls{publisher}, and that its not modified nor been exposed to unauthorized parties (if necessary).
 This introduces a possibility that anyone can retrieve any piece of data from anyone, trusted or not, regardless of secure channel or not.
 The question is how can this idea be achieved? 
-As Diana Smetters and Van Jacobsen says~\cite{secure-network-content}, we must ensure the content's validity, provenance and relevance.
+As Diana Smetters and Van Jacobsen says~\cite{secure-network-content}, we must ensure the contents' validity, provenance and relevance.
 
 \begin{itemize}
   \item Validity - Complete and unmodified content from the \gls{publisher}.

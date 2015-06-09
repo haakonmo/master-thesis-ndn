@@ -80,7 +80,7 @@ IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{code-topology.png}
-  \caption{Packages and Classes.}
+  \caption[Class topology]{Packages and Classes.}
   \label{fig:code-topology}
 \end{figure}
 
@@ -138,14 +138,14 @@ The fields are:
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{init_interest-data.png}
-  \caption{\texttt{Init} \gls{interest} and \gls{data}}
+  \caption[Init Interest and Data packet]{\texttt{Init} \gls{interest} and \gls{data}}
   \label{fig:init_interest-data}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{sensor_interest-data.png}
-  \caption{\texttt{Sensor} \gls{interest} and \gls{data}}
+  \caption[Sensor Interest and Data packet]{\texttt{Sensor} \gls{interest} and \gls{data}}
   \label{fig:sensor_interest-data}
 \end{figure}
 
@@ -204,7 +204,7 @@ Each computer is assigned an ID which will be used for reference in the performa
   C2      & Garsbook                  & 64-bit Ubuntu 14.04 LTS   & Intel Core i5 @ 3.0GHz       \\ %\hline
   C3      & HP                        & 64-bit Ubuntu 14.04 LTS   & Intel Core i7 @ 2.8GHz       \\ %\hline
   \end{tabular}
-  \caption{Computers used during tests.}
+  \caption[Test computers]{Computers used during tests.}
   \label{tbl:target_computers}
 \end{table}
 
@@ -226,7 +226,7 @@ The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and
   IBS Signature                   & Waters          & 412 bytes         \\ %\hline
   Encrypted SSK                   & AES             & 437 bytes         \\ %\hline
   \end{tabular}
-  \caption{Sizes of different keys used in the health sensor system implementation.}
+  \caption[Size chart of IBC parameters]{Sizes of different keys used in the health sensor system implementation.}
   \label{tbl:size_chart}
 \end{table}
 
@@ -259,7 +259,7 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
   %ECDSA Sign                                  & ECDSA           & 0.50 ms         & 0.21 ms     & 0.33 ms     \\ %\hline
   %ECDSA Verify                                & ECDSA           & 0.90 ms         & 0.37 ms     & 0.58 ms     \\ %\hline
   \end{tabular}
-  \caption{Cryptographic methods time chart. Each measurement is the mean time of 100 rounds and measured in milliseconds. }
+  \caption[Time chart of cryptographic computations]{Cryptographic methods time chart. Each measurement is the mean time of 100 rounds and measured in milliseconds. }
   \label{tbl:time_chart}
 \end{table}
 
@@ -273,7 +273,7 @@ The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
   Initialization                          & 202.9 ms      & 70.8 ms       & 116.3 ms     \\ %\hline
   Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
   \end{tabular}
-  \caption{Round trip time chart. Time is measured in milliseconds.}
+  \caption[Round trip time of protocols]{Round trip time chart. Time is measured in milliseconds.}
   \label{tbl:rtt_chart}
 \end{table}
 
@@ -282,7 +282,7 @@ The topology is shown in~\autoref{fig:hss-testbed}.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{hss-testbed.png}
-  \caption{Health Sensor System implementation tested over two computer. 
+  \caption[HSS testing - computer topology]{Health Sensor System implementation tested over two computer. 
   C3 runs two nodes, i.e. the PKG and one device. 
   C1 runs a second device.}
   \label{fig:hss-testbed}
@@ -296,6 +296,6 @@ The map of the NDN testbed is shown in~\autoref{fig:ndn-map}.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{ndn-map.png}
-  \caption{NDN Testbed Map}
+  \caption[NDN Testbed map]{NDN Testbed Map}
   \label{fig:ndn-map}
 \end{figure}
