@@ -89,9 +89,10 @@ Sufficient key management is not implemented.
 Storing of secret keys should be done in a secure fashion.
 
 \subsection{Name Structure}
-The \gls{ID} of every device is a part of the \gls{name}.
+As explained in~\autoref{name}, the \gls{name} structure in \gls{NDN} is left to application developers to decide.
+Using \gls{IBC} it is essential to construct the \gls{name} structure where the \gls{ID} 
+The \gls{ID} of every device should therefore be concatenated with the \gls{name}.
 A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
-\todo{more..}
 
 \subsection{Access Control}
 In~\autoref{access_control} I present a possible solution for access control.

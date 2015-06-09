@@ -51,10 +51,10 @@ In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as wel
 To encrypt a message with \gls{IBE}, the user encrypts a \gls{CEK} with the recipients \gls{ID}.
 The user encrypts the message using the \gls{CEK} together with symmetric encryption~\cite[section 2.2.2]{rfc5408}, and sends both the encrypted \gls{CEK} and the encrypted content to the requester. 
 
-Two main
-The security of \gls{IBC} depends mainly on the secrecy of the \gls{PKG}.
-Deploy a secure \gls{PKG}.
-Identify each device before issuing \gls{SK}.
+It is two main concepts which holds a great part of the security in an \gls{IBC} system.
+The security of \gls{IBC} depends mainly on the secrecy of the \gls{PKG}, therefor it is crucial to deploy a secure \gls{PKG}.
+Also, it is important to identify each device before issuing \gls{SK}.
+Approving wrong devices and allocating \gls{SK} to an adversary would compromize the system.
 
 There are some drawbacks related to \gls{IBE} such as issues around trusting the \gls{PKG} considering that the \gls{PKG} generates all \gls{SK}s.  
 If the \gls{PKG} is compromised by an adversary, the adversary will retrieve all \gls{SK}s belonging to the corresponding \gls{ID}. 
