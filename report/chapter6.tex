@@ -71,7 +71,7 @@ A comparison of \gls{IBC} and other solutions is shown in~\autoref{tbl:ibc-pkc-c
   PKC & Complex & $O(n)$ & At each node and key center & Yes & No & Yes \\ \hline
   IBC & Simple & $N$ & No & No & Yes & Yes \\ \hline
   \end{tabular}
-  \caption{Comparison with PKC and IBC~\cite[Table 9.6]{Patil:2012:SWS:2464778}.}
+  \caption[Comparison with PKC and IBC]{Comparison with PKC and IBC~\cite[Table 9.6]{Patil:2012:SWS:2464778}.}
   \label{tbl:ibc-pkc-comparison}
 \end{table}
 
@@ -89,39 +89,45 @@ Storing the \gls{SK} in a secure fashion.
 Preloading secret key, offline mode, yet the initialization protocol should be used to do this, unless the sharing is done in a wired environment. 
 \gls{NFC} signal is hard (impossible?) to eavesdrop, thus the initialization protocol is not needed. 
 
+One question left to be solved is how expensive the \texttt{Sync} \gls{interest} would be for each device. 
+The \texttt{Sync} \gls{interest} should be expressed periodically, but the frequency is not determined. 
+In equivalent networks deployed over \gls{IP}, \texttt{Hello} messages is often used, hence the \texttt{Sync} \gls{interest} can be modified to be a combination of \texttt{Hello} and \texttt{Sync} \gls{interest}.
 
 \section{Scalability}
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
 However, this might not be a huge problem in the use cases that is addressed in this thesis, considering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
+In a sensor network where the number of sensor can exceed 1 million sensors, the list of every ID can be cumbersome for each device.
+Lets set an upper limit for the ID to be 20 bytes, then 1 million sensors will approximately require 19 megabyte of data, which will have to be synchronized:
+$(20B / 1024 / 1024) * 1 000 000 = 19.07MB$.
+However, in such sensor networks, each node does not need to know all other names, but rather the name its gateway, i.e. a \gls{sink_node}. 
+Such logic scheme is not implemented or considered a part of this thesis.
 
-Example:
-ID size * devices = x bytes 
-
-\section{Sync}
-The sync application makes it possible for users to know who has a valid public key within the \gls{PKG}s domain.
-One drawback with the key distribution using \gls{FSM} is that for the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
+\section{Synchronization}
+The synchronization application makes it possible for users to know who has a valid \gls{ID} within the \gls{PKG}s trust domain.
+One drawback with the key distribution scheme I have proposed, is \gls{DoS} on \texttt{Sync} \gls{interest} and \texttt{Sync} \gls{data}. 
+For the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
 Likewise when a \gls{receiver} verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
-Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution to reduce the time of exposure when compromised.
-
-There are some issues that could occur in such a system. 
-\gls{DoS} on Sync \gls{interest} and Sync \gls{data}. 
-If the \gls{FSM} is used to revoke public keys as suggested, an attacker who has found the compromised \gls{SK}, can try to deny the distribution of the new list, i.e. the Sync \gls{data}, from the distributor. 
+An adversary which has found a compromised \gls{SK}, can try to deny the distribution of the updated list, i.e. the \texttt{Sync} \gls{data}, from the distributor. 
 This is however a complicated attack and an updated list would spread fast.
 Performing \gls{DoS} on every node is not easy, and would block the network access for the adversary anyway.
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
 
-\section{Test Results}
+Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution to reduce the time of exposure if compromised without noticing.
+
+\section{Testing}
 The application is not tested with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.
 However, there is done some research on \gls{ecc} in \gls{wsn}~\cite{DBLP:conf/ipsn/LiuN08, DBLP:conf/ewsn/SzczechowiakOSCD08} and \gls{IBC}s applicability to \gls{wsn}~\cite{DBLP:journals/iacr/OliveiraAMDLD07}.
 
-IBE vs RSA
+An interesting question is the performance difference of \gls{IBC} versus RSA.
 In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better on key generation, signing and verification than regular asymmetric cryptography, RSA. 
-However encryption and decryption of \gls{CEK} is not performing better.
+However encryption and decryption of \gls{CEK} is not performing better with the \gls{IBE} schemes I use, but the difference is minimal compared to the results Xinwen Zhang et al. got in their implementation~\cite{DBLP:conf/icnp/ZhangCXWSW11}, i.e. 1.7 seconds difference with \gls{IBE} compared to RSA.
 
-RTT on protocols
-
-
+Looking at~\autoref{tbl:rtt_chart} and studying the~\autoref{tbl:time_chart}, we can see that the time spent on each protocol can be correlated to the time spent doing \texttt{IBE Encrypting \gls{CEK}} and \texttt{IBE Decrypting \gls{CEK}} operations. 
+We can see that the data pull on C1 takes about 61 ms.
+This protocol involves one \texttt{IBE Encrypting \gls{CEK}} (41 ms) and one \texttt{IBE Decrypting \gls{CEK}} (20 ms). 
+Hence it seems that the \gls{IBC} requires most of the time.
+The results listed are done in a virtual environment, hence the total latency should be somewhat more in a deployed network.
 
 \section{Other Use Cases}
 The trust model used in the \gls{HSS} can be used in any network where the use of a \gls{TTP} is accepted. 
