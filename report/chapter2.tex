@@ -3,14 +3,14 @@
 
 This chapter will give a brief overlook of the motivation for \gls{ICN}, as well as explaining more details of the \gls{ICN} protocol \gls{NDN}.
 The \gls{NDN} architecture will be reviewed.
-Finally there will be a quick summary of related work.
+Finally there will be a quick summary of related work to this thesis.
 
 \section{Motivation for Information-Centric Networking}
 When Internet was created in the 1960s', the researchers where inspired by the existing communication network; the telecommunication network.
 Because it was natural and logical to think that people would send and receive short messages and instructions, the point-to-point communication model was a logical architecture. 
-As Internet have developed, the traffic has increased enormously over the past few years. 
-In the Global Internet Phenomena Report 1H2014 done by Sandvine~\cite{gipr2014}, close to 64\% of all \gls{IP} traffic in North America was Real-Time Entertainment streaming.
-In~\autoref{fig:ip-traffic} it can easily be seen that most of the traffic is content download, and not communication as Internet was designed for.
+As Internet has developed, the traffic has increased enormously over the past few years. 
+In the Global Internet Phenomena Report 1H2014 done by Sandvine~\cite{gipr2014}, shows that close to 64\% of all \gls{IP} traffic in North America was Real-Time Entertainment streaming.
+In~\autoref{fig:ip-traffic} it can easily be seen that most of the traffic is content download, and not communication as Internet originally was designed for.
 With this in mind, the \gls{IP} architecture does not provide an efficient transport model for what we are actually using the network for.
 
 \begin{figure}[ht]
@@ -29,14 +29,15 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
   \end{subfigure}
   \caption[Peak Period Aggregate Traffic Composition]{
   Peak Period Aggregate Traffic Composition in (a) North America and (b) Europe, fixed Access~\cite{gipr2014}.
+  In North America, Netflix alone is responsible for 34.21\% of all content download.
   }
   \label{fig:ip-traffic}
 \end{figure}
 
-Designing the \gls{IP} network, security was not the first priority.
-A logical thought considering that they did not know what the Internet is being used for and how big it has become.
-Many protocols related to Internet have been designed and deployed mainly with the goal of functionality, not thinking about security.
-In the years after the birth of Internet, it was discovered that Internet needed security at several layers, due to that the application requirements and transmission importance increased.
+When designing the \gls{IP} network, security was not the first priority.
+A logical thought considering that they did not know what the Internet is being used for nowadays and how big it has become.
+Many protocols related to Internet has been designed and deployed mainly with the goal of functionality, not thinking about security.
+In the years after the birth of Internet, it was discovered that Internet needed security at several layers, due to the increase of application requirements and transmission importance.
 \gls{IPsec} is a very good example of work trying to patch up security flaws in the design of Internet.
 
 Today, WiFi is disseminated across homes and buildings in many countries. 
@@ -48,8 +49,9 @@ Devices should easily be able to communicate directly with each other without ha
 Another problem is the network redundancy. 
 Looking at~\autoref{fig:ip-traffic} and reading~\cite{gipr2014} where it comes to light that Netflix stands for 34.21\% of all content download in America, one can conclude that there are a lot of movies downloaded from \textit{x} users geographically located close.
 And thus the network path from the source (e.g. Netflix) to this geographical place is allocated \textit{x} too many times. 
-This is because a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packets' endpoints, i.e. \textit{where} it goes and \textit{where} it comes from. 
-This makes every node dumb, hence the network is designed for redundancy when it comes to content download.
+This is because a node in an \gls{IP} network does not know \textit{what} it processes, but rather the packets' endpoints, i.e. \textit{where} it goes and \textit{where} it comes from, hence the node throws all packets after use. 
+The fact the every node knows nothing about the content the process, makes every node dumb.
+The network is designed for redundancy when it comes to content download.
 
 These design failures are some the reasons why the research for the future Internet began.  
 \gls{ICN}~\cite{DBLP:journals/cm/AhlgrenDIKO12} is a concept developed under this research.
@@ -85,6 +87,8 @@ The \gls{data} can be verified by the requester ensuring that the \gls{publisher
 It is because of the signature we can retrieve the \gls{data} from any \gls{node}.
 If confidentiality is needed, the \gls{data} can be encrypted itself. 
 
+\todo{more}
+
 \subsection{NDN - Based on Existing Concepts}
 The goal for the network design is essentially making it more secure and applicable for content without removing the communication service that \gls{IP} was designed for. 
 Designing a new network protocol we have to look at what measurements have been done in the existing \gls{IP} network to tailor it towards content sharing.
@@ -93,9 +97,9 @@ Some examples are:
 \begin{itemize}
   \item BitTorrent - 
   The concept of sharing bits of files between peers in a network is a well-working distributed method for sharing content. 
-  Requester does not care where the content comes from, but only that the content is what is requested.
+  Requesters does not care where the content come from, but only that the content is what is requested.
   \item \gls{CDN} - 
-  Many \gls{ASP}s, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their \gls{data} close to where the users is located.
+  Many \gls{ASP}s, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their data close to where the users is located.
 \end{itemize}
 
 \subsection{Packets}\label{packets}
@@ -105,7 +109,9 @@ There are two types of packets in \gls{NDN};
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{packets.png}
-  \caption[NDN packets]{\gls{interest} packet and \gls{data} packet}
+  \caption[NDN packets]{\gls{interest} packet and \gls{data} packet.
+  Reconstructed from~\cite{jac09-03}.
+  }
   \label{fig:packets}
 \end{figure}
 
@@ -137,10 +143,10 @@ This reduces unwanted traffic compared to \gls{UDP} in \gls{IP}, and minimizes t
 In todays Internet we are well familiar with the mapping of \gls{URL} and \gls{IP} addresses.
 This mapping, done by the \gls{DNS}, eases the pain of remembering an \gls{IPv4} (32-bit) address and lately also \gls{IPv6} (128-bit) addresses.
 
-In the \gls{NDN} network a \gls{node} does not have an address nor a \gls{name}.
+In a \gls{NDN} network a \gls{node} does not have an address nor a \gls{name}.
 The routing of packets is done by content lookup, rather than address lookup.
 This means that all content in the network do have a \gls{name}.
-When an \gls{interest} is sent, each \gls{node} asks the network: ``Where can I find a node that can provide me with this content?''.
+When an \gls{interest} is sent, each \gls{node} asks the network: ``Where can I find \textit{a} node that can provide me with this content?''.
 
 There is no strict rules for a \gls{name} in \gls{NDN}.
 This means that a network \gls{node} only routes an \gls{interest} based on longest prefix match.
@@ -149,15 +155,15 @@ However the network assumes hierarchical structured names, hence routing will pe
 
 For the network to perform even better, the \gls{interest} can append some Selectors that can help the network to decide which \gls{data} to retrieve and where to route.
 With Selectors a partially known \gls{name} can successfully retrieve the right \gls{data}.
-E.g. when a user want to download the newest version of some content, lets say ``/ndn/no/ntnu/haakon/file/<version?>'', but do not know which version is the newest, the user can append a ChildSelector to choose the newest version.
+E.g. when a user want to download the newest version of some content, lets say ``/ndn/no/ntnu/haakon/file/<version?>'', but do not know which version is the newest, the user can append a ChildSelector to choose the newest version, if several versions are offered.
 
 The fact that \gls{data} has a \gls{name} makes \gls{SDSI} and \gls{IBC} highly applicable to \gls{NDN}.
 Namespace-based trust was introduced in \gls{SDSI}~\cite{rivest1996sdsi}, binding names to public keys.
-\gls{IBC} will be explained in detail in~\autoref{chp:ibc}.
+\gls{IBC} will be explained in detail in~\autoref{chp:ibc}, and is a key topic in this thesis.
 
 \subsection{Network Node}
 It may sound like a impossible task to force todays network from \gls{IP} to \gls{NDN}. 
-But as \gls{IP} first ran over the telecommunication network and later established its own, \gls{NDN} can run over the \gls{IP} network and later create its own network. 
+But looking at history, \gls{IP} first ran over the telecommunication network and later established its own physical network, \gls{NDN} can run over the \gls{IP} network and later create its own physical network. 
 Also, if we look at an existing model of an \gls{IP} node~\autoref{fig:ip-model-node} and compare it to a \gls{NDN} node~\autoref{fig:icn-model-node}, we see that they look much the same.
 The only significant difference in hardware is the storing capacity, which becomes cheaper and cheaper each month.
 However, the logic behind a \gls{NDN} \gls{node} is a bit more complex, and thus lead to more knowledge about \textit{what} content the node has to offer.
@@ -176,7 +182,8 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
   \centering
   \includegraphics[width=0.8\textwidth]{ip_model_node.png}
   \caption[Model of IP node]{Model of IP node. A packets enters the node through an interface. 
-  The node decides whether the packet is for the node itself, or passes it further to next node, found in the FIB.}
+  The node decides whether the packet is for the node itself, or passes it further to next node, found in the FIB.
+  Reconstructed from~\cite{jac09-03}.}
   \label{fig:ip-model-node}
 \end{figure}
 
@@ -184,21 +191,23 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
   \centering
   \includegraphics[width=0.8\textwidth]{icn_model_node.png}
   \caption[Model of NDN node]{Model of NDN node. A packet enters through an Face. 
-  The node checks whether the \gls{interest} is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.}
+  The node checks whether the \gls{interest} is already queried in the PIT, or stored in the CS, or passes it further to next node, found in the FIB.
+  Reconstructed from~\cite{jac09-03}.}
   \label{fig:icn-model-node}
 \end{figure}
 
 In contrary to an \gls{IP} node, a \gls{NDN} node knows \textit{what} content comes through itself. 
-Since all content is associated with a \gls{name}, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
+Since all content is associated with a \gls{name}, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. stored in \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
 With this knowledge the network can now satisfy \texttt{Interests} with content already stored in cache, hence the network can naturally offer multicast on network layer.
-~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly have to send equal amount of traffic than in an \gls{IP} network.
+~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly have to send equal amount of content than in an \gls{IP} network.
 The mobile expresses an \gls{interest} (1) in a file named \path{/ntnu/file1}.
-The \gls{interest} finds its way to the \gls{publisher} of the file, and thus the \gls{publisher} responds with a \gls{data} packet (2) named \path{/ntnu/file1} containing the file.
+The \gls{interest} finds its way to the \gls{publisher} of the file, and thus the \gls{publisher} responds with a \gls{data} packet (2) named \path{/ntnu/file1} containing the file, and the \gls{data} finds it way back to the mobile.
 When the second computer expresses the same \gls{interest} (3), the consecutive node has already cached the \gls{data} response matching to the \gls{interest} in its \gls{CS}, hence the \gls{interest} is satisfied already at this point (4), and not forwarded any further.
 Same happens when the third computer expresses again the same \gls{interest} (5) to the network.
-Given that the file (\path{/ntnu/file1}) these computers are interested in is 4 gigabyte, the network saves a lot of traffic with multicast.
+Given that the file (\path{/ntnu/file1}) these computers are interested in is 4 gigabyte, the network saves a lot of traffic with multicast provided by \gls{NDN}.
 Best case scenario in \gls{NDN} is illustrated in~\autoref{tbl:node_comparison-ip-ndn}.
-Worst case scenario, the \gls{NDN} nodes will perform equal to the \gls{IP} nodes.
+Every node is saving bandwidth in a \gls{NDN} network compared to nodes in an \gls{IP} network.
+Worst case scenario, where cached \gls{data} is thrown away, the \gls{NDN} nodes will perform equal to the \gls{IP} nodes.
 
 \begin{figure}[H]
   \centering
@@ -210,12 +219,12 @@ Worst case scenario, the \gls{NDN} nodes will perform equal to the \gls{IP} node
 \begin{table}[h]
   \begin{tabular}{llll}
   Node        & Data in/out IP  & Data in/out NDN   & \% bandwidth needed in NDN    \\ \hline
-  1           & 8GB/8GB         & 4GB/8GB           & 50\%/100\%      \\ %\hline
-  2           & 8GB/8GB         & 4GB/4GB           & 50\%/50\%     \\ %\hline
-  3           & 12GB/12GB       & 4GB/8GB           & 33\%/66\%     \\ %\hline
+  node1       & 8GB/8GB         & 4GB/8GB           & 50\%/100\%      \\ %\hline
+  node2       & 8GB/8GB         & 4GB/4GB           & 50\%/50\%     \\ %\hline
+  node3       & 12GB/12GB       & 4GB/8GB           & 33\%/66\%     \\ %\hline
   Publisher   & -/12GB          & -/4GB             & -/33\%        \\ %\hline
   \end{tabular}
-  \caption[Bandwidth comparison of NDN and IP]{Node bandwidth allocation comparison in IP and NDN (best case). Mobile, 2\textsuperscript{nd}device and 3\textsuperscript{rd}device requests \protect\path{/ntnu/file1} (4GB). The NDN nodes allocates bandwidth 44.3\% (in) and 66.3\% (out) compared to IP nodes.}
+  \caption[Bandwidth comparison of NDN and IP]{Node bandwidth allocation comparison in IP and NDN (best case). Mobile, 2\textsuperscript{nd}device and 3\textsuperscript{rd}device requests \protect\path{/ntnu/file1} (4GB). The NDN nodes allocates bandwidth 44.3\% (incoming) and 66.3\% (outgoing) compared to IP nodes.}
   \label{tbl:node_comparison-ip-ndn}
 \end{table}
  
@@ -252,10 +261,11 @@ The node checks the \gls{data} from local applications cached in \gls{CS} first,
 Below I will present why \gls{NDN} facilitates good security properties, explaining some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}, and the difference in securing data and securing channel.
 
 \subsubsection{Trusting Host versus Trusting Content}
-Doing a whole lot of mapping at different layers is not a good security model since each mapping introduces a potentially vulnerable target for forgery.
+Doing a whole lot of mapping at different layers is not a good security model.
+Each mapping introduces a potentially vulnerable target for forgery.
 The \gls{IP} network is designed in a way that makes us want to trust the host.
 What we are actually trusting is the mapping of the \gls{URL} to the \gls{IP} address.
-\gls{DNS} points to a host address that speaks for the \gls{URL} you are interested in, and thus if someone manages to forge this address, you cannot tell if you talk to the right host.
+\gls{DNS} points to a host address that speaks for the \gls{URL} you are interested in, and thus if someone manages to forge this address exploiting \gls{dnssec}, you cannot tell if you talk to the right host.
 
 The content is rarely encrypted and the confidentiality is not preserved, unless there is established a secure channel using e.g. \gls{TLS}.
 This is a problem due to the issues concerning tampering and eavesdropping.
@@ -290,7 +300,7 @@ Hence there should be a linkage between the \gls{publisher}, the \gls{name} and 
 A solution is to do a triple mapping of the \gls{name} (N) and content (C), cryptographically signed by the \gls{publisher} (P) seen in~\autoref{eq:mapping_name-content}.
 This mapping is unique, relying on the hash computation done in the signing, providing validity, provenance and relevance.
 A requester can easily verify the \gls{name} and content binding, as well as authenticating that the data originates from the \gls{publisher} who knows what the content is.
-Now anybody can retrieve \texttt{M\textsubscript{(N,P,C)}}, hence an untrusted \gls{host} and an insecure channel is not so bad anymore.
+Anybody can retrieve \texttt{M\textsubscript{(N,P,C)}} and verify the content and publisher mapping, hence an untrusted \gls{host} and an insecure channel is not so bad anymore.
 
 \begin{equation}\label{eq:mapping_name-content}
 M_{(N, P, C)} = (N,C,Sign_{P}(N,C))
@@ -348,4 +358,6 @@ In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Xinwen Zhang et al. propose a hybrid schem
 Leonardo B. Oliveira et al.~\cite{DBLP:journals/iacr/OliveiraAMDLD07} argued in 2007 that \gls{IBE} is applicable to \gls{wsn}.
 Oliveira et al. measured on a MICAz node (with the ATmega128 microcontroller, 8-bit/7.38 MHz processor, 4KB SRAM, 128KB flash memory) running TinyOS that the average execution time to compute a pairing is 30.21s. 
 
-Harsh Kupwade Patil and Stephen A. Szygenda, security for \gls{wsn} using \gls{IBE}~\cite{Patil:2012:SWS:2464778}
+Harsh Kupwade Patil and Stephen A. Szygenda, security for \gls{wsn} using \gls{IBE}~\cite{Patil:2012:SWS:2464778}.
+
+\todo{more..}
