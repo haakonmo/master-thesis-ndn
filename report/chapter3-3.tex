@@ -1,12 +1,12 @@
 \chapter{Implementation and Testing}
 This chapter will first introduce the most significant frameworks that must be installed to be able to run \gls{NDN} applications.
-Then the various designs and implementation choices will be explained.
-The source code is left out from the appendix due to the size inconvenience. 
+Then the design and architecture will be explained.
+The source code is left out from the appendix due to the size inconvenience, but referenced as an open GitHub repository~\cite{garseg15}. 
 Finally, the test result will be presented.
 
 \section{Installing Named Data Networking Protocol}
 
-There are several libraries that is required for experimenting in a \gls{NDN} environment.
+Several libraries is required for experimenting in a \gls{NDN} environment.
 Installation guides can be found at the Github project~\cite{ndn-git}.
 First we need to install the \gls{ndn-cxx}.
 \gls{ndn-cxx} is a implementation of \gls{NDN} primitives. 
@@ -32,18 +32,19 @@ This is an easy to use implementation of \gls{NDN} and comes with great code exa
 Because the \gls{NDN} protocol require signing of \gls{data} packets (\autoref{ndn-security}) some new implementation in the \gls{PyNDN2} source code was necessary to be able to sign and verify with \gls{IBS}.
 I added the \path{python/pyndn/sha256_with_ibswaters_signature.py} file that follows the pattern of the existing RSA Signature (\path{python/pyndn/sha256_with_rsa_signature.py}) and is of type \texttt{Signature}.
 Some small additions in the \path{python/pyndn/encoding/tlv_0_1_1_wire_format.py} and the \path{python/pyndn/encoding/tlv/tlv.py} is added so \gls{PyNDN2} recognizes the \gls{IBS} when the \gls{data} packet is encoded and decoded.
+The files edited can be found under \path{src/other/charm/} in~\cite{garseg15}.
 
 \section{Installing Identity-Based Cryptography}
 To be able to run \gls{IBC} the \gls{PBC}~\cite{ben2007implementation} needs to be installed.
-I use the Charm framework~\cite{charm13} implements several \gls{IBE} and \gls{IBS} schemes in Python.
+I use the Charm framework~\cite{charm13} which implements several \gls{IBE} and \gls{IBS} schemes in Python.
 Charm is a framework for rapidly prototyping cryptosystems.
 
 
 Some small modifications had to be done in the Waters-\gls{IBS}~\cite{DBLP:journals/iacr/Waters04} implementation in Charm.
 In \path{charm/schemes/pksig/pksig_waters.py} there is a global variable, i.e. \texttt{waters}, that is used throughout all the methods in \path{pksig_waters.py}.
 The problem is that this variable is declared in the \texttt{setup()}, which is only called at \gls{PKG}, and not by another devices that do not play the role of a \gls{PKG}. 
-And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}.
-
+And thus, the declaration of \texttt{waters} must be moved to the \texttt{\_\_init\_\_()} in \path{pksig_waters.py}, which is called by every device using the scheme.
+The file can be found under \path{src/other/pyndn/} in~\cite{garseg15}.
 
 \section{File Synchronization Module - Implementation}
 \gls{FSM} is a python application that runs over \gls{NDN} and synchronizes all files in a specified path, with all participants within the synchronization room.
@@ -68,8 +69,8 @@ The code is divided into several pieces shown in~\autoref{fig:code-topology}.
 
 The Device class~\cite[device.py]{garseg15} implements the role of a device that can express \gls{interest} and offer \gls{data}.
 The PKG class~\cite[publicKeyGenerator.py]{garseg15} implements the role of a \gls{PKG}.
-Both classes uses \gls{PyNDN2} and IndetityBasedCryptography. 
-IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{IBE} schemes and one \gls{IBS} scheme. 
+Both classes uses \gls{PyNDN2}, to be able to run over \gls{NDN}, and IndetityBasedCryptography, to be able to perform \gls{IBC}. 
+IdentityBasedCrypto~\cite[identityBasedCrypto.py]{garseg15} implements two \gls{IBE} schemes and one \gls{IBS} scheme from Charm. 
 These schemes are listed below:
 \begin{description}
   \item[Waters05]~\cite{DBLP:journals/iacr/Naccache05} that is a variant of Brent Waters \gls{IBE} scheme~\cite{DBLP:journals/iacr/Waters04}, but with smaller key size, hence more practical.
@@ -89,42 +90,44 @@ Sufficient key management is not implemented.
 Storing of secret keys should be done in a secure fashion.
 
 \subsection{Name Structure}
-As explained in~\autoref{name}, the \gls{name} structure in \gls{NDN} is left to application developers to decide.
-Using \gls{IBC} it is essential to construct the \gls{name} structure where the \gls{ID} 
-The \gls{ID} of every device should therefore be concatenated with the \gls{name}.
+As explained in the \gls{name}~\autoref{name}, the \gls{name} structure in \gls{NDN} is left to application developers to decide.
+Using \gls{IBC}, it is essential that the \gls{ID} is publicly known.
+Therefore the \gls{ID} of every device should be concatenated with the \gls{name}.
 A device register the prefix \path{/ndn/no/ntnu/<device>/<resource>} and hence its \gls{ID} is \path{/ndn/no/ntnu/<device>}.
 
 \subsection{Access Control}
-In~\autoref{access_control} I present a possible solution for access control.
-This is however not implemented in the application, because it is considered too high workload for this thesis.
+In access control~\autoref{access_control} I present a possible solution for access control.
+This is however not implemented in the application, because it is considered too high workload for this thesis, the suggested solution is implemented in Java, and not Python.
 
 \subsection{Packet Design}
-The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured \gls{data}.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
-Initialization packets have the structure presented in~\autoref{fig:init_interest-data}.
-Initially the idea was to have the \gls{TMPK} appended to the content \gls{name}. 
+The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
+Device registration packets have the structure presented in~\autoref{fig:init_interest-data}.
+Initially the idea was to have the cipher appended to the content \gls{name}. 
 However, I experienced a problem where the \texttt{Init} \gls{data} never arrived at destination node. 
 After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the \texttt{Init} \gls{data} exceeded this limit and reached 8904 bytes.
-Because the \gls{TMPK} is approximately 2\gls{KB} and was appended to the content \gls{name} in the \gls{interest}, the \gls{data} response off course had to have the same content \gls{name}, hence 2\gls{KB} overhead in the \gls{name}. 
-The \gls{TMPK} can as easily be appended to the KeyLocator \gls{name}, hence the \gls{data} response can be 2\gls{KB} less, resulting to a 6866 bytes \texttt{Init} \gls{data} packet.
+Because the cipher is approximately 2\gls{KB} and was appended to the content \gls{name} in the \gls{interest}, the \gls{data} response off course had to have the same content \gls{name}, hence 2\gls{KB} overhead in the \gls{name}. 
+The cipher can as easily be appended to the KeyLocator \gls{name}, hence the \gls{data} response can be 2\gls{KB} less, resulting to a 6866 bytes \texttt{Init} \gls{data} packet.
 
 Sensor packets have the structure presented in~\autoref{fig:sensor_interest-data}.
 The code can be reviewed in~\cite[messageBuf.proto]{garseg15}.
-\begin{description}
-	\item[\texttt{Init} \gls{interest}] - 
-  The \texttt{Init} \gls{interest} can be seen in~\autoref{fig:init_interest-data} and consist of three fields: Content Name, KeyLocator and MustBeFresh.
-  KeyLocator can be of type \gls{name}. 
-  As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the \gls{interest}.
-  However, in the trust model I use this field to publish the requesters \gls{name}, i.e. the requesters public key. 
-  This is very useful when using \gls{IBE} and \gls{IBS}.
-	\item[\texttt{Init} \gls{data}] - 
-  The \gls{data} response to the \texttt{Init} \gls{interest} is illustrated in~\autoref{fig:init_interest-data}.
-	\item[\texttt{Sensor} \gls{interest}] -
-	As in the \texttt{Init} \gls{interest} the KeyLocator field is used to define the ID\textsubscript{requester}. 
-  The packet is illustrated in~\autoref{fig:sensor_interest-data}.
-	\item[\texttt{Sensor} \gls{data}] - 
-  The \gls{data} response to the \texttt{Sensor} \gls{interest} uses the same structure as the \texttt{Init} \gls{data}. 
-  It is illustrated in~\autoref{fig:sensor_interest-data}
-\end{description}
+
+\texttt{Init} \gls{interest}. 
+The \texttt{Init} \gls{interest} can be seen in~\autoref{fig:init_interest-data} and consist of three fields: Content Name, KeyLocator and MustBeFresh.
+KeyLocator can be of type \gls{name}. 
+As described in the \gls{NDN} Packet Format~\cite{ndnpacketformat}, generally this field can be used to specify where to download the certificate used to sign the \gls{interest}.
+However, in the trust model I use this field to publish the requesters \gls{name}, i.e. the requesters public key. 
+This is very useful when using \gls{IBE} and \gls{IBS}.
+
+\texttt{Init} \gls{data}.
+The \gls{data} response to the \texttt{Init} \gls{interest} is illustrated in~\autoref{fig:init_interest-data}.
+	
+\texttt{Sensor} \gls{interest}.
+As in the \texttt{Init} \gls{interest} the KeyLocator field is used to define the ID\textsubscript{requester}. 
+The packet is illustrated in~\autoref{fig:sensor_interest-data}.
+	
+\texttt{Sensor} \gls{data}.
+The \gls{data} response to the \texttt{Sensor} \gls{interest} uses the same structure as the \texttt{Init} \gls{data}. 
+It is illustrated in~\autoref{fig:sensor_interest-data}
 
 The \texttt{Init} and \texttt{Sensor} \gls{data} responses in the \gls{HSS} have a structure that is defined in~\cite[messageBuf.proto]{garseg15}.
 The fields are:
@@ -135,7 +138,7 @@ The fields are:
   \item \texttt{IbsAlgorithm} is an \texttt{enum} and represents which type of \gls{IBS} scheme is used to sign the \gls{data}.
   \item \texttt{MasterPublicKey} is the \gls{PKG}s public parameters used to do \gls{IBE}.
   \item \texttt{SignatureMasterPublicKey} is the \gls{PKG}s public parameters used to do \gls{IBS}.
-  \item \texttt{SymmetricKey} is the symmetric key used to encrypt the content. The key is encrypted.
+  \item \texttt{SymmetricKey} is the symmetric key used to encrypt the content. The key is encrypted. Only used in \texttt{Sensor} \gls{data}.
   \item \texttt{Cipher} is the encrypted content.
   \item \texttt{Session} is a nonce.
 \end{itemize}
@@ -169,7 +172,7 @@ On the device playing the role of the user device (e.g. a mobile), run the code 
 This will automatically start the initialize protocol with the \gls{PKG}.
 Running \texttt{r} will make the device expressing an \gls{interest} for sensor \gls{data} from the sensor.
 
-\begin{lstlisting}[language=bash, caption={NFD Start}, label={lst:nfd-start}]
+\begin{lstlisting}[language=bash, caption={Start NFD}, label={lst:nfd-start}]
   $ nfd-start
   $ nfdc register /ndn/no/ntnu/<data-device> udp://<device-ip-address>
   $ nfdc register /ndn/no/ntnu/<pull-device> udp://<device-ip-address>
@@ -194,7 +197,7 @@ Running \texttt{r} will make the device expressing an \gls{interest} for sensor 
 
 \section{Testing}
 In this section it will be presented which computers will be used during testing. 
-The measurement results will be presented together with the key/content sizes related to the \gls{HSS}.
+The testing results will be presented together with the key/content sizes related to the \gls{HSS}.
 
 \subsection{Computers}
 The plan was to test the application with several Raspberry Pi's to simulate a sensor network, with limited computation power.
@@ -215,9 +218,8 @@ Each computer is assigned an ID which will be used for reference in the performa
 
 \subsection{Key Sizes}
 It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to the \gls{IBE} and \gls{IBS} that is used in the \gls{HSS} implementation.
-The \gls{CEK} is generated as a group element and is extracted to 40 bytes when performing encryption and decryption with \gls{AES}.
-I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format on the \gls{data}, and thus the whole \gls{CEK} must be sent.
-The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and is generated with \texttt{group.random(GT)}.
+The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and extracted to 40 bytes when performing encryption and decryption with \gls{AES}.
+I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format for the input, and thus the whole \gls{CEK} must be sent.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
   Data                            & Scheme          & Size              \\ \hline
@@ -240,7 +242,7 @@ The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and
 To be able to evaluate if \gls{IBC} is applicable to devices with small computation power and limited battery, it has to at least perform somewhat in the range of regular asymmetric encryption (read RSA), and signing. 
 Naccache suggested that if the prime \gls{p} is 1024-bit, the scheme would provide equivalent security as a RSA 1024-bit key.
 For comparison reasons, the RSA key pair is therefore generated with the size of 1024-bit.
-In~\autoref{tbl:time_chart} the results from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
+In~\autoref{tbl:time_chart} the performance from running different cryptographic methods on the computers listed in~\autoref{tbl:target_computers} are presented.
 
 \begin{table}[h]
   \begin{tabular}[c]{lllll}
@@ -269,14 +271,14 @@ In~\autoref{tbl:time_chart} the results from running different cryptographic met
 \end{table}
 
 
-The initialization protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
+The device registration protocol described in~\autoref{init} and the data pull protocol described in~\autoref{data_pull} is tested on the computers listed in~\autoref{tbl:target_computers}.
 The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
-\todo{re-run?}
+\todo{re-run? and on different machines, physical lines}
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
   Protocol                                & C1            & C1            & C3            \\ \hline
-  Initialization                          & 202.9 ms      & 70.8 ms       & 116.3 ms     \\ %\hline
-  Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms     \\ %\hline
+  Device Registration                     & 202.9 ms      & 70.8 ms       & 116.3 ms      \\ %\hline
+  Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms       \\ %\hline
   \end{tabular}
   \caption[Round trip time of protocols]{Round trip time chart. Time is measured in milliseconds.}
   \label{tbl:rtt_chart}

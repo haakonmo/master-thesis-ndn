@@ -23,7 +23,11 @@ ID_{device} = PK_{device} = Name_{device}
 \end{equation}
 
 In \gls{IBE} there is a \gls{TTP} that is called \gls{PKG}.
-The \gls{PKG}s task is to extract a secret key given an \gls{ID} and provide public parameters (\gls{MPK}) needed for performing encryption, decryption, signing and verifying. In~\autoref{fig:pkg_functions} the \gls{IBC} methods is illustrated in practice. 
+The \gls{PKG}s task is to extract a \gls{SK} given an \gls{ID} and provide public parameters (\gls{MPK}) needed for performing encryption, decryption, signing and verifying. In~\autoref{fig:pkg_functions} the \gls{IBC} methods is illustrated in practice. 
+\autoref{eq:keypair-id-sk} shows the key pair \gls{ID} and \gls{SK} which is used in \gls{IBC}.
+\begin{equation}\label{eq:keypair-id-sk}
+(ID_{device}, SK_{device})
+\end{equation}
 First the \texttt{PKG} runs \texttt{Setup()}. 
 \texttt{device1} can then request a \texttt{SK} by sending \texttt{ID\textsubscript{d1}} to the \texttt{PKG}. 
 In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as well as the \texttt{MPK\textsubscript{PKG}}.

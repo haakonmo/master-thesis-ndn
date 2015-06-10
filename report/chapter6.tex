@@ -7,27 +7,34 @@ Scalability issues and other applicable networks for the application will be men
 \section{Named Data Networking}
 \gls{NDN} facilitates a lot of concepts that shows to be a huge benefit for todays Internet, and the predicted increase of \gls{IoT}.
 The naming of content and content routing provides usability to \gls{IoT} and \gls{wsn}.
-Bandwidth redundancy in the network is reduced, security properties in network layer is provided, and the linkage between data and its publisher is easily proven. 
-It is easier for machines to directly communicate, without having to connect through a router.
+Bandwidth redundancy in the network is reduced, security properties in network layer is provided, and the linkage between data and its publisher can easily be proven. 
+It is easier for machines to communicate directly, without having to connect through a router.
 Broadcast and multicast comes naturally, hence wireless communication can be done in a simple manner.
 
 Developing applications on top of \gls{NDN} is easy once a basic perception of the \gls{NDN} architecture is understood.
 The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
 
-The concept of naming \gls{data} introduces more simplicity, but also a new way of application design thinking.
+The concept of naming data introduces more simplicity, but also a new way of application design thinking.
 Addressing is dealt with in one place in the architecture compared to an equivalent system over \gls{IP}. 
 A problem with \gls{wsn} in \gls{IP} networks, is that it is a limited number of \gls{IP} addresses (especially in \gls{IPv4}).
 So the global scalability issue arises due to the potentially large number of sensors that could be deployed. 
 With the naming rules in \gls{NDN}, this is not an issue.
 Security is easily applied in \gls{NDN} which is shown to be a huge problem to many systems nowadays.
 
+A huge advantage is that one can ask the network for content, and easily verify the signature.
+The \gls{interest} a \gls{requester} expresses, has the same content name as the \gls{data} received in return.
+Hence the signature will be signed by a \gls{SK}\textsubscript{publisher} corresponding to a part of the content name, the \gls{ID}\textsubscript{publisher}.
+
+% \gls{NDN} has met resistance when it comes to real-time services. 
+% Due to the resistance, many of the research projects have been motivated to prove this idea wrong.
+% ndnrtc, chronosync, chronochat.
 \todo{more} 
 
 \section{Identity-Based Cryptography in Named Data Networking}
 The concept of \gls{IBC} appears to be highly applicable to \gls{IoT} and \gls{wsn}~\cite{Patil:2012:SWS:2464778}.
-Running \gls{IBC} over \gls{NDN}, makes it even more practical, because of the naming of content concept that \gls{NDN} is built upon. 
+Running \gls{IBC} over \gls{NDN}, makes it even more practical, because of the naming concept that \gls{NDN} is built upon. 
 As mentioned it is easier to secure data, relate data to publisher, and authenticate that the publisher is aware of what content it published. 
-I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make applications with security less complex and more practical than using security such as RSA. 
+I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make applications with security less complex and more practical than using security such as RSA running over \gls{IP}. 
 
 Using \gls{ID} as public key eliminates the binding of ID and certificate. 
 Compared to ordinary \gls{PKI} where the recipient have to download the public key certificate to verify the digital signature.

@@ -27,7 +27,7 @@ The capabilities is distributed to all nodes and signed by the root distributor.
 These capabilities is needed so that every node can verify the integrity and authenticity of the distributed list.
 If confidentiality is required, it can be achieved by symmetric encryption, and key exchange in the subscription protocol, i.e. using asymmetric encryption.
 However this becomes quite complicated concerning possible key leakage and redistribution of a new symmetric key when the number of subscribers is high. 
-In the case of public keys list, the \gls{data} would not have to be confidential, but rather rely on integrity and authenticity.
+In the case of public keys list, the data would not have to be confidential, but rather rely on integrity and authenticity.
 
 In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributors' (\texttt{d}) list of public keys.
 In order to achieve this goal, the following actions should occur.
@@ -36,7 +36,7 @@ In order to achieve this goal, the following actions should occur.
 	\item \texttt{a}, \texttt{b} and \texttt{c} ask for subscription to this list, and somehow authenticates them selves to \texttt{d} if confidentiality is required.
 	\item \texttt{d} approves those who should be approved, and returns a symmetric synchronization key. 
 	This step is only done if confidentiality is required.
-	\item \texttt{a}, \texttt{b} and \texttt{c} now knows that they are a part of the synchronization and have read access. They expresses a Sync \gls{interest} with their state, receiving Sync \gls{data} whenever \texttt{d} has announced a newer state.
+	\item \texttt{a}, \texttt{b} and \texttt{c} now knows that they are a part of the synchronization and have read access. They expresses a \texttt{Sync} \gls{interest} with their state, receiving \texttt{Sync} \gls{data} whenever \texttt{d} has announced a newer state.
 \end{enumerate}
 
 \begin{figure}[ht]
