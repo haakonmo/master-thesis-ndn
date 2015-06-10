@@ -96,7 +96,7 @@ I do not assume that every device is a part of such trust chain before registrat
 The packet flow of the key preloading, done over e.g. \gls{NFC}, is shown in~\autoref{fig:init_ibe_1}.
 The device generates a temporary random key \texttt{tk} and together with the ID\textsubscript{d}, are loaded onto the \gls{PKG}.
 The device receives the ID\textsubscript{PKG} and the MPK\textsubscript{PKG} in return.
-Since $ID_{PKG} = Name_{PKG}$, the device now what \gls{name} the \texttt{Init} \gls{interest} should have.
+Since $ID_{PKG} = Name_{PKG}$, the device know the content \gls{name} the \texttt{Init} \gls{interest} should have.
 It can also verify signatures from the \gls{PKG}, with the MPK\textsubscript{PKG}. 
 Before phase 2, an admin user have to approve the requesting ID\textsubscript{d} and the corresponding \texttt{tk}.
 
