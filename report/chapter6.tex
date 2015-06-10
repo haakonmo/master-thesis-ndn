@@ -38,45 +38,47 @@ I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make
 
 Using \gls{ID} as public key eliminates the binding of ID and certificate. 
 Compared to ordinary \gls{PKI} where the recipient have to download the public key certificate to verify the digital signature.
-This is practical, less communication overhead to establish connection, lower energy consumption.
-\gls{IBC} implies less keys involved, IDs of each device have to be known and distributed anyway (IP addresses).
+This is practical and results in less communication overhead when establishing connection, and reduces energy consumption.
+\gls{IBC} implies less keys involved, only \gls{SK} and \gls{MPK} have to be stored at each device. 
+\gls{ID}s of each device have to be known and distributed anyway in existing sensor networks (IP addresses).
 Also, the mapping done by \gls{DNS} is eliminated, because IP addresses is no longer needed.
 Exchanging data between nodes can be done with cryptography completely without the \gls{PKG} after device registration.
-However, there is issue of having a \gls{TTP}, i.e. the \gls{PKG}.
+However, there is issue of having a \gls{TTP}.
 The \gls{PKG} generates all secret keys to every node in its trust domain. 
 This kind of trust model leads to a single point of failure.
 The model will only work for networks where users trust the \gls{PKG} because of the key escrow problem.
-This means that 1) the users do not care if the \gls{PKG} can monitor traffic or 2) they trust that the \gls{PKG} will not monitor traffic.
-In \gls{wsn} this should not be a problem.
+This means that 1) the users do not care that the \gls{PKG} can monitor traffic or 2) they trust that the \gls{PKG} will not monitor traffic.
+In \gls{wsn} this is not a problem.
 Typically networks that users might reacts to this kind of security structure could be telecommunication and email services. 
-However, there is limited security in these types of network now anyway. 
+However, there is limited security in these types of network anyway. 
 Telcos have full control over all data flowing through their servers and email actors such as Google states that their system is analyzing all content related to a Google user, including email~\cite{google_reads_email}.
 The problem is that these actors do not want to make all content opaque for themselves, because they use it for their business. 
 My point being, if this is going to be the case anyway in the future, when the network switches over to \gls{NDN} they could secure their systems with cryptography such as \gls{IBC} to make it more difficult for adversaries to eavesdrop or perform any other form of attacks.
 
-However, key revocation is a problem.
+Another problem is key revocation.
 In ordinary \gls{PKI} a device can create its own new key pair when compromised. 
-This is not possible with \gls{IBC}.
+This is not possible with \gls{IBC}, because the \gls{PKG} is needed to extract the \gls{SK}.
 One suggestion has been to add a timestamp to the \gls{name} (e.g. monthly), but this introduces overhead for the \gls{PKG} which has to renew private keys for everybody each month. 
 Also, one typically wants to reduce the time of vulnerability. 
 Worst case, an adversary could act as an legit user for a month.
 With the \gls{FSM} as a key distribution scheme, every user will be notified when an identity is revoked and replaced.
 
-Periodically renewal of keys might not be an issue in the \gls{HSS} due to its natural size of devices participating in such a network.
+However, periodically renewal of keys might not be an issue in the \gls{HSS} due to its natural size of devices participating in such a network.
 One does not always know when a SK\textsubscript{device} is compromised, and thus periodic renewal of secret keys is a security measure that might be worth the cost.
 
 Another problem occurs if the \gls{PKG} must renew its key pair, \gls{MSK} and \gls{MPK}.
 Then secret keys for all devices have to be renewed.
 
 A comparison of \gls{IBC} and other solutions is shown in~\autoref{tbl:ibc-pkc-comparison}.
+\todo{explain}
 \begin{table}[h]\footnotesize
   \begin{tabular}[c]{ | p{2cm} | p{1.5cm} | p{1cm} | p{1.2cm} | p{1cm} | p{1.3cm} | p{1.8cm} |}
   \hline 
-  & Key distribution & Number of keys & Key Directory & Digital certificate & Forward encryption & Nonrepudiation 	\\ \hline
-  Symmetric key cryptography 	& Problematic 	& $O(n^2)$ 	& At each node 					& No 	& No 	& No 	\\ \hline 
-  Random key predistribution 	& Simple 		& $O(n)$ 	& At each node 					& No 	& No 	& No 	\\ \hline
-  PKC 							& Complex 		& $O(n)$ 	& At each node and key center 	& Yes 	& No 	& Yes 	\\ \hline
-  IBC 							& Simple 		& $N$ 		& No 							& No 	& Yes 	& Yes 	\\ \hline
+  & Key distribution & Number of keys & Key Directory & Digital certificate & Forward encryption & Nonrepudiation  \\ \hline
+  Symmetric key cryptography 	 & Problematic 	   & $O(n^2)$ 	& At each node 					        & No 	& No 	& No 	   \\ \hline 
+  Random key predistribution 	 & Simple 		     & $O(n)$ 	  & At each node 					        & No 	& No 	& No 	   \\ \hline
+  PKC 							           & Complex 		     & $O(n)$ 	  & At each node and key center 	& Yes & No 	& Yes 	 \\ \hline
+  IBC 							           & Simple 		     & $N$ 		    & No 							              & No 	& Yes & Yes 	 \\ \hline
   \end{tabular}
   \caption[Comparison with PKC and IBC]{Comparison with PKC and IBC~\cite[Table 9.6]{Patil:2012:SWS:2464778}.}
   \label{tbl:ibc-pkc-comparison}
@@ -84,42 +86,42 @@ A comparison of \gls{IBC} and other solutions is shown in~\autoref{tbl:ibc-pkc-c
 
 \section{Application}
 There is some topics that should be discussed related to the security model in \gls{HSS}.
-The sharing of a temporary random key \texttt{tk} to register a device is assumed to be preloaded in an offline mode or done in a wired environment. 
+The sharing of a temporary random key \texttt{tk} to register a device is assumed to be preloaded in an offline mode or done in a controlled wired environment, i.e. not tapped. 
 \gls{NFC} signal is hard to eavesdrop outside a radius of 1 meter, thus the sharing is assumed to be secure.
 However, in scenarios where a node cannot share a \texttt{tk} in a physical manner, one have to rely on performing the device registration with some sort of asymmetric encryption. 
 But this solution introduces the question ``who is able to play the role as a device?''.
-This is a downfall that eliminates the authentication process that is performed when preloading the \texttt{tk}.
+The downfall is that it removes the authentication process that is performed when preloading the \texttt{tk}.
 
 Another question could be encrypting with same symmetric key for each data set, or using a unique key for each time the data set is requested.
 Encrypting with the same key limits the encryption computation for the device if several devices requests the same \gls{data}.
 Using a unique key each time \gls{data} is requested would be more secure, and thus can be used for more sensitive content.
-Using the same key on the same content would able the system to utilize the data propagation property \gls{NDN} facilitates.
+Using the same key on the same content would able the system to utilize the data propagation property that \gls{NDN} facilitates.
 
 One question left to be solved is how expensive the \texttt{Sync} \gls{interest} would be for each device. 
-The \texttt{Sync} \gls{interest} should be expressed periodically, but the frequency is not determined. 
+The \texttt{Sync} \gls{interest} should be expressed periodically for always having the updated ID-list. 
 In equivalent networks deployed over \gls{IP}, \texttt{Hello} messages is often used, hence the \texttt{Sync} \gls{interest} can be modified to be a combination of \texttt{Hello} and \texttt{Sync} \gls{interest}.
 
 \section{Scalability}
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
-However, this might not be a huge problem in the use cases that is addressed in this thesis, considering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices. 
+However, this might not be a huge problem in the use case which is addressed in this thesis.
+Lets set an upper limit for the ID to be 20 bytes. 
+Considering that the number of devices in the \gls{HSS} will not grow larger than e.g. 100 devices, the list will almost be 2 kilobyte of data ($(20B / 1024) * 100 = 1.95KB$). 
 In a sensor network where the number of sensor can exceed 1 million sensors, the list of every ID can be cumbersome for each device.
-Lets set an upper limit for the ID to be 20 bytes, then 1 million sensors will approximately require 19 megabyte of data, which will have to be synchronized:
-$(20B / 1024 / 1024) * 1 000 000 = 19.07MB$.
+1 million sensors will approximately require 19 megabyte of data ($(20B / 1024 / 1024) * 1 000 000 = 19.07MB$), which will have to be synchronized.
 However, in such sensor networks, each node does not need to know all other names, but rather the name its gateway, i.e. a \gls{sink_node}. 
 Such logic scheme is not implemented or considered a part of this thesis.
 
-\section{Synchronization}
-The synchronization application makes it possible for users to know who has a valid \gls{ID} within the \gls{PKG}s trust domain.
+\section{Key Distribution}
+The \gls{FSM} makes it possible for users to know who has a valid \gls{ID} within the \gls{PKG}s trust domain.
 One drawback with the key distribution scheme I have proposed, is \gls{DoS} on \texttt{Sync} \gls{interest} and \texttt{Sync} \gls{data}. 
 For the sender to be 100\% sure that the message is encrypted with the latest \gls{ID}, the sender has to rely on that it has received the latest sync state available from the \gls{PKG}.
-Likewise when a \gls{receiver} verifies a signature, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
-An adversary which has found a compromised \gls{SK}, can try to deny the distribution of the updated list, i.e. the \texttt{Sync} \gls{data}, from the distributor. 
-This is however a complicated attack and an updated list would spread fast.
+Likewise when a receiver verifies a signature from another device in the trust domain, it has to rely on the same principle to be able to know if the belonging \gls{ID} is still valid.
+In the case where an adversary has found a \gls{SK}, the \gls{SK} is compromised and the adversary can try to deny the distribution of a updated list, i.e. running a \gls{DoS} on the \texttt{Sync} \gls{data}, from the distributor. 
+This however, is a complicated attack.
+An updated list would spread fast in a large network.
 Performing \gls{DoS} on every node is not easy, and would block the network access for the adversary anyway.
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
-
-Since the scalability is not that big of an issue in this scenario, the monthly (or even more often) timestamp appended to the \gls{ID} might be a good solution to reduce the time of exposure if compromised without noticing.
 
 \section{Testing}
 The application is not tested with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.
@@ -127,23 +129,23 @@ However, there is done some research on \gls{ecc} in \gls{wsn}~\cite{DBLP:conf/i
 It is worth noticing that Yusnani Mohd Yussoff et al.~\cite{DBLP:journals/corr/abs-1207-6185} tested an \gls{IBC} implemenation on ARM prcessor, and measured energy consumption on a device with a processor that runs at 20mA, 3.6V with frequency 667MHz.
 
 An interesting question is the performance difference of \gls{IBC} versus RSA.
-In~\autoref{ibc-performance} we can see that \gls{IBC} is performing better on key generation, signing and verification than regular asymmetric cryptography, RSA. 
-However encryption and decryption of \gls{CEK} is not performing better with the \gls{IBE} schemes I use, but the difference is minimal compared to the results Xinwen Zhang et al. got in their implementation~\cite{DBLP:conf/icnp/ZhangCXWSW11}, i.e. 1.7 seconds difference with \gls{IBE} compared to RSA.
+In~\autoref{tbl:time_chart} we can see that \gls{IBC} is performing better on key generation, signing and verification than regular asymmetric cryptography, RSA. 
+However encryption and decryption of \gls{CEK} is not performing better with the \gls{IBE} schemes I use, but the difference is minimal compared to the results Xinwen Zhang et al. got in their implementation~\cite{DBLP:conf/icnp/ZhangCXWSW11}, which was 1.7 seconds difference with \gls{IBE} compared to RSA.
 
 Looking at~\autoref{tbl:rtt_chart} and studying the~\autoref{tbl:time_chart}, we can see that the time spent on each protocol can be correlated to the time spent doing \texttt{IBE Encrypting \gls{CEK}} and \texttt{IBE Decrypting \gls{CEK}} operations. 
 We can see that the data pull on C1 takes about 61 ms.
 This protocol involves one \texttt{IBE Encrypting \gls{CEK}} (41 ms) and one \texttt{IBE Decrypting \gls{CEK}} (20 ms). 
-Hence it seems that the \gls{IBC} requires most of the time.
+Hence it seems that the \gls{IBC} requires most of the time of this protocol.
 The results listed are done in a virtual environment, hence the total latency should be somewhat more in a deployed network.
 
 \section{Other Use Cases}
 The trust model used in the \gls{HSS} can be used in any network where the issues of having a \gls{TTP} is accepted. 
-Such a system can for instance be:
+Such systems can for instance be:
 \begin{enumerate}
 	\item Home automation systems
 	\item \gls{BAS}
 	\item \gls{BMS}
-	\item Health care
+	\item Health care systems
 	\item Military networks
 	\item Sensor networks such as disaster, habitat and hazard monitoring
 \end{enumerate}
