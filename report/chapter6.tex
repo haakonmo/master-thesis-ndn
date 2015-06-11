@@ -8,27 +8,22 @@ Scalability issues and other applicable networks for the application will be men
 \gls{NDN} facilitates a lot of concepts that shows to be a huge benefit for todays Internet, and the predicted increase of \gls{IoT}.
 The naming of content and content routing provides usability to \gls{IoT} and \gls{wsn}.
 Bandwidth redundancy in the network is reduced, security properties in network layer is provided, and the linkage between data and its publisher can easily be proven. 
-It is easier for machines to communicate directly, without having to connect through a router.
+It is easier for machines to communicate directly, without having to interconnect through a router.
 Broadcast and multicast comes naturally, hence wireless communication can be done in a simple manner.
 
 Developing applications on top of \gls{NDN} is easy once a basic perception of the \gls{NDN} architecture is understood.
 The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
 
 The concept of naming data introduces more simplicity, but also a new way of application design thinking.
-Addressing is dealt with in one place in the architecture compared to an equivalent system over \gls{IP}. 
+Addressing and security is dealt with in one place in the architecture compared to in an equivalent system over \gls{IP}. 
 A problem with \gls{wsn} in \gls{IP} networks, is that it is a limited number of \gls{IP} addresses (especially in \gls{IPv4}).
 So the global scalability issue arises due to the potentially large number of sensors that could be deployed. 
 With the naming rules in \gls{NDN}, this is not an issue.
 Security is easily applied in \gls{NDN} which is shown to be a huge problem to many systems nowadays.
 
 A huge advantage is that one can ask the network for content, and easily verify the signature.
-The \gls{interest} a \gls{requester} expresses, has the same content name as the \gls{data} received in return.
-Hence the signature will be signed by a \gls{SK}\textsubscript{publisher} corresponding to a part of the content name, the \gls{ID}\textsubscript{publisher}.
-
-% \gls{NDN} has met resistance when it comes to real-time services. 
-% Due to the resistance, many of the research projects have been motivated to prove this idea wrong.
-% ndnrtc, chronosync, chronochat.
-\todo{more} 
+The \gls{interest} a \gls{requester} expresses, has the same content \gls{name} as the \gls{data} received in return.
+Hence the signature will be signed by a \gls{SK}\textsubscript{publisher} corresponding to the \gls{ID} part of the content \gls{name}.
 
 \section{Identity-Based Cryptography in Named Data Networking}
 The concept of \gls{IBC} appears to be highly applicable to \gls{IoT} and \gls{wsn}~\cite{Patil:2012:SWS:2464778}.
@@ -43,7 +38,7 @@ This is practical and results in less communication overhead when establishing c
 \gls{ID}s of each device have to be known and distributed anyway in existing sensor networks (IP addresses).
 Also, the mapping done by \gls{DNS} is eliminated, because IP addresses is no longer needed.
 Exchanging data between nodes can be done with cryptography completely without the \gls{PKG} after device registration.
-However, there is issue of having a \gls{TTP}.
+However, there is an issue of having a \gls{TTP}.
 The \gls{PKG} generates all secret keys to every node in its trust domain. 
 This kind of trust model leads to a single point of failure.
 The model will only work for networks where users trust the \gls{PKG} because of the key escrow problem.
@@ -70,7 +65,10 @@ Another problem occurs if the \gls{PKG} must renew its key pair, \gls{MSK} and \
 Then secret keys for all devices have to be renewed.
 
 A comparison of \gls{IBC} and other solutions is shown in~\autoref{tbl:ibc-pkc-comparison}.
-\todo{explain}
+In \gls{IBC}, the number of keys a node has to manage is smaller than any other solution. 
+There is no need for digital certificates, and it is not possible to forge a signature.
+Compromise of a single \gls{CEK}, will only lead to compromise of the content which was encrypted using this key.
+Compromise of a \gls{SK}, will only lead to compromise of the device which holds the corresponding ID.
 \begin{table}[h]\footnotesize
   \begin{tabular}[c]{ | p{2cm} | p{1.5cm} | p{1cm} | p{1.2cm} | p{1cm} | p{1.3cm} | p{1.8cm} |}
   \hline 
@@ -125,8 +123,6 @@ All applications that relies on some sort of crucial information derived using \
 
 \section{Testing}
 The application is not tested with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.
-However, there is done some research on \gls{ecc} in \gls{wsn}~\cite{DBLP:conf/ipsn/LiuN08, DBLP:conf/ewsn/SzczechowiakOSCD08} and \gls{IBC}s applicability to \gls{wsn}~\cite{DBLP:journals/iacr/OliveiraAMDLD07}.
-It is worth noticing that Yusnani Mohd Yussoff et al.~\cite{DBLP:journals/corr/abs-1207-6185} tested an \gls{IBC} implemenation on ARM prcessor, and measured energy consumption on a device with a processor that runs at 20mA, 3.6V with frequency 667MHz.
 
 An interesting question is the performance difference of \gls{IBC} versus RSA.
 In~\autoref{tbl:time_chart} we can see that \gls{IBC} is performing better on key generation, signing and verification than regular asymmetric cryptography, RSA. 

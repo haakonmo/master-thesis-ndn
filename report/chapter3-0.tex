@@ -52,7 +52,7 @@ In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as wel
 \texttt{device0}, which do not have a \gls{SK} generated from the \texttt{PKG} and thus is not a part of the trust domain, sends a request to \texttt{device1} that is declined.
 
 \begin{enumerate}\label{ibc-methods}
-  \item \texttt{Setup()} generates a key pair, \gls{MPK} and \gls{MSK}. 
+  \item \texttt{Setup()} generates the key pair \texttt{(\gls{MPK}, \gls{MSK})}. 
   These keys are used by only the \gls{PKG} to extracting secret keys, encryption and decryption.
   \item \texttt{Extract(MPK\textsubscript{PKG}, MSK\textsubscript{PKG}, ID\textsubscript{device})} generates a secret key from a given ID. 
   \item \texttt{Encrypt(MPK\textsubscript{PKG}, ID\textsubscript{device}, message)} encrypts the message.
@@ -64,7 +64,14 @@ In return the \texttt{device1} receives the \texttt{SK\textsubscript{d1}} as wel
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{pkg_functions.png}
-  \caption[IBC methods]{Methods of an IBC systems illustrated in practice.}
+  \caption[IBC methods]{Methods of an IBC systems illustrated in practice.
+  The PKG calls \texttt{Setup()} which generates the key pair \texttt{(MPK, MSK)}.
+  Device1 then requests registration by sending its ID\textsubscript{d1} to the PKG.
+  PKG extracts the SK\textsubscript{d1} composing the key pair \texttt{(ID\textsubscript{d1}, SK\textsubscript{d1})}.
+  After retrieving the SK\textsubscript{d1}, device1 receives an request for a resource, signed by another device in the trust domain.
+  The request is verified and the resource requested is encrypted and sent as a response.
+  Finally, device2 verifies the response and decrypts the resource content.
+  Device0 requests the same resource, but the request is denied because the verification fails, due to its inadequate signature.}
   \label{fig:pkg_functions}
 \end{figure}
 

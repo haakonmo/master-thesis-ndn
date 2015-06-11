@@ -1,7 +1,7 @@
 \chapter{Sensor Application}\label{sensor-application}
 In this chapter the sensor application will be presented. 
-Several sequence diagrams will be proposed and explained, as well as concepts needed to understand the flow of the application. 
-\todo{better ingress}
+I present the threat model, the application protocols \textit{device registration} and \textit{data pull}, and finally an informal secure analysis of these protocols and the whole system. 
+I also present a more formal analysis by modeling the protocols in \gls{spdl}.
 
 \section{Health Sensors}
 There is an ongoing discussion of when the health technology revolution will come to human bodies now that \gls{IoT} have become so popular.
@@ -434,13 +434,14 @@ This is also why I have chosen to append the MPK in the packet~\autoref{fig:sens
 
 \subsection{Trust Model}
 For a system to be secure, cryptography together with trust is essential. 
-The \gls{HSS} trust model is built upon trusting a centralized authority (typically the users' home server), rendezvous authentication and \gls{IBC}.
+The \gls{HSS} trust model is built upon trusting a centralized authority (typically the user's home server), rendezvous authentication and \gls{IBC}.
 The fact that it runs over \gls{NDN} makes it easier to achieve security goals and usability for developers.
 
-The \gls{PK} is the \gls{name} of the device, and all content published by the device will begin with this \gls{name}, hence it is easy to verify that the \gls{publisher} is the owner of the content.
+The \gls{ID} is the \gls{name} of the device, and all content published by the device will begin with this \gls{name}, hence it is easy to verify that the \gls{publisher} is the owner of the content.
 To be able to verify and encrypt messages, the device need the MPK\textsubscript{PKG} and the ID of the user it wants to communicate with. 
-If allowed by the PKG, the public parameters MPK\textsubscript{PKG} is public for everybody that is not a part of the trust domain. 
-To be able to sign and decrypt messages the device have to be a member of the trust domain and be issued a secret key mapping to the ID\textsubscript{device}.
-Each device builds its trust on other devices based on that it has been verified by an administrator that controls the \gls{PKG}.
+If allowed by the PKG, the public parameters MPK\textsubscript{PKG} is public for everybody that is not a part of the trust domain as well. 
+To be able to sign and decrypt messages the device has to be verified by an administrator that controls the \gls{PKG} and be issued a \gls{SK} such that \texttt{(ID\textsubscript{device}, SK\textsubscript{device})}. 
+Because every device trust its administrator and likewise is trusted by its administrator, each device should trust other devices after verifying their signature.
+As stated, it is assumed that an adversary do not obtain a polynomial time algorithm that can forge a valid signature or forge a valid \gls{SK}.
 
-\todo{more relevant}
+As proposed, the application should follow the least privilege access principle.

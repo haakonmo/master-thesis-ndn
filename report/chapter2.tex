@@ -354,25 +354,29 @@ The \gls{NDN} network is also potentially susceptible to content poisoning attac
 The work in this thesis builds upon three main concepts: synchronization, theoretical sensor networking and \gls{IBC}. 
 Some related work done will shortly be presented in this section.
 
-\subsection{Synchronization}
 There have been done work to show that \gls{NDN} is well suited for synchronization. 
 A synchronization application built by the \gls{NDN}-team is ChronoSync~\cite{DBLP:conf/icnp/ZhuA13}.
 As explained in~\autoref{chp3:file-sync}, I use ChronoSync to achieve synchronization of files over \gls{NDN}.
 There is also an application called iSync~\cite{DBLP:conf/acmicn/FuAC14}, which is a scalable and high performance synchronization protocol.
 
-\subsection{Secure Data Retrieval from Sensors}
 Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of \gls{data} from different wireless producers which can answer to the same \gls{interest} packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in \textit{this} room.
 In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate \gls{data} aggregation in wireless sensor networks.
 Jeff Burke et al. addresses efficient and secure sensing over \gls{NDN}~\cite{DBLP:conf/nca/BurkeGNT14}.
 Burke has also contributed in developing and installing a system that secures building management systems at \gls{UCLA} using \gls{NDN}~\cite{DBLP:journals/network/ShangDMBZ14}.
 
-\subsection{Identity-Based Cryptography}
 There is little research done on \gls{IBC} in \gls{NDN}. 
 In~\cite{DBLP:conf/icnp/ZhangCXWSW11} Xinwen Zhang et al. propose a hybrid scheme with traditional \gls{PKI} and \gls{IBC}.
 
+There is done some research on \gls{ecc} in \gls{wsn}~\cite{DBLP:conf/ipsn/LiuN08, DBLP:conf/ewsn/SzczechowiakOSCD08}.
 Leonardo B. Oliveira et al.~\cite{DBLP:journals/iacr/OliveiraAMDLD07} argued in 2007 that \gls{IBE} is applicable to \gls{wsn}.
 Oliveira et al. measured on a MICAz node (with the ATmega128 microcontroller, 8-bit/7.38 MHz processor, 4KB SRAM, 128KB flash memory) running TinyOS that the average execution time to compute a pairing is 30.21s. 
+It is worth noticing that Yusnani Mohd Yussoff et al.~\cite{DBLP:journals/corr/abs-1207-6185} tested an \gls{IBC} implemenation on ARM prcessor, and measured energy consumption on a device with a processor that runs at 20mA, 3.6V with frequency 667MHz to be 26.9 mJ.
 
-Harsh Kupwade Patil and Stephen A. Szygenda, security for \gls{wsn} using \gls{IBE}~\cite{Patil:2012:SWS:2464778}.
+Harsh Kupwade Patil and Stephen A. Szygenda have wrote a book about security for \gls{wsn} using \gls{IBE}~\cite{Patil:2012:SWS:2464778}.
+The book explains relevant concepts in addition to summarize many research papers within the scope.
 
-\todo{more..}
+My contribution is unique due to 
+\begin{itemize}
+  \item the combination of using \gls{IBC} in a \gls{wsn} setting, running over \gls{NDN}.
+  \item the protocol proposals for \textit{device registration} and \textit{data pull} in a sensor network.
+\end{itemize}
