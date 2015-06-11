@@ -18,39 +18,32 @@ and subsequent work, that may be revisited and applicable to \gls{NDN}.
 
 \section{Problem and Scope}
 
-When designing a new network protocol for the future Internet, one of the most significant changes should be security.
+Designing a new network protocol for the future Internet, one of the most significant changes should be security.
 Trust management plays a big part in security, and thus we cannot design trust management on known \gls{IP} failures such as X.500. 
 \gls{PKI} is a tough challenge to solve and it is probably not rigid solution, but rather case specific.
 \gls{NDN} is being designed with security in mind, but the issue of trust management is yet to be solved.
 
 In addition to the problem description, I also address the trust management issue in a thought sensor device network using \gls{IBC}.
-By using the \gls{NFD} I will implement my proposal for such a sensor network over \gls{NDN}, and contribute with ideas and concepts around such a network.
+By using the \gls{NFD} I will implement my proposal for such sensor network over \gls{NDN}, and contribute with ideas and concepts around such network.
 
 \section{Methodology}
 
-First I design the application flow in sequence diagrams.
-Based on how \gls{NDN} is designed, I try to implement the proposed design and see where changes can be made to minimize communication overhead, maximize security (i.e. \gls{CIA}) and usability.
-The implementation will be tested and discussed.
+When developing applications over \gls{NDN} it is important to understand the architecture of the protocol. 
+I study the protocol, reading the guide for NDN developers~\cite{NDN-0021} and papers published by the \gls{NDN}-team\footnote{NDN Publications - http://named-data.net/publications/} describing protocol features in addition to existing applications running over \gls{NDN}.
+
+Applying \gls{IBC} to \gls{NDN}, the concept should be thoroughly understood.
+Thus I study \gls{IBC}, finding relevant papers at Google Scholar\footnote{Google Scholar - https://scholar.google.no/}.
+
+Establishing a solid background knowledge in these topics, I first design the application flow in sequence diagrams.
+Based on the \gls{API} to the \gls{PyNDN2}, I try to implement the proposed design and see where changes can be made to minimize communication overhead, maximize security (i.e. \gls{CIA}) and usability.
+The implementation will be tested and cryptographic parameters will be measured.
+Finally I discuss the work done.
 
 \section{Outline}
 
 This thesis will first introduce \gls{NDN}, one of the proposed protocols for the future Internet.
 I will explain the architecture of \gls{NDN} as well as some related work regarding my application proposal and \gls{IBC}. 
-The concept of \gls{IBC} will also be explained and the application, \gls{HSS}, will be explained in detail and implementation choices will be discussed.
-At last I will present the results of the implementation and result, a discussion around the research topics in the thesis and finally my conclusion around the same topics.
-
-\section{Notations}
-Notations used throughout in this thesis is listed in~\autoref{tbl:notations}.
-\begin{table}[h]
-  \begin{tabular}[c]{p{0.5\textwidth}p{0.5\textwidth}}
-  \hline
-  Symbol                    & Description                               \\ \hline
-  MPK\textsubscript{i}      & Master Public Key belonging to i          \\ %\hline
-  MSK\textsubscript{i}      & Master Secret Key belonging to i          \\ %\hline
-  SK\textsubscript{i}       & Secret Key (private key) belonging to i   \\ %\hline
-  PK\textsubscript{i}       & Public Key belonging to i                 \\ %\hline
-  ID\textsubscript{i}       & Identity belonging to i                   \\ %\hline
-  \end{tabular}
-  \caption[IBC Notations]{IBC notations used throughout the thesis.}
-  \label{tbl:notations}
-\end{table}
+The concept of \gls{IBC} will also be explained.
+The specifications for the \gls{HSS} application will be explained in detail and implementation choices will be discussed.
+I will present the results of the implementation and testing.
+At last, a discussion around the research topics in the thesis will be presented and finally my conclusion around the same topics.

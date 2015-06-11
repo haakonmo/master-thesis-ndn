@@ -2,6 +2,22 @@
 This chapter will present the concept of \gls{IBE} and \gls{IBS}, and why it is highly applicable to use this type of cryptography in \gls{NDN}. 
 The possibilities to use the file synchronization module to do key distribution and revocation will be introduced.
 
+\section{Notations}
+Notations related to \gls{IBC} used throughout this thesis is listed in~\autoref{tbl:notations}.
+\begin{table}[h]
+  \begin{tabular}[c]{p{0.5\textwidth}p{0.5\textwidth}}
+  \hline
+  Symbol                    & Description                               \\ \hline
+  MPK\textsubscript{i}      & Master Public Key belonging to i          \\ %\hline
+  MSK\textsubscript{i}      & Master Secret Key belonging to i          \\ %\hline
+  SK\textsubscript{i}       & Secret Key (private key) belonging to i   \\ %\hline
+  PK\textsubscript{i}       & Public Key belonging to i                 \\ %\hline
+  ID\textsubscript{i}       & Identity belonging to i                   \\ %\hline
+  \end{tabular}
+  \caption[IBC Notations]{IBC notations used throughout the thesis.}
+  \label{tbl:notations}
+\end{table}
+
 \section{Concept}\label{ibc}
 \gls{IBE} was first proposed by Shamir~\cite{DBLP:conf/crypto/Shamir84} in 1984. 
 Shamir proposed a scheme for \gls{IBS}, but not a scheme for \gls{IBE}. 
