@@ -82,12 +82,16 @@ To publish some content to the network, a user have to register the prefix, i.e.
 The retrieval can only be achieved if someone expresses an \gls{interest} to the content \gls{name}.
 If a user expresses \gls{interest} in the \gls{name}, the network will route the \gls{interest} to the closest \gls{node} that holds the \gls{data}. 
 The \gls{data} packet can be retrieved from any \gls{node}, trusted or not, over any type of communication channel, secure or not. 
-Finally the requester will receive the \gls{data} packet containing the content.
+This is due to that the network layer demands a signature from the content's \gls{publisher}.
+Finally the \gls{requester} will receive the \gls{data} packet containing the content requested.
 The \gls{data} can be verified by the requester ensuring that the \gls{publisher} who ``owns'' the content actually is the owner, because its cryptographically signed.
-It is because of the signature we can retrieve the \gls{data} from any \gls{node}.
-If confidentiality is needed, the \gls{data} can be encrypted itself. 
+If confidentiality is needed, the \gls{data} can be encrypted, thus the communication channel does not need to be secured. 
 
-\todo{more}
+A \gls{NDN} node is slightly different to an \gls{IP} node. 
+Since the \gls{data} is linked to a \gls{name} and signed by its \gls{publisher}, the node can cache the \gls{data} and be able to satisfy other \texttt{Interests} to the same \gls{data}. 
+This provides natural \gls{multicast} in the network, and will ease the network load drastically.
+
+Securing the \gls{data} rather than the connection, leads to a network where one can easily verify the connection between content and its \gls{publisher}.
 
 \subsection{NDN - Based on Existing Concepts}
 The goal for the network design is essentially making it more secure and applicable for content without removing the communication service that \gls{IP} was designed for. 
@@ -198,13 +202,13 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
 
 In contrary to an \gls{IP} node, a \gls{NDN} node knows \textit{what} content comes through itself. 
 Since all content is associated with a \gls{name}, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. stored in \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
-With this knowledge the network can now satisfy \texttt{Interests} with content already stored in cache, hence the network can naturally offer multicast on network layer.
+With this knowledge the network can now satisfy \texttt{Interests} with content already stored in cache, hence the network can naturally offer \gls{multicast} on network layer.
 ~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly have to send equal amount of content than in an \gls{IP} network.
 The mobile expresses an \gls{interest} (1) in a file named \path{/ntnu/file1}.
 The \gls{interest} finds its way to the \gls{publisher} of the file, and thus the \gls{publisher} responds with a \gls{data} packet (2) named \path{/ntnu/file1} containing the file, and the \gls{data} finds it way back to the mobile.
 When the second computer expresses the same \gls{interest} (3), the consecutive node has already cached the \gls{data} response matching to the \gls{interest} in its \gls{CS}, hence the \gls{interest} is satisfied already at this point (4), and not forwarded any further.
 Same happens when the third computer expresses again the same \gls{interest} (5) to the network.
-Given that the file (\path{/ntnu/file1}) these computers are interested in is 4 gigabyte, the network saves a lot of traffic with multicast provided by \gls{NDN}.
+Given that the file (\path{/ntnu/file1}) these computers are interested in is 4 gigabyte, the network saves a lot of traffic with \gls{multicast} provided by \gls{NDN}.
 Best case scenario in \gls{NDN} is illustrated in~\autoref{tbl:node_comparison-ip-ndn}.
 Every node is saving bandwidth in a \gls{NDN} network compared to nodes in an \gls{IP} network.
 Worst case scenario, where cached \gls{data} is thrown away, the \gls{NDN} nodes will perform equal to the \gls{IP} nodes.
@@ -260,14 +264,23 @@ The node checks the \gls{data} from local applications cached in \gls{CS} first,
 \subsection{Security}\label{ndn-security}
 Below I will present why \gls{NDN} facilitates good security properties, explaining some of the security aspects around \gls{NDN} discussed in~\cite{secure-network-content}, and the difference in securing data and securing channel.
 
-\todo{addressing figure ndn vs ip}
-
 \subsubsection{Trusting Host versus Trusting Content}
 Doing a whole lot of mapping at different layers is not a good security model.
 Each mapping introduces a potentially vulnerable target for forgery.
 The \gls{IP} network is designed in a way that makes us want to trust the host.
 What we are actually trusting is the mapping of the \gls{URL} to the \gls{IP} address.
 \gls{DNS} points to a host address that speaks for the \gls{URL} you are interested in, and thus if someone manages to forge this address exploiting \gls{dnssec}, you cannot tell if you talk to the right host.
+
+As seen in~\autoref{fig:ndn-vs-ip-architecture} the security in \gls{NDN} is dealt with in one layer, rather than over several layer as needed in the \gls{IP} architecture, i.e. \gls{TLS}, \gls{dnssec}, \gls{IPsec}, etc.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{ndn-vs-ip-architecture.png}
+  \caption[NDN versus IP architecture]{NDN versus IP architecture. 
+  The building blocks of the NDN architecture are named content chunks, in contrast to the IP architecture's fundamental unit of communication, which is a point-to-point channel between to endpoints identified by IP addresses.
+  ~\cite{DBLP:journals/ccr/0001ABJcCPWZ14}.
+  }
+  \label{fig:ndn-vs-ip-architecture}
+\end{figure}
 
 The content is rarely encrypted and the confidentiality is not preserved, unless there is established a secure channel using e.g. \gls{TLS}.
 This is a problem due to the issues concerning tampering and eavesdropping.
