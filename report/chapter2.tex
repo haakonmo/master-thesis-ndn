@@ -1,7 +1,7 @@
 \chapter{Background}\label{chp:background} 
 \chapterprecishere{"We model the future on the past. Sometimes that’s a mistake."\par\raggedleft--- \textup{Van Jacobsen}, SIGCOMM 2001}
 
-This chapter will give a brief overlook of the motivation for \gls{ICN}, as well as explaining more details of the \gls{ICN} protocol \gls{NDN}.
+This chapter will give a brief overlook of the motivation for \gls{ICN}, as well as explaining details of the \gls{ICN} protocol \gls{NDN}.
 The \gls{NDN} architecture will be reviewed.
 Finally there will be a quick summary of related work to this thesis.
 
@@ -37,7 +37,7 @@ With this in mind, the \gls{IP} architecture does not provide an efficient trans
 When designing the \gls{IP} network, security was not the first priority.
 A logical thought considering that they did not know what the Internet is being used for nowadays and how big it has become.
 Many protocols related to Internet has been designed and deployed mainly with the goal of functionality, not thinking about security.
-In the years after the birth of Internet, it was discovered that Internet needed security at several layers, due to the increase of application requirements and transmission importance.
+In the years after the birth of Internet it was discovered that Internet needed security at several layers, due to the increase of application requirements and transmission importance.
 \gls{IPsec} is a very good example of work trying to patch up security flaws in the design of Internet.
 
 Today, WiFi is disseminated across homes and buildings in many countries. 
@@ -101,9 +101,9 @@ Some examples are:
 \begin{itemize}
   \item BitTorrent - 
   The concept of sharing bits of files between peers in a network is a well-working distributed method for sharing content. 
-  Requesters does not care where the content come from, but only that the content is what is requested.
+  Requesters do not care where the content come from, but only that the content is what is requested.
   \item \gls{CDN} - 
-  Many \gls{ASP}s, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their data close to where the users is located.
+  Many \gls{ASP}, such as Netflix and YouTube, have found out that their service performs a lot better for their costumers if they cache up their data close to where the users is located.
 \end{itemize}
 
 \subsection{Packets}\label{packets}
@@ -137,14 +137,14 @@ This is used to uniquely identify an \gls{interest} and prevent looping in the n
 
 The \gls{data} packet is a response to the \gls{interest} packet, and contains the content \gls{name} and the Content itself.
 It also has a MetaInfo field that is used to specify the FreshnessPeriod (milliseconds), ContentType and FinalBlockId. 
-When somebody requests a file ``/ndn/no/ntnu/haakon/file/1'' with an \gls{interest}, the response will have the same \gls{name}, but also containing the file.
+When someone requests a file ``/ndn/no/ntnu/haakon/file/1'' with an \gls{interest}, the response will have the same \gls{name}, but also containing the file.
 
-Because a \gls{data} packet can only exists if there is a corresponding \gls{interest}, \gls{NDN} is pull-based.
+Because a \gls{data} packet can only exist if there is a corresponding \gls{interest}, \gls{NDN} is pull-based.
 Hence unsolicited \gls{data} packets will be thrown away, i.e. there is no content in the network, that is not requested from someone.
 This reduces unwanted traffic compared to \gls{UDP} in \gls{IP}, and minimizes the \gls{DoS} vulnerability drastically.
 
 \subsection{Names}\label{name}
-In todays Internet we are well familiar with the mapping of \gls{URL} and \gls{IP} addresses.
+In today's Internet we are well familiar with the mapping of \gls{URL} and \gls{IP} addresses.
 This mapping, done by the \gls{DNS}, eases the pain of remembering an \gls{IPv4} (32-bit) address and lately also \gls{IPv6} (128-bit) addresses.
 
 In a \gls{NDN} network a \gls{node} does not have an address nor a \gls{name}.
@@ -359,7 +359,7 @@ A synchronization application built by the \gls{NDN}-team is ChronoSync~\cite{DB
 As explained in~\autoref{chp3:file-sync}, I use ChronoSync to achieve synchronization of files over \gls{NDN}.
 There is also an application called iSync~\cite{DBLP:conf/acmicn/FuAC14}, which is a scalable and high performance synchronization protocol.
 
-Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of \gls{data} from different wireless producers which can answer to the same \gls{interest} packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in \textit{this} room.
+Amadeo et al.~\cite{DBLP:conf/acmicn/AmadeoCM14} propose a solution for reliable retrieval of \gls{data} from different wireless producers which can answer to the same \gls{interest} packet. This is highly applicable to a sensor network where you want to communicate with the closest sensor, e.g. the light in this room.
 In~\cite{DBLP:conf/noms/AbidySLF14} Abid et al. simulate \gls{data} aggregation in wireless sensor networks.
 Jeff Burke et al. addresses efficient and secure sensing over \gls{NDN}~\cite{DBLP:conf/nca/BurkeGNT14}.
 Burke has also contributed in developing and installing a system that secures building management systems at \gls{UCLA} using \gls{NDN}~\cite{DBLP:journals/network/ShangDMBZ14}.
