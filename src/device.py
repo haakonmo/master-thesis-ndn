@@ -33,7 +33,7 @@ from identityBasedCrypto import IbeWaters09, IbsWaters
 
 class Device(object):
 
-    def __init__(self, face, baseName, deviceName):
+    def __init__(self, face, baseName, deviceName, presharedKey):
         """
         Initialize:
             Identity-Based Encryption scheme
@@ -48,6 +48,8 @@ class Device(object):
         self.ibs_scheme = IbsWaters()
 
         self.face = face
+        
+        self.presharedKey = presharedKey
 
         self.baseName = Name(baseName)
         self.deviceName = Name(self.baseName).append(deviceName)
@@ -276,14 +278,14 @@ class Device(object):
         Send the Interest
         """
         self.initRequestStart = time.clock()
-        # Create a keyPair for initialization process
-        (master_public_key, master_secret_key) = self.ibe_scheme.setup()
-        self.temp_master_public_key = master_public_key
-        ID = self.deviceName.toUri()
-        self.temp_private_key = self.ibe_scheme.extract(master_public_key, master_secret_key, ID)
 
+        ID = self.deviceName.toUri()
         # Make each init unique with a session
         session = str(int(round(util.getNowMilliseconds() / 1000.0)))
+
+        a = SymmetricCryptoAbstraction(self.presharedKey)
+        message = {"ID":ID, "nonce":session}
+        cipher = a.encrypt(message)
 
         #TODO append tempMpk to name , as base64 encoded
         encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
@@ -292,7 +294,7 @@ class Device(object):
         # interest.setMinSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(Name(self.deviceName).append(str(messageBuf_pb2.Message.WATERS09)).append(encodedTempMasterPublicKey))
+        keyLocator.setKeyName(Name(self.deviceName).append(cipher))
         interest.setKeyLocator(keyLocator)
 
         logging.info("Expressing interest name: " + name.toUri())

@@ -4,7 +4,7 @@ I present the threat model, the application protocols \textit{device registratio
 I also present a more formal analysis by modeling the protocols in \gls{spdl}.
 
 \section{Health Sensors}
-There is an ongoing discussion of when the health technology revolution will come to human bodies now that \gls{IoT} have become so popular.
+There is an ongoing discussion of when the health technology revolution will come to human bodies now that \gls{IoT} has become so popular.
 By revolution, I mean sensors placed in the human body. 
 Sensors that can read your blood pressure, heart rate and measure insulin levels.
 Sensors that can detect whether your body is missing a substance, or if it is poisoned. 
@@ -36,7 +36,7 @@ The \gls{CGM} reports periodically to the insulin pump, and all sensors reports 
 \end{figure}
 
 \section{Health Sensor System}\label{hss}
-To have a secure system, it needs to be established trust between the sensors and the devices.
+To obtain a secure system, trust have to be established between the sensors and the devices.
 There need to be integrity controls, confidentiality protection and access control. 
 In the following sections, I will describe the protocols suggested for achieving the mentioned goals.
 
@@ -68,7 +68,7 @@ Using \gls{HIBC}, one can extend the key hierarchy by another level that is time
 These time-based keys can then be downloaded to the mobile on a daily basis, hence the time the mobile will be compromised is reduced.
 
 \subsection{System Initialization Phase}
-When The Stig is setting up his \gls{HSS}, first he have to configure the \gls{PKG}. 
+When The Stig is setting up his \gls{HSS}, first he has to configure the \gls{PKG}. 
 Any type of computer can play the role of the \gls{PKG} and The Stig has chosen his home server, from now ``the PKG''.
 The Stig is now the only admin user in the system, hence he has full control over which device that should be granted access to the trust domain.
 The \gls{PKG} runs the \texttt{Setup()} which creates key pairs that is used to do \gls{IBE} and \gls{IBS}.
@@ -81,7 +81,7 @@ For the protocol to be secure, there are several issues that need to be addresse
 1) The response message containing the secret key has to be encrypted. 
 This can be achieved by using a pre-shared symmetric key to do encryption on the \gls{SK}.
 2) The response message has to be signed by the \gls{PKG} for integrity and authenticity reasons.
-3) A nonce have to be present for replay protection.
+3) A nonce has to be present for replay protection.
 The pre-shared symmetric key should be a temporary random generated key. 
 Thus the device registration \gls{interest} between the device and the \gls{PKG} can be unique.
 This implies that the device can authenticate itself in a way that an adversary cannot do.
@@ -92,13 +92,13 @@ Phase 2 is the \gls{SK} allocation, illustrated in~\autoref{fig:init_ibe_2}.
 
 \textit{Phase 1}.
 Trust is difficult to be established without a rendezvous authentication or any form of pre-established trust chain like e.g. a certificate chain.
-I do not assume that every device is a part of such trust chain before registration, and thus the trust between the device and the \gls{PKG} have to be based on the concept explained in~\autoref{rendezvous_authentication}, with manually inspection of the device and preloading of a temporary random key \texttt{tk}.
+I do not assume that every device is a part of such trust chain before registration, and thus the trust between the device and the \gls{PKG} has to be based on the concept explained in~\autoref{rendezvous_authentication}, with manually inspection of the device and preloading of a temporary random key \texttt{tk}.
 The packet flow of the key preloading, done over e.g. \gls{NFC}, is shown in~\autoref{fig:init_ibe_1}.
 The device generates a temporary random key \texttt{tk} and together with the ID\textsubscript{d}, are loaded onto the \gls{PKG}.
 The device receives the ID\textsubscript{PKG} and the MPK\textsubscript{PKG} in return.
 Since $ID_{PKG} = Name_{PKG}$, the device know the content \gls{name} the \texttt{Init} \gls{interest} should have.
 It can also verify signatures from the \gls{PKG}, with the MPK\textsubscript{PKG}. 
-Before phase 2, an admin user have to approve the requesting ID\textsubscript{d} and the corresponding \texttt{tk}.
+Before phase 2, an admin user has to approve the requesting ID\textsubscript{d} and the corresponding \texttt{tk}.
 
 \begin{figure}[ht]
   \centering
@@ -131,13 +131,13 @@ Before phase 2, an admin user have to approve the requesting ID\textsubscript{d}
   \caption[Device Registration, phase 1]{Device Registration, phase 1.
   The messages are exchanged through e.g. NFC (\autoref{rendezvous_authentication}), and thus are protected against any adversaries outside the range of the NFC signal (\textasciitilde{1} meter).
   At first the Device generates a temporary random key \texttt{tk} and sends this key together with its \texttt{ID\textsubscript{d}} to the PKG. 
-  The PKG responds with its \texttt{ID\textsubscript{PKG}} and finally an admin user have to approve the requesting device. 
+  The PKG responds with its \texttt{ID\textsubscript{PKG}} and finally an admin user has to approve the requesting device. 
   }
   \label{fig:init_ibe_1}
 \end{figure}
 
 \textit{Phase 2}.
-Now that both the device and the \gls{PKG} possesses the shared secret \texttt{tk} and the device have been approved by an admin user, phase 2 can begin.
+Now that both the device and the \gls{PKG} possesses the shared secret \texttt{tk} and the device has been approved by an admin user, phase 2 can begin.
 The device sends an \texttt{Init} \gls{interest} that contains its ID\textsubscript{d} and a nonce which is encrypted with the \texttt{tk}.
 The \gls{PKG} decrypts the message and uses the received ID\textsubscript{d} to extract the \gls{SK} for the device (this will be the \gls{SK}\textsubscript{d} belonging to the \gls{PKG}s trust domain) and uses the \texttt{tk} to do symmetric \gls{AES} encryption on the secret key. 
 The \gls{data} response to the \texttt{Init} \gls{interest} will contain the encrypted \gls{SK}\textsubscript{d}, the nonce and a signature.
@@ -242,7 +242,7 @@ Thus the signature protects against \gls{MITM} attacks.
 The \gls{SK} will be encrypted with the pre-shared temporary random key \texttt{tk}, and thus the confidentiality is preserved.
 An adversary will only be able to know the \gls{MPK}, cipher texts, signatures and both IDs, which is not required to be confidential and not sufficient to compute the \gls{SK} that is extracted. 
 The adversary do not obtain a polynomial time algorithm that can forge the signature or the \texttt{tk} from the known parameters.
-Hence an adversary have to obtain a algorithm to compute the \gls{SK}s, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
+Hence an adversary has to obtain a algorithm to compute the \gls{SK}s, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
 
 \textit{Replay}.
 Since the adversary cannot compute \texttt{tk} nor forge the signature, it cannot send encrypted, signed \gls{interest} nor \gls{data} that is captured at any arbitrary point. 
@@ -371,7 +371,7 @@ When a resource is requested, the \gls{publisher} will do an access control to d
 The \gls{CEK} will be asymmetrically encrypted, and the resource data will be symmetrically encrypted, thus both key and data is confidential and only available to whoever has the corresponding \gls{SK}\textsubscript{requester} to the ID\textsubscript{requester}.
 An adversary will only be able to know the \gls{MPK}, nonce, request, cipher and both IDs, which is not required to be confidential and not sufficient to compute the resource data. 
 The adversary do not obtain a polynomial time algorithm that can compute the resource data from the cipher and other known parameters.
-Hence an adversary have to obtain a algorithm to compute the \gls{SK}s, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
+Hence an adversary has to obtain a algorithm to compute the \gls{SK}s, which is the same polynomial time algorithm as in the sub section above that the adversary do not have access to.
 
 \textit{Replay}.
 Since the adversary cannot forge the signature, it cannot send \gls{interest} nor \gls{data} that is captured at any arbitrary point. 
@@ -404,7 +404,7 @@ This approach has some additional benefits for the \gls{HSS}, such as
   \item delegation support - 
   A device can grant access rights to other devices, as well as granting the right to further delegate these rights to a third device.
   \item capability revocation - 
-  If the \gls{PKG} have granted delegation rights to a mobile, and the mobile is not found trustworthy after some time, the capabilities issued by the mobile can easily be revoked.
+  If the \gls{PKG} has granted delegation rights to a mobile, and the mobile is not found trustworthy after some time, the capabilities issued by the mobile can easily be revoked.
   \item information granularity - 
   Specific resources from a device can be granted access to in different granularity.
 \end{itemize}

@@ -219,8 +219,11 @@ def startSensorPull():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
-  
-    sensorPull = Device(face, "/ndn/no/ntnu", "device1")
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+    
+    presharedKey = Blob("3d58b86f6a302d87881f1af09fd1be3045c0f953")
+    sensorPull = Device(face, "/ndn/no/ntnu", "device1", presharedKey)
     sensorPull.requestIdentityBasedPrivateKey()
     while not EXIT:
         face.processEvents()
@@ -241,8 +244,11 @@ def startSensorData():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
- 
-    sensorData = Device(face, "/ndn/no/ntnu", "device2")
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+
+    presharedKey = Blob("37357ea87ccf6e819754475f0184f961caeb8f28")
+    sensorData = Device(face, "/ndn/no/ntnu", "device2", presharedKey)
     sensorData.requestIdentityBasedPrivateKey()
     sensorData.registerPrefix()
     while not EXIT:
@@ -263,6 +269,9 @@ def startPKG():
     global EXIT
     # The default Face will connect using a Unix socket, or to "localhost".
     face = Face()
+    keyChain = KeyChain()
+    face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
+
     pkg = PublicKeyGenerator(face, "/ndn/no/ntnu")
 
     while not EXIT:
