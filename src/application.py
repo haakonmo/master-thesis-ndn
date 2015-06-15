@@ -221,8 +221,8 @@ def startSensorPull():
     face = Face()
     keyChain = KeyChain()
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
-    
-    presharedKey = Blob("3d58b86f6a302d87881f1af09fd1be3045c0f953")
+
+    presharedKey = "gAJVrjM6R1RYT09MeE1XZXMxVzJiYWRuTXppaHIyamttRjNwdXJhTC9abnFKQTUrRU5DM1Z1eHB1YnpST1VBVTlVN2dvclZlT0ZmUDNPUkR1UkJaVldjNUh0dDVEOXcwNVJOUmFNV1YxeVFqTlUvNmo1Rk9LbU5RUmkrZWxORlNoRkxYbWtZZjdxS3ZWUlNGUU1najBoNkt1YW1IN1J4WWNYZ09wMlR4MUx4RnBXYlBFPXEALg=="
     sensorPull = Device(face, "/ndn/no/ntnu", "device1", presharedKey)
     sensorPull.requestIdentityBasedPrivateKey()
     while not EXIT:
@@ -247,7 +247,7 @@ def startSensorData():
     keyChain = KeyChain()
     face.setCommandSigningInfo(keyChain, keyChain.getDefaultCertificateName())
 
-    presharedKey = Blob("37357ea87ccf6e819754475f0184f961caeb8f28")
+    presharedKey = "gAJVrjM6RjFCMGE3Y0VRaFh2RTdqSUZPT3R2ZFZEWFVubDVVRVlXMmlmbWVXczR3K0JTdG9TTlUxREk3TGQ1K1p0UkpkL0NVUG55c1M4ZzhXdDdKT2lKOWx4cUh3UVRtNDVWemlGWVdaQlV2cHMwZkpQWUNMc0RyeTFqUldMOEQ4YTcyaTZCTlhueXo3bitIa0ZFdm1wVzhFbE00UEtRc21KdTlTWmkybVRlVlZFaTNRPXEALg=="
     sensorData = Device(face, "/ndn/no/ntnu", "device2", presharedKey)
     sensorData.requestIdentityBasedPrivateKey()
     sensorData.registerPrefix()

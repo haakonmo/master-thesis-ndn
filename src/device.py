@@ -7,6 +7,7 @@ import random
 import os.path
 import util
 import ast
+import base64
 from pyndn import Name
 from pyndn import Interest
 from pyndn import Data
@@ -49,7 +50,7 @@ class Device(object):
 
         self.face = face
         
-        self.presharedKey = presharedKey
+        self.presharedKey = extractor(bytesToObject(presharedKey, self.ibe_scheme.group))
 
         self.baseName = Name(baseName)
         self.deviceName = Name(self.baseName).append(deviceName)
@@ -281,20 +282,20 @@ class Device(object):
 
         ID = self.deviceName.toUri()
         # Make each init unique with a session
-        session = str(int(round(util.getNowMilliseconds() / 1000.0)))
+        self.initSession = str(int(round(util.getNowMilliseconds() / 1000.0)))
 
         a = SymmetricCryptoAbstraction(self.presharedKey)
-        message = {"ID":ID, "nonce":session}
-        cipher = a.encrypt(message)
+        message = {"ID":ID, "nonce":self.initSession}
+        cipher = a.encrypt(str(message))
+        cipherEncoded = base64.b64encode(cipher)
+        logging.info("Cipher encoded: " + str(cipherEncoded))
 
-        #TODO append tempMpk to name , as base64 encoded
-        encodedTempMasterPublicKey = objectToBytes(self.temp_master_public_key, self.ibe_scheme.group)
-        name = Name(self.baseName).append("pkg").append("initDevice").append(session)
+        name = Name(self.baseName).append("pkg").append("initDevice").append(self.initSession)
         interest = Interest(name)
         # interest.setMinSuffixComponents(6)
         keyLocator = KeyLocator()
         keyLocator.setType(KeyLocatorType.KEYNAME)
-        keyLocator.setKeyName(Name(self.deviceName).append(cipher))
+        keyLocator.setKeyName(Name(self.deviceName).append(cipherEncoded))
         interest.setKeyLocator(keyLocator)
 
         logging.info("Expressing interest name: " + name.toUri())
@@ -320,7 +321,14 @@ class Device(object):
         message.ParseFromString(data.getContent().toRawStr())
 
         # TODO: Compare session
-        session = message.nonce
+        if not self.initSession == message.nonce:
+            logging.warning("Nonce is not equal!")
+
+        # SignatureMasterPublicKey
+        signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)
+        self.signature_master_public_key = deserializeObject(signatureMasterPublicKeyDict, self.ibs_scheme.group)
+        # Verify signature
+        self.ibs_scheme.verifyData(self.signature_master_public_key, data, self.onVerifiedData, self.onVerifyDataFailed)
 
         if (message.type == messageBuf_pb2.Message.INIT):
             if (message.encAlgorithm == messageBuf_pb2.Message.AES):
@@ -332,23 +340,14 @@ class Device(object):
                 if not (self.ibe_scheme.algorithm == message.ibeAlgorithm):
                     logging.error("IBE algorithm doesnt match! Receiver: "+self.ibe_scheme.algorithm+", Sender: "+message.ibeAlgorithm)
 
-                #Decrypt identityBasedEncrypedKey
-                identityBasedEncryptedKeyDict = ast.literal_eval(message.identityBasedEncryptedKey)
-                identityBasedEncryptedKey = deserializeObject(identityBasedEncryptedKeyDict, self.ibe_scheme.group)
-                key = self.ibe_scheme.decryptKey(self.temp_master_public_key, self.temp_private_key, identityBasedEncryptedKey)
-                
                 #Decrypt encryptedMessage
                 # PrivateKeys
-                a = SymmetricCryptoAbstraction(extractor(key))
+                a = SymmetricCryptoAbstraction(self.presharedKey)
                 privateKeyEncoded           = a.decrypt(message.encryptedPK)
                 signaturePrivateKeyEncoded  = a.decrypt(message.encryptedSPK)
                 self.private_key            = bytesToObject(privateKeyEncoded, self.ibe_scheme.group)
                 self.signature_private_key  = bytesToObject(signaturePrivateKeyEncoded, self.ibs_scheme.group)
                 
-                # SignatureMasterPublicKey
-                signatureMasterPublicKeyDict = ast.literal_eval(message.identityBasedSignatureMasterPublicKey)
-                self.signature_master_public_key = deserializeObject(signatureMasterPublicKeyDict, self.ibs_scheme.group)
-
                 # MasterPublicKey
                 masterPublicKeyDict     = ast.literal_eval(message.identityBasedMasterPublicKey)
                 self.master_public_key  = deserializeObject(masterPublicKeyDict, self.ibe_scheme.group)

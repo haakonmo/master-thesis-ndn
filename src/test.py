@@ -125,7 +125,7 @@ def test():
     cekSize = len(Blob(extractor(cek)))
     logging.info("CEK: ")
     logging.info(extractor(cek))
-    logging.info(Blob(extractor(cek)))
+    logging.info(objectToBytes(cek, ibe.ibe_scheme.group))
 
     results = 0.0
     for i in range (0, number):

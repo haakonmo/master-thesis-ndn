@@ -3,6 +3,8 @@ import messageBuf_pb2
 import logging
 import util
 import ast
+import base64
+import urllib 
 
 from pyndn import Name
 from pyndn import Interest
@@ -31,8 +33,8 @@ class PublicKeyGenerator(object):
 
         """
         # Devices that are manually approved by an administrator.
-        self.approvedDevices = {"/ndn/no/ntnu/device1":Blob("3d58b86f6a302d87881f1af09fd1be3045c0f953"),
-                                "/ndn/no/ntnu/device2":Blob("37357ea87ccf6e819754475f0184f961caeb8f28")}
+        self.approvedDevices = {"/ndn/no/ntnu/device1":"gAJVrjM6R1RYT09MeE1XZXMxVzJiYWRuTXppaHIyamttRjNwdXJhTC9abnFKQTUrRU5DM1Z1eHB1YnpST1VBVTlVN2dvclZlT0ZmUDNPUkR1UkJaVldjNUh0dDVEOXcwNVJOUmFNV1YxeVFqTlUvNmo1Rk9LbU5RUmkrZWxORlNoRkxYbWtZZjdxS3ZWUlNGUU1najBoNkt1YW1IN1J4WWNYZ09wMlR4MUx4RnBXYlBFPXEALg==",
+                                "/ndn/no/ntnu/device2":"gAJVrjM6RjFCMGE3Y0VRaFh2RTdqSUZPT3R2ZFZEWFVubDVVRVlXMmlmbWVXczR3K0JTdG9TTlUxREk3TGQ1K1p0UkpkL0NVUG55c1M4ZzhXdDdKT2lKOWx4cUh3UVRtNDVWemlGWVdaQlV2cHMwZkpQWUNMc0RyeTFqUldMOEQ4YTcyaTZCTlhueXo3bitIa0ZFdm1wVzhFbE00UEtRc21KdTlTWmkybVRlVlZFaTNRPXEALg=="}
 
         self.deviceName = Name(baseName).append("pkg")
 
@@ -90,10 +92,10 @@ class PublicKeyGenerator(object):
         ID = ""
         if interest.getKeyLocator().getType() == KeyLocatorType.KEYNAME:
             keyLocator = interest.getKeyLocator().getKeyName()
-            tempIbeAlgorithm = int(keyLocator.get(keyLocator.size()-2).toEscapedString())
-            tempMasterPublicKeyEncoded = keyLocator.get(keyLocator.size()-1).toEscapedString()
-            logging.info(tempMasterPublicKeyEncoded)
-            ID = keyLocator.getPrefix(keyLocator.size()-2).toUri()
+            cipherEncoded = keyLocator.get(keyLocator.size()-1).toEscapedString()
+            cipherEncoded = urllib.unquote(cipherEncoded).decode('utf8') 
+            logging.info("Cipher encoded: " + str(cipherEncoded))
+            ID = keyLocator.getPrefix(keyLocator.size()-1).toUri()
         
         # Check if ID is in approved devices
         presharedKey = self.approvedDevices[ID]
@@ -103,10 +105,13 @@ class PublicKeyGenerator(object):
             logging.info("Pre-shared key: " + str(presharedKey))
 
             # Decrypt cipher
-            a = SymmetricCryptoAbstraction(presharedKey)
+
+            a = SymmetricCryptoAbstraction(extractor(bytesToObject(presharedKey, self.ibe_scheme.group)))
+            cipher = base64.b64decode(cipherEncoded)
             message = a.decrypt(cipher)
+            message = ast.literal_eval(message)
             decryptedID = message["ID"]
-            dectrptedNonce = message["nonce"]
+            decryptedNonce = message["nonce"]
 
             if not ID == decryptedID:
                 logging.warning("Device ID: " + str(decryptedID) + " is not equal to registered ID: " + str(ID))
@@ -120,10 +125,6 @@ class PublicKeyGenerator(object):
             keyName = interest.getName()
             session = keyName.get(keyName.size()-2).toEscapedString()
             
-            tempMasterPublicKey = bytesToObject(tempMasterPublicKeyEncoded, self.ibe_scheme.group)
-            key = self.ibe_scheme.getRandomKey()
-            identityBasedEncryptedKey = self.ibe_scheme.encryptKey(tempMasterPublicKey, ID, key)
-            identityBasedEncryptedKey = str(serializeObject(identityBasedEncryptedKey, self.ibe_scheme.group))
 
             # Symmetric AES encryption of contentData
             encodedPrivateKey = objectToBytes(device_private_key, self.ibe_scheme.group)
@@ -131,7 +132,7 @@ class PublicKeyGenerator(object):
             # logging.info(encodedPrivateKey)
             # logging.info(encodedSignaturePrivateKey)
 
-            a = SymmetricCryptoAbstraction(extractor(key))
+            a = SymmetricCryptoAbstraction(presharedKey)
             encryptedPK = a.encrypt(encodedPrivateKey)
             encryptedSPK = a.encrypt(encodedSignaturePrivateKey)
             # logging.info(encryptedPK)
@@ -143,13 +144,13 @@ class PublicKeyGenerator(object):
             message = messageBuf_pb2.Message()
             message.identityBasedMasterPublicKey = str(serializeObject(self.master_public_key, self.ibe_scheme.group))
             message.identityBasedSignatureMasterPublicKey = str(serializeObject(self.signature_master_public_key, self.ibs_scheme.group))
-            message.identityBasedEncryptedKey = identityBasedEncryptedKey
+            # message.identityBasedEncryptedKey = None
             message.encryptedPK = encryptedPK
             message.encryptedSPK = encryptedSPK
             message.encAlgorithm = messageBuf_pb2.Message.AES
             message.ibeAlgorithm = self.ibe_scheme.algorithm
             message.ibsAlgorithm = self.ibs_scheme.algorithm
-            message.nonce = session
+            message.nonce = decryptedNonce
             message.timestamp = int(round(util.getNowMilliseconds() / 1000.0)) 
             message.type = messageBuf_pb2.Message.INIT
             
