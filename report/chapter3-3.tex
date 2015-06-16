@@ -102,7 +102,7 @@ This is however not implemented in the application, because it is considered too
 \subsection{Packet Design}
 The packet format is designed with Google Protocol Buffers, which is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.\footnote{Google Protocol Buffers - https://developers.google.com/protocol-buffers/}
 Device registration packets have the structure presented in~\autoref{fig:init_interest-data}.
-Initially the idea was to have the cipher appended to the content \gls{name}. 
+Initially, the idea was to have the cipher appended to the content \gls{name}. 
 However, I experienced a problem where the \texttt{Init} \gls{data} never arrived at destination node. 
 After some research in \texttt{ndn-cxx} documentation I found that the packets have a \texttt{MAX\_NDN\_PACKET\_SIZE} of 8800 bytes and the \texttt{Init} \gls{data} exceeded this limit and reached 8904 bytes.
 Because the cipher is approximately 2\gls{KB} and was appended to the content \gls{name} in the \gls{interest}, the \gls{data} response off course had to have the same content \gls{name}, hence 2\gls{KB} overhead in the \gls{name}. 
@@ -276,8 +276,8 @@ The results of the round trip time are presented in~\autoref{tbl:rtt_chart}.
 \todo{re-run? and on different machines, physical lines}
 \begin{table}[h]
   \begin{tabular}[c]{p{0.40\textwidth}p{0.15\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
-  Protocol                                & C1            & C1            & C3            \\ \hline
-  Device Registration                     & 57.7 ms       & 25.8 ms       & 32.3 ms      \\ %\hline
+  Protocol                                & C1            & C2            & C3            \\ \hline
+  Device Registration                     & 57.7 ms       & 23.8 ms       & 32.3 ms      \\ %\hline
   Data Pull                               & 61.4 ms       & 31.0 ms       & 46.2 ms       \\ %\hline
   \end{tabular}
   \caption[Round trip time of protocols]{Round trip time chart. Time is measured in milliseconds.}

@@ -7,11 +7,11 @@ The key distribution scheme and key revocation I use in the~\autoref{sensor-appl
 The \gls{FSM} is built upon ChronoSync, which is explained in~\autoref{apx:chronosync}.
 The goal for the \gls{FSM} is to distribute \gls{data} to a large group of nodes.
 Each node wants to verify that the distributed \gls{data} originate from the \gls{publisher}.
-Each node always wants to have the newest version of the \gls{data}. 
+Each node always want to obtain the newest version of the \gls{data}. 
 One example where \gls{FSM} is applicable is when we want to distribute a list of public keys within a domain.
 Let us say there is a list owner, e.g. a \gls{TTP} that could be a university like the \gls{ntnu}.
 \gls{ntnu} wants to distribute to a large set of nodes, i.e. each student and employee at \gls{ntnu}.
-Every node wants to have every public key in \gls{ntnu}s domain up-to-date.
+Every node want to have every public key in \gls{ntnu}s domain up-to-date.
 When the list of public keys gets updated, caused by for instance a key revocation or a key initialization, every node should immediately synchronize with the updated list.
 
 There can be two types of roles in the \gls{FSM}. 

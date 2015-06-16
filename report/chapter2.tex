@@ -66,7 +66,7 @@ He, amongst other contributors of \gls{CCN}, has been working on developing the 
 Jacobsen has contributed to \gls{TCP}/\gls{IP} with his flow control algorithms~\cite{DBLP:conf/sigcomm/Jacobson88} and \gls{TCP} header compression~\cite{rfc1144}.
 \gls{CCN} focuses on naming content, instead of naming \gls{IP}-addresses. 
 The research project is lead by \gls{PARC}.
-A branch of \gls{CCN} is the \gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} research project started in 2010, which Jacobsen also have contributed to.
+A branch of \gls{CCN} is the \gls{NDN}~\cite{DBLP:journals/ccr/0001ABJcCPWZ14} research project started in 2010, which Jacobsen also has contributed to.
 One of the biggest contributers is \gls{UCLA}, with Lixia Zhang in the lead. 
 Zhang is known for her contribution to, amongst many other, \gls{RSVP}~\cite{rfc2205} and \gls{MACAW}~\cite{DBLP:conf/sigcomm/BharghavanDSZ94}.
 The \gls{NDN} project is also one of few projects funded by \gls{NSF} in their \gls{FIA} program~\cite{nsf-fia}.
@@ -78,7 +78,7 @@ This section will describe the basic architecture of \gls{NDN}~\cite{NDN-0021} a
 \subsection{Brief Introduction}
 In \gls{NDN} there are two types of packets, \gls{interest} and \gls{data} packet.
 All \gls{data} has be given a content \gls{name} by its \gls{publisher}. 
-To publish some content to the network, a user have to register the prefix, i.e. announcing the contents \gls{name}, which tells the network that the content can be retrieved on the announced \gls{name}. 
+To publish some content to the network, a user has to register the prefix, i.e. announcing the contents \gls{name}, which tells the network that the content can be retrieved on the announced \gls{name}. 
 The retrieval can only be achieved if someone expresses an \gls{interest} to the content \gls{name}.
 If a user expresses \gls{interest} in the \gls{name}, the network will route the \gls{interest} to the closest \gls{node} that holds the \gls{data}. 
 The \gls{data} packet can be retrieved from any \gls{node}, trusted or not, over any type of communication channel, secure or not. 
@@ -203,7 +203,7 @@ To understand this, the following entities in a \gls{NDN} \gls{node} should be u
 In contrary to an \gls{IP} node, a \gls{NDN} node knows \textit{what} content comes through itself. 
 Since all content is associated with a \gls{name}, a \gls{NDN} node can know 1) \textit{what} is requested, but not satisfied (i.e. stored in \gls{PIT}), and 2) \textit{what} has been satisfied earlier and still available, i.e. still cached in \gls{CS}.
 With this knowledge the network can now satisfy \texttt{Interests} with content already stored in cache, hence the network can naturally offer \gls{multicast} on network layer.
-~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly have to send equal amount of content than in an \gls{IP} network.
+~\autoref{fig:ndn-multicast} illustrates a \gls{NDN} network where we can see that the network does not nearly has to send equal amount of content than in an \gls{IP} network.
 The mobile expresses an \gls{interest} (1) in a file named \path{/ntnu/file1}.
 The \gls{interest} finds its way to the \gls{publisher} of the file, and thus the \gls{publisher} responds with a \gls{data} packet (2) named \path{/ntnu/file1} containing the file, and the \gls{data} finds it way back to the mobile.
 When the second computer expresses the same \gls{interest} (3), the consecutive node has already cached the \gls{data} response matching to the \gls{interest} in its \gls{CS}, hence the \gls{interest} is satisfied already at this point (4), and not forwarded any further.
