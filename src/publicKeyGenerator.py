@@ -32,9 +32,6 @@ class PublicKeyGenerator(object):
         """
 
         """
-        # Devices that are manually approved by an administrator.
-        self.approvedDevices = {"/ndn/no/ntnu/device1":"gAJVrjM6R1RYT09MeE1XZXMxVzJiYWRuTXppaHIyamttRjNwdXJhTC9abnFKQTUrRU5DM1Z1eHB1YnpST1VBVTlVN2dvclZlT0ZmUDNPUkR1UkJaVldjNUh0dDVEOXcwNVJOUmFNV1YxeVFqTlUvNmo1Rk9LbU5RUmkrZWxORlNoRkxYbWtZZjdxS3ZWUlNGUU1najBoNkt1YW1IN1J4WWNYZ09wMlR4MUx4RnBXYlBFPXEALg==",
-                                "/ndn/no/ntnu/device2":"gAJVrjM6RjFCMGE3Y0VRaFh2RTdqSUZPT3R2ZFZEWFVubDVVRVlXMmlmbWVXczR3K0JTdG9TTlUxREk3TGQ1K1p0UkpkL0NVUG55c1M4ZzhXdDdKT2lKOWx4cUh3UVRtNDVWemlGWVdaQlV2cHMwZkpQWUNMc0RyeTFqUldMOEQ4YTcyaTZCTlhueXo3bitIa0ZFdm1wVzhFbE00UEtRc21KdTlTWmkybVRlVlZFaTNRPXEALg=="}
 
         self.deviceName = Name(baseName).append("pkg")
 
@@ -53,6 +50,11 @@ class PublicKeyGenerator(object):
         self.signature_master_secret_key = signature_master_secret_key
         self.signature_private_key = self.ibs_scheme.extract(self.signature_master_public_key, self.signature_master_secret_key, self.deviceName.toUri())
 
+        # Devices that are manually approved by an administrator.
+        presharedKey1 = extractor(bytesToObject("gAJVrjM6R1RYT09MeE1XZXMxVzJiYWRuTXppaHIyamttRjNwdXJhTC9abnFKQTUrRU5DM1Z1eHB1YnpST1VBVTlVN2dvclZlT0ZmUDNPUkR1UkJaVldjNUh0dDVEOXcwNVJOUmFNV1YxeVFqTlUvNmo1Rk9LbU5RUmkrZWxORlNoRkxYbWtZZjdxS3ZWUlNGUU1najBoNkt1YW1IN1J4WWNYZ09wMlR4MUx4RnBXYlBFPXEALg==", self.ibe_scheme.group))
+        presharedKey2 = extractor(bytesToObject("gAJVrjM6RjFCMGE3Y0VRaFh2RTdqSUZPT3R2ZFZEWFVubDVVRVlXMmlmbWVXczR3K0JTdG9TTlUxREk3TGQ1K1p0UkpkL0NVUG55c1M4ZzhXdDdKT2lKOWx4cUh3UVRtNDVWemlGWVdaQlV2cHMwZkpQWUNMc0RyeTFqUldMOEQ4YTcyaTZCTlhueXo3bitIa0ZFdm1wVzhFbE00UEtRc21KdTlTWmkybVRlVlZFaTNRPXEALg==", self.ibe_scheme.group))
+        self.approvedDevices = {"/ndn/no/ntnu/device1":presharedKey1,
+                                "/ndn/no/ntnu/device2":presharedKey2}
         self.face = face
 
         self.baseName = Name(baseName)
@@ -106,7 +108,7 @@ class PublicKeyGenerator(object):
 
             # Decrypt cipher
 
-            a = SymmetricCryptoAbstraction(extractor(bytesToObject(presharedKey, self.ibe_scheme.group)))
+            a = SymmetricCryptoAbstraction(presharedKey)
             cipher = base64.b64decode(cipherEncoded)
             message = a.decrypt(cipher)
             message = ast.literal_eval(message)
