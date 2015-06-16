@@ -336,7 +336,7 @@ Finally the \gls{requester} receives the \gls{data}, verifies the signature and 
   The mobile sends a Sensor Interest to the device appending the request for a resource and a nonce \texttt{n}. 
   The Interest is signed with the mobile's secret key \texttt{sk\textsubscript{m}} and verified by the device. 
   The device checks whether the mobile has a valid capability for the requested resource and encrypts the data if granted.
-  The Data response is signed with the devices' secret key \texttt{sk\textsubscript{d}}.
+  The Data response is signed with the device's secret key \texttt{sk\textsubscript{d}}.
   The mobile decrypts of the content encryption key \texttt{cek} and the cipher \texttt{c}, checks whether the received nonce \texttt{\^{n}} is equal to \texttt{n} and finally accepts the data as correct.}
   \label{fig:data_pull_ibe}
 \end{figure}

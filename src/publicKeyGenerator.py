@@ -31,8 +31,10 @@ class PublicKeyGenerator(object):
     def __init__(self, face, baseName):
         """
 
+        :param Face face:
+        :param Name baseName:
         """
-
+        # ID of the PKG
         self.deviceName = Name(baseName).append("pkg")
 
         #Initialize IBC schemes
