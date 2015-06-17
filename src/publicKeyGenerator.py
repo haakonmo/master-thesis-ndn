@@ -30,6 +30,10 @@ class PublicKeyGenerator(object):
 
     def __init__(self, face, baseName):
         """
+        Initialize the Public Key Generator (PKG):
+            Device Name
+            Identity-Based Encryption scheme
+            Identity-Based Signature scheme 
 
         :param Face face:
         :param Name baseName:
