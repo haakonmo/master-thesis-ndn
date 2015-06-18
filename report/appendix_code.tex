@@ -11,8 +11,9 @@
     }
 
 \section{Scyther Security Analysis of Device Registration}\label{apx:scyther-analysis-dr}
-\todo{intro}
-To better understand the code,~\autoref{tbl:mapping_code} is presents mapping of the~\autoref{fig:init_ibe_2} to the code.
+Scyther is a tool for verifying the security in protocols.
+The security verification for the device registration phase 2 is modeled in the \gls{spdl} code presented in~\autoref{drspdl}.
+To better understand the \gls{spdl} code,~\autoref{tbl:mapping_code} presents the mapping of~\autoref{fig:init_ibe_2} to the code.
 
 \begin{table}[h]
   \begin{tabular}{lll}
@@ -30,13 +31,14 @@ To better understand the code,~\autoref{tbl:mapping_code} is presents mapping of
 \end{table}
 
 \begin{lstinputlisting}
-[language=Python, caption={Device Registration SPDL}]{../src/device_registration.spdl}
+[language=Python, label={drspdl}, caption={Device Registration SPDL}]{../src/device_registration.spdl}
 \end{lstinputlisting}
 
 \clearpage
 \section{Scyther Security Analysis of Data Pull}\label{apx:scyther-analysis-dp}
-\todo{intro}
-To better understand the code,~\autoref{tbl:mapping_code_data} is presents mapping of the~\autoref{fig:data_pull_ibe} to the code.
+Scyther is a tool for verifying the security in protocols.
+The security verification for the data pull is modeled in the \gls{spdl} code presented in~\autoref{dpspdl}.
+To better understand the \gls{spdl} code,~\autoref{tbl:mapping_code_data} presents the mapping of~\autoref{fig:data_pull_ibe} to the code.
 
 \begin{table}[h]
   \begin{tabular}{lll}
@@ -52,12 +54,12 @@ To better understand the code,~\autoref{tbl:mapping_code_data} is presents mappi
   s\textsubscript{1} = Sign(mpk || sk\textsubscript{m} || c\textsubscript{1})      	& s1 = { SHA1(m1) }sk(M)   & Signature				\\ %\hline
   s\textsubscript{2} = Sign(mpk || sk\textsubscript{d} || c\textsubscript{2}      	& s2 = { SHA1(c2) }sk(D)   & Signature				\\ %\hline
   \end{tabular}
-  \caption[SPDL mapping data pull]{Mapping of the~\autoref{fig:init_ibe_2} and the \gls{spdl} code.}
+  \caption[SPDL mapping data pull]{Mapping of the~\autoref{fig:data_pull_ibe} and the \gls{spdl} code.}
   \label{tbl:mapping_code_data}
 \end{table}
 
 \begin{lstinputlisting}
-[language=Python, caption={Data Pull SPDL}]{../src/data_pull.spdl}
+[language=Python, label={dpspdl}, caption={Data Pull SPDL}]{../src/data_pull.spdl}
 \end{lstinputlisting}
 
 % \section{File Sync}\label{apx:file-sync-code}
