@@ -105,6 +105,11 @@ Hence proving security in the standard model is preferably.
 In 2004 Boneh and Boyen proposed a fully secure scheme in the standard model~\cite{DBLP:conf/crypto/BonehB04}.
 However the scheme is not efficient. 
 
+The complexity assumptions is based on bilinear maps.
+Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order \gls{p}, and $g$ be a generator of \gls{g}. 
+We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ if $e$ is efficiently computable, $e$ is bilinear, i.e. $e(g^a, g^b) = e(g, g)^{ab}$ (for all $a$ and $b$), and $e$ is non-degenerate, i.e. $e(g,g)\neq 1$.
+For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader is encouraged to take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
+
 First practical scheme was introduces by Brent Waters~\cite{DBLP:journals/iacr/Waters04}.
 But as David Naccache states in his paper~\cite{DBLP:journals/iacr/Naccache05}, Waters' scheme without random oracles introduces too large public parameters (164\gls{KB}!).
 Naccache proves that he was able to construct a practical and fully secure scheme in the standard model based on the \gls{DBDH} assumption.
@@ -112,9 +117,5 @@ The scheme is a modification of Waters' scheme, but with public parameters of ju
 
 Waters created a fully secure \gls{IBE} system with short parameters under \gls{simple_assumption} in 2009~\cite{DBLP:conf/crypto/Waters09}.
 
-The complexity assumptions is based on bilinear maps.
-Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be groups of prime order \gls{p}, and $g$ be a generator of \gls{g}. 
-We say that $\mathbb{G}$ has a bilinear map $e : \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ if $e$ is efficiently computable, $e$ is bilinear, i.e. $e(g^a, g^b) = e(g, g)^{ab}$ (for all $a$ and $b$), and $e$ is non-degenerate, i.e. $e(g,g)\neq 1$.
-For more details about bilinear maps and~\gls{BDH} used in \gls{IBE}, the reader is encouraged to take a look at~\cite{DBLP:conf/crypto/BonehF01,DBLP:journals/iacr/Naccache05}.
 
 

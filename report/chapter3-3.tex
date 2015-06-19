@@ -25,7 +25,7 @@ The \gls{NDN} project is under development, and thus the implementation of \gls{
 Ideally we want the devices to communicate directly with each other using WiFi, without running over \gls{IP}. 
 This face functionality is not yet implemented, and thus \gls{NDN} is running over \gls{IP} in my experiments.
 
-\section{Installing PyNDN2}
+\section{Installing PyNDN2}\label{pyndn}
 The work done in this thesis is written in Python, hence the \gls{PyNDN2}~\cite{pyndn2-git} is used.
 This is an easy to use implementation of \gls{NDN} and comes with great code examples.
 
@@ -52,9 +52,11 @@ Application goals are explained in~\autoref{file-sync}.
 The module is highly based on the Python implementation of ChronoSync~\cite[test-chrono-chat.py]{pyndn2-git}.
 The code can be retrieved from the thesis work repository~\cite[fileSync.py]{garseg15}
 
-The implementation of the \gls{FSM} does not use \gls{IBS}. 
-This is because all packets that are sent is managed by ChronoSync. 
+The implementation of the \gls{FSM} does not correspond 100\% to the application goals.
+The distributor/subscriber model is not implemented, and neither is the \gls{IBS}.
+The latter is because all packets that are sent is managed by ChronoSync. 
 ChronoSync uses the PyNDN2 KeyChain to sign and verify all \gls{interest} and \gls{data} packets.
+The \gls{IBS} integration explained in~\autoref{pyndn} is not implemented with the KeyChain, hence this is added to the future work.
 I do however demonstrate that it works perfectly fine to perform both \gls{IBE} and \gls{IBS} over \gls{NDN} in the \gls{HSS} implementation.
 
 The module triggers synchronization when files that are watched is changed, or when a file is added or removed.
@@ -85,9 +87,9 @@ These schemes are listed below:
   \label{fig:code-topology}
 \end{figure}
 
-\subsection{Key Management}
-Sufficient key management is not implemented.
+\subsection{Key Storage}
 Storing of secret keys should be done in a secure fashion.
+Sufficient key storage is not implemented.
 
 \subsection{Name Structure}
 As explained in the \gls{name}~\autoref{name}, the \gls{name} structure in \gls{NDN} is left to application developers to decide.
@@ -127,7 +129,7 @@ The packet is illustrated in~\autoref{fig:sensor_interest-data}.
 	
 \texttt{Sensor} \gls{data}.
 The \gls{data} response to the \texttt{Sensor} \gls{interest} uses the same structure as the \texttt{Init} \gls{data}. 
-It is illustrated in~\autoref{fig:sensor_interest-data}
+It is illustrated in~\autoref{fig:sensor_interest-data}.
 
 The \texttt{Init} and \texttt{Sensor} \gls{data} responses in the \gls{HSS} have a structure that is defined in~\cite[messageBuf.proto]{garseg15}.
 The fields are:
@@ -219,7 +221,7 @@ Each computer is assigned an ID which will be used for reference in the performa
 \subsection{Key Sizes}
 It is listed in~\autoref{tbl:size_chart} the different sizes for keys related to the \gls{IBE} and \gls{IBS} that is used in the \gls{HSS} implementation.
 The \gls{CEK} is a random $\mathbb{G}_T$ element (\autoref{ibe-secureness}), and extracted to 40 bytes when performing encryption and decryption with \gls{AES}.
-I would prefer to encrypt and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the \gls{IBE} encryption scheme demands a certain type of format for the input, and thus the whole \gls{CEK} must be sent.
+I would prefer to extract and send the extracted version of the \gls{CEK}, i.e. the hash value of 40 bytes, but the implementation of the \gls{IBE} encryption scheme demands a certain type of format for the input, and thus the whole \gls{CEK} must be sent.
 \begin{table}[h]
   \begin{tabular}[c]{p{0.4\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
   Data                            & Scheme          & Size              \\ \hline
