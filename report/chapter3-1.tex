@@ -23,16 +23,19 @@ Distributors are list-owners and have read-write access.
 Subscribers only have read access.
 A node can be both a distributor and a subscriber, and there can be several distributors that are equal, i.e. several owners of the list.
 However, there is one root distributor (i.e. the true owner) that should be able to delegate write access to other nodes that should act as a distributor. 
+One can verify the root distributor because the ID\textsubscript{distributor} is a part of the \gls{synchronization_group}'s \gls{name} (i.e. \path{/../<id_to_root_distributor>/../}).
 The capabilities is distributed to all nodes and signed by the root distributor.
 These capabilities is needed so that every node can verify the integrity and authenticity of the distributed list.
 If confidentiality is required, it can be achieved by symmetric encryption, and key exchange in the subscription protocol, i.e. using asymmetric encryption.
 However this becomes quite complicated concerning possible key leakage and redistribution of a new symmetric key when the number of subscribers is high. 
 In the case of public keys list, the data would not have to be confidential, but rather rely on integrity and authenticity.
 
+
+
 In~\autoref{fig:ndn-sync} the subscribers (\texttt{a}, \texttt{b} and \texttt{c}) wants to subscribe to the distributors' (\texttt{d}) list of public keys.
 In order to achieve this goal, the following actions should occur.
 \begin{enumerate}
-	\item \texttt{d} announces that it wants to distribute a list to the network by registering the synchronization group prefix. 
+	\item \texttt{d} announces that it wants to distribute a list to the network by registering the \gls{synchronization_group} prefix. 
 	\item \texttt{a}, \texttt{b} and \texttt{c} ask for subscription to this list, and somehow authenticates them selves to \texttt{d} if confidentiality is required.
 	\item \texttt{d} approves those who should be approved, and returns a symmetric synchronization key. 
 	This step is only done if confidentiality is required.
