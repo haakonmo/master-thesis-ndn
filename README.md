@@ -4,16 +4,27 @@ master-thesis-ndn
 Install 
 =======
 
+Clone master thesis repo
+
+    $ git clone https://github.com/haakonmo/master-thesis-ndn.git
+
 Install NFD (http://named-data.net/doc/NFD/current/INSTALL.html)
 
     $ sudo add-apt-repository ppa:named-data/ppa
     $ sudo apt-get update
     $ sudo apt-get install nfd
 
-Install PyNDN2
+Install PyNDN2 (https://github.com/named-data/PyNDN2/blob/master/INSTALL.md)
 
-    $ sudo apt-get install python-setuptools
-    $ sudo CFLAGS=-Qunused-arguments easy_install pyndn
+    $ git clone https://github.com/named-data/PyNDN2.git
+    $ cd PyNDN2/
+
+Copy the edited files into PyNDN2 soruce code
+
+    $ cp -R ../master-thesis-ndn/src/other/pyndn python/pyndn/
+
+    $ sudo CFLAGS=-Qunused-arguments python ./setup.py install
+
 
 Install Git
 
@@ -34,13 +45,14 @@ This requires GMP 5.x, PBC (see above) and OPENSSL
     $ git clone https://github.com/JHUISI/charm.git
     $ cd charm
     $ git checkout 2.7-master
+
+Copy the edited files into Charm soruce code
+
+    $ cp -R ../master-thesis-ndn/src/other/charm charm/
+    
     $ ./configure.sh  (include --enable-darwin if running Mac OS X)
     $ sudo make install
 
-Clone master thesis repo
-
-    $ cd /opt
-    $ git clone https://github.com/haakonmo/master-thesis-ndn.git
 
 Run
 ===
