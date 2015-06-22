@@ -19,7 +19,7 @@ Install PyNDN2 (https://github.com/named-data/PyNDN2/blob/master/INSTALL.md)
     $ git clone https://github.com/named-data/PyNDN2.git
     $ cd PyNDN2/
 
-Copy the edited files into PyNDN2 soruce code
+Copy the edited files into PyNDN2 source code
 
     $ cp -R ../master-thesis-ndn/src/other/pyndn python/pyndn/
 
@@ -46,7 +46,7 @@ This requires GMP 5.x, PBC (see above) and OPENSSL
     $ cd charm
     $ git checkout 2.7-master
 
-Copy the edited files into Charm soruce code
+Copy the edited files into Charm source code
 
     $ cp -R ../master-thesis-ndn/src/other/charm charm/
     

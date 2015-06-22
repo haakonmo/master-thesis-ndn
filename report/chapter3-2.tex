@@ -414,7 +414,7 @@ Another solution can be an \gls{ACL} based approach equivalent to what Wentao Sh
 
 \subsection{Confidentiality}
 Generally, the confidentiality is achieved by doing asymmetric encryption on a \gls{CEK} that is used for symmetric encryption on the content.
-As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each \gls{interest} appends the requesters' ID (\autoref{eq:mapping-id-name-pk}).
+As explained in the sequence diagram (\autoref{fig:data_pull_ibe}) presented in the above sections, each \gls{interest} appends the requester's ID (\autoref{eq:mapping-id-name-pk}).
 Since the ID\textsubscript{requester} always is appended it can always be used to do asymmetric encryption, hence all \gls{CEK}s can be encrypted only for the requesting device, and thus the confidentiality in the system can always be achieved.
 
 \subsection{Integrity and Authenticity}
