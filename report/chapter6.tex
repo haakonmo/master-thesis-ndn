@@ -1,8 +1,8 @@
 \chapter{Discussion}
 In this chapter the work done in conjunction to this thesis will be discussed. 
-First I will talk about the pros and cons using \gls{IBC} in \gls{NDN}.
-Then I will discuss the \gls{HSS} and possible drawbacks in the system. 
-Scalability issues and other applicable networks for the application will be mentioned.
+First I will talk about \gls{NDN} and the pros and cons using \gls{IBC} in \gls{NDN}.
+Then I will discuss some central topics in the \gls{HSS}. 
+Testing results, scalability issues and other applicable networks for the application will be mentioned.
 
 \section{Named Data Networking}
 \gls{NDN} facilitates a lot of concepts that shows to be a huge benefit for todays Internet, and the predicted increase of \gls{IoT}.
@@ -82,23 +82,6 @@ Compromise of a \gls{SK}, will only lead to compromise of the device which holds
   \label{tbl:ibc-pkc-comparison}
 \end{table}
 
-\section{Application}
-There is some topics that should be discussed related to the security model in \gls{HSS}.
-The sharing of a temporary random key \texttt{tk} to register a device is assumed to be preloaded in an offline mode or done in a controlled wired environment, i.e. not tapped. 
-\gls{NFC} signal is hard to eavesdrop outside a radius of 1 meter, thus the sharing is assumed to be secure.
-However, in scenarios where a node cannot share a \texttt{tk} in a physical manner, one have to rely on performing the device registration with some sort of asymmetric encryption. 
-But this solution introduces the question ``who is able to play the role as a device?''.
-The downfall is that it removes the authentication process that is performed when preloading the \texttt{tk}.
-
-Another question could be encrypting with same symmetric key for each data set, or using a unique key for each time the data set is requested.
-Encrypting with the same key limits the encryption computation for the device if several devices requests the same \gls{data}.
-Using a unique key each time \gls{data} is requested would be more secure, and thus can be used for more sensitive content.
-Using the same key on the same content would able the system to utilize the data propagation property that \gls{NDN} facilitates.
-
-One question left to be solved is how expensive the \texttt{Sync} \gls{interest} would be for each device. 
-The \texttt{Sync} \gls{interest} should be expressed periodically for always having the updated ID-list. 
-In equivalent networks deployed over \gls{IP}, \texttt{Hello} messages is often used, hence the \texttt{Sync} \gls{interest} can be modified to be a combination of \texttt{Hello} and \texttt{Sync} \gls{interest}.
-
 \section{Scalability}
 Distributing the \gls{ID}-list can be an issue, as the list can grow linearly with the number of participants in the trust domain.
 However, this might not be a huge problem in the use case which is addressed in this thesis.
@@ -108,6 +91,14 @@ In a sensor network where the number of sensor can exceed 1 million sensors, the
 1 million sensors will approximately require 19 megabyte of data ($(20B / 1024 / 1024) * 1 000 000 = 19.07MB$), which will have to be synchronized.
 However, in such sensor networks, each node does not need to know all other names, but rather the name its gateway, i.e. a \gls{sink_node}. 
 Such logic scheme is not implemented or considered a part of this thesis.
+
+\section{Preshared Secret}
+The sharing of a temporary random key \texttt{tk} to register a device is assumed to be preloaded in an offline mode or done in a controlled wired environment, i.e. not tapped. 
+As mentioned, I suggest using \gls{NFC} to perform the sharing of \texttt{tk}.
+The \gls{NFC} signal is hard to eavesdrop outside a radius of 1 meter, thus the sharing is assumed to be secure.
+However, in scenarios where a node cannot share a \texttt{tk} in a physical manner, one have to rely on performing the device registration with some sort of asymmetric encryption. 
+But this solution introduces the question ``who is able to play the role as a device?''.
+The downfall is that it removes the authentication process that is performed when preloading the \texttt{tk}.
 
 \section{Key Distribution}
 The \gls{FSM} makes it possible for users to know who has a valid \gls{ID} within the \gls{PKG}s trust domain.
@@ -120,6 +111,10 @@ An updated list would spread fast in a large network.
 Performing \gls{DoS} on every node is not easy, and would block the network access for the adversary anyway.
 In~\cite{DBLP:conf/spw/StajanoA99} Frank Stajano and Ross Anderson mentions possible \gls{DoS} attacks, such as radio jamming and battery exhaustion. 
 All applications that relies on some sort of crucial information derived using \gls{FSM} (\autoref{file-sync}) are vulnerable to this kind of \gls{DoS}.
+
+One question left to be solved is how expensive the \texttt{Sync} \gls{interest} would be for each device. 
+The \texttt{Sync} \gls{interest} should be expressed periodically for always having the updated ID-list. 
+In equivalent networks deployed over \gls{IP}, \texttt{Hello} messages is often used, hence the \texttt{Sync} \gls{interest} can be modified to be a combination of \texttt{Hello} and \texttt{Sync} \gls{interest}.
 
 \section{Testing}
 The application is not tested with real sensors, hence I cannot conclude with anything regarding the computational power of such devices, nor the life time of the battery when performing \gls{IBE}.
