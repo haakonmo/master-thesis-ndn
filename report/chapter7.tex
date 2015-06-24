@@ -2,22 +2,20 @@
 In this chapter the conclusion of this thesis will be presented and the future work will be listed.
 
 \section{Conclusion}
-In this thesis I have developed a application in Python with \gls{IBC} used for signing and verification, encryption and decryption, thought to be deployed in a \gls{wsn}.
-The system is built over the new network protocol called Named Data Networking.
-I have suggested how a secure system easily can be implemented, achieving confidentiality, integrity and authenticity, as well as trust.
-
-The system is tested to see how the suggested protocols for device registration and data pull performs with \gls{IBC}. 
-This work is an attempt to show how applicable \gls{NDN} together with \gls{IBC} are for \gls{IoT}, and to design secure protocols for local device networks.
-
+A new network protocol is much needed due to the lack of security in existing networks and the continually increase of data traffic around the world. 
+This thesis explains the architecture of the proposed future Internet protocol \gls{NDN}.
 \gls{NDN} facilitates a lot of concepts that shows to be a huge benefit for todays Internet, and the predicted increase of \gls{IoT}.
 The naming of content and content routing provides usability to \gls{IoT} and \gls{wsn}.
-The concept of \gls{IBC} appears to be highly applicable to \gls{IoT} and \gls{wsn}~\cite{Patil:2012:SWS:2464778}.
-Running \gls{IBC} over \gls{NDN}, makes it even more practical, because of the naming of content concept that \gls{NDN} is built upon. 
-As mentioned it is easier to secure data, relate data to publisher, and authenticate that the publisher is aware of what content it published. 
-I believe that using \gls{IBC} in a \gls{wsn} running over \gls{NDN} should make applications with security less complex and more practical than using security such as RSA. 
+The concept of \gls{IBC} shows to be highly applicable to \gls{IoT} and \gls{wsn}, and running \gls{IBC} over \gls{NDN}, makes it even more practical.
+This is because of the content naming concept that \gls{NDN} is built upon. 
+It is easier to secure data, relate data to publisher, and authenticate that the publisher is aware of what content it published, than in an \gls{IP} network. 
+Using \gls{IBC} in a \gls{wsn} running over \gls{NDN} makes applications with security less complex and more practical than using equivalent security such as RSA. 
 
-Developing applications on top of \gls{NDN} is easy once a basic perception of the \gls{NDN} architecture is understood.
-The \gls{PyNDN2} framework comes with good examples of how to develop simple applications with packets that are signed and encrypted.
+In this thesis I have developed an application thought to be deployed in a \gls{wsn}, written in Python with \gls{IBC} used for signing and verification, encryption and decryption.
+The system is running over the new network protocol called Named Data Networking.
+This work shows how applicable \gls{NDN} together with \gls{IBC} are for \gls{IoT}, and to design secure protocols for local device networks.
+The application is tested to see how the suggested protocols for device registration and data pull performs with \gls{IBC}. 
+I have proven that my suggested proposal is a secure system that can easily be implemented, achieving confidentiality, integrity and authenticity, as well as trust.
 
 \section{Future Work}
 The implementation of the \gls{HSS} does not include integration of the \gls{FSM}, which is a part of the future work.
